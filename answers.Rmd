@@ -1,0 +1,84 @@
+# Chapter 5: attributes
+
+```{r}
+library(sf)
+```
+
+## 5.3: the `AREA` variable
+If we 
+```{r}
+demo(nc, ask = FALSE, echo = FALSE)
+library(sf)
+nc$area = st_area(nc)
+nc
+class(nc$area)
+plot(area ~ AREA, nc)
+abline(lm(area ~ AREA, nc))
+library(units)
+set_units(nc$area, km^2)
+nc$area2 = set_units(nc$area, km^2) / 10000
+plot(area2 ~ AREA, nc)
+abline(0, 1)
+#nc$area = st_area(nc)
+set_units(nc$area, km^2)
+set_units(nc$area, km^2) * 100
+set_units(nc$area, ha)
+cor(nc$area, nc$AREA)
+
+
+plot(area2 ~ AREA, nc)
+abline(0, 1)
+#nc$area = st_area(nc)
+set_units(nc$area, km^2)
+set_units(nc$area, km^2) * 100
+set_units(nc$area, ha)
+nc2 = nc
+st_crs(nc2) = NA
+nc2
+st_area(nc2)
+nc2$area = st_area(nc2)
+plot(area ~ AREA, nc2)
+abline(0,1)
+cor(nc2$area, nc2$AREA)
+```
+
+## 5.5 area-weighted interpolation
+
+From the on-line version of the book we get the code that created the plot:
+```{r}
+g = st_make_grid(st_bbox(st_as_sfc("LINESTRING(0 0,1 1)")), n = c(2,2))
+par(mar = rep(0,4))
+plot(g)
+plot(g[1] * diag(c(3/4, 1)) + c(0.25, 0.125), add = TRUE, lty = 2)
+text(c(.2, .8, .2, .8), c(.2, .2, .8, .8), c(1,2,4,8), col = 'red')
+```
+
+A question is how we can make `g` into an `sf` object with the right
+attribute values associated with the right geometries. We try values
+`1:4`:
+```
+sf = st_sf(x = 1:4, geom = g)
+plot(sf)
+```
+and see the order of the geometries: row-wise, bottom row first, so
+```{r}
+sf = st_sf(x = c(1,2,4,8), geom = g)
+plot(sf)
+```
+gives us the source object. We create target geometries by
+```{r}
+dashed = g[1] * diag(c(3/4, 1)) + c(0.25, 0.125)
+box = st_union(g)
+c(dashed, box)
+```
+and can call `st_interpolate_aw` to compute the area-weighted interpolations:
+```{r}
+st_interpolate_aw(sf, c(dashed, box), extensive = TRUE)
+st_interpolate_aw(sf, c(dashed, box), extensive = FALSE)
+```
+This generates a warning, which we can get rid of by setting the `agr` to
+`constant`:
+```{r}
+st_agr(sf) = "constant"
+st_interpolate_aw(sf, c(dashed, box), FALSE)
+```
