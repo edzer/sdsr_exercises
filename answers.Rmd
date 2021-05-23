@@ -12,9 +12,254 @@ output:
 
 # Chapter 1: Intro
 
+## 1. List five differences between raster and vector data.
+
+- raster data have values for pixels, vector data for points, lines of polygons
+- spatial locations of raster pixels are constrained to a grid,
+  vector data coordinates can have arbitrary locations (only limited
+  by floating point representation of coordinates)
+- raster data lend themselves well to represent spatially
+  continuously observed variables (such as imagery) or spatially
+  continuously varying variables (such as elevation or temperature);
+  vector data lend themselves well to represent spatially discrete
+  features such as houses and roads, or administrative regions.
+- raster data cover their spatial extent completely: every point
+  is part of a single pixel; vector data may contain holes, or have
+  intersecting geometries where points belong to multiple polygons.
+- the operations on raster data are often simple mathematical
+  (raster algebra) operations that include spatial operations; such 
+  simple operations are usually not available for vector data.
+- raster data has trivial topology: it is clear which 4 or 8 pixels
+  are the neighbours of every pixel; for vector data spatial there
+  are more types of relationships, and these relationships are more
+  complicated to detect.
+
+The answer "Raster data is continuous data while vector data is
+discrete data." is not complete: a raster of land use type represens
+a discrete (type) variable, a polygon map with population density
+represents a continuous variable. The difference lies in _spatially_
+continuous variables like elevation or temperature which are
+more easily represented by raster data, and _spatially_ discrete
+features, such as houses and roads, which are easier represented
+by vector data.
+
+## 2. In addition to those listed below figure 1.1, list five further graphical components that are often found on a map.
+
+* scale bar
+* data source
+* well defined title, subtitle
+* orientation indicator, north arrow
+* further reference elements: seas, land mass, rivers
+
+## 3. Why the numeric information shown in figure 1.4 misleading (or meaningless):
+
+The values shown in figure 1.4 are population _total_ associated
+with their respective counties.  Without the county boundaries the
+meaning disappears: raster pixels do not contain population totals
+per pixel, population totals over larger regions or populations
+densities can no longer be derived based on this raster map alone.
+
+## 4. Under which conditions would you expect strong differences when doing geometrical operations on $S^2$, compared to doing them on $R^2$
+
+* when computing distances between two points at large distance from each other
+* when determining what the shortest line is between two points,
+  in particular near to the poles, or when the antimeridian crosses
+  this line
+
 # Chapter 2: Coordinates
 
+## 1. list three geographic measures that do not have a natural zero origin
+
+* longitude: the zero meridian is arbitrary, 100 years ago there were many other zero meridians fashionable
+* latitude: the equator may feel like a natural zero, but one could
+  equally use the North Pole as zero, or choose entirely different
+  origins and orientation for longitude and latitude.
+* altitude (measured w.r.t. mean sea level, geoid, or ellispoid)
+
+## 2 - 4
+
+(thanks to Jonas Hurst)
+
+Convert the (x, y) point s (10, 2), (-10, -1), (10, -2) and (0, 10) to polar cooridnates
+
+```{r}
+cart2polar = function(x, y){
+  r = sqrt(x*x + y*y)  # compute r (distance from origin)
+  phi = atan2(y, x)  # compute phi (angle between point and positive x axis in rad)
+  phi_deg = phi * 180 / pi  #  compute angle in deg
+  result = c(r, phi_deg)
+  return(result)
+}
+
+cart2polar(10, 2)
+cart2polar(-10, -1)
+cart2polar(10, -2)
+cart2polar(0, 10)
+```
+
+## Convert from Polar to Cartesian
+
+Convert the polar (r, phi) points (10, 45°), (0, 100°) and (5, 259°) to Cartesian coordinates
+
+```{r}
+deg2rad = function(angle_degree) {
+  angle_degree * pi / 180
+}
+
+polar2cart = function(r, phi_deg){
+  # phi must be in degrees
+  phi_rad = deg2rad(phi_deg)  # convert phi in degrees to radians
+  x = r * cos(phi_rad)
+  y = r * sin(phi_rad)
+  c(x, y) # return value
+}
+
+polar2cart(10, 45)
+polar2cart(0, 100)
+polar2cart(5, 259)
+```
+
+assuming the Earth is a sphere with a radius of 6371 km, compute for (lambda, phi) points the great circle distance between (10, 10) and (11, 10), between (10, 80)    >and (11, 80), between (10, 10) and (10, 11) and between (10, 80) and (10, 81).
+
+```{r}
+distOnSphere = function(l1, phi1, l2, phi2, radius) {
+  l1_rad = deg2rad(l1)
+  l2_rad = deg2rad(l2)
+  phi1_rad = deg2rad(phi1)
+  phi2_rad = deg2rad(phi2)
+
+  theta = acos(
+    sin(phi1_rad) * sin(phi2_rad) +
+    cos(phi1_rad) * cos(phi2_rad) * cos(abs(l1_rad - l2_rad))
+  )
+  radius * theta # return value
+}
+
+radius = 3671
+distOnSphere(10, 10, 11, 10, radius)
+distOnSphere(10, 80, 11, 80, radius)
+distOnSphere(10, 10, 10, 11, radius)
+distOnSphere(10, 80, 10, 81, radius)
+```
+Unit of all results are kilometers.
+
 # Chapter 3: Geometries
+
+(thanks to Jannis Fröhlking)
+
+## 1 Give two examples of geometries in 2-D (flat) space that are not simple feature geometries, and create a plot of them.
+
+```{r}
+library(sf)
+x1 <- st_linestring(rbind(c(0,0),c(2,2),c(0,2),c(2,0)))
+x2 <- st_polygon(list(rbind(c(3,0),c(5,2),c(3,2),c(5,0),c(3,0))))
+plot(c(x1,x2), col = 2:3)
+st_is_simple(x1)
+st_is_simple(x2)
+```
+
+## 2) Recompute the coordinates 10.542, 0.01, 45321.789 using precision values 1, 1e3, 1e6, and 1e-2.
+```{r 2) precicsion}
+for(i in c(1,1e3,1e6,1e-2)) 
+  print(round(i * c(10.542, 0.01, 45321.789))/i)
+```
+## 3) Describe a practical problem for which an n-ary intersection would be needed.
+
+* for a long-term set of polygons with fire extents, find the polygons that underwent
+  0, 1, 2, 3, ... fires
+* for a set of extents of n individual plant species, find polygons with 0, 1, ..., n species, or
+  find the polygon(s) that contain a particular subset of plant species.
+
+## 4) How can you create a Voronoi diagram (figure 3.3) that has closed polygons for every point?
+
+Voronoi diagrams have "open polygons", areas that extend into
+infinity, for boundary points. These cannot be represented by
+simple feature geometries. `st_voronoi` chooses a default (square)
+polygon to limit the extent, which can be enlarged. Alternatively,
+the extent can be limited using `st_intersection` on its result:
+
+```{r}
+library(sf)
+par(mfrow = c(2,2))
+set.seed(131)
+mp = st_multipoint(matrix(runif(20), 10))
+plot(st_voronoi(mp), col = NA, border = 'black')
+plot(mp, add = TRUE)
+title("default extent")
+e2 = st_polygon(list(rbind(c(-5,-5), c(5, -5), c(5,5), c(-5, 5), c(-5,-5))))
+plot(st_voronoi(mp, envelope = e2), col = NA, border = 'black')
+plot(mp, add = TRUE)
+title("enlarged envelope")
+e3 = st_polygon(list(rbind(c(0,0), c(1, 0), c(1, 1), c(0, 1), c(0, 0))))
+v = st_voronoi(mp) %>% st_collection_extract() # pulls POLYGONs out of GC
+plot(st_intersection(v, e3), col = NA, border = 'black', axes=TRUE)
+plot(mp, add = TRUE)
+title("smaller, intersected envelope")
+
+
+## 5) Give the unary measure dimension for geometries POINT Z (0 1 1), LINESTRING Z (0 0 1,1 1 2), and POLYGON Z ((0 0 0,1 0 0,1 1 0,0 0 0))
+```{r unary measure dimension}
+st_dimension(st_point(c(0,1,1)))
+st_dimension(st_linestring(rbind(c(0,1,1),c(1,1,2))))
+st_dimension(st_polygon(list(rbind(c(0,0,0),c(1,0,0),c(1,1,0),c(0,0,0)))))
+```
+
+(these are all zero-dimensional geometries because they are _points_, irrespective the number of dimensions they're defined in)
+
+## 6) Give the DE-9IM relation between LINESTRING(0 0,1 0) and LINESTRING(0.5 0,0.5 1); explain the individual characters.
+```{r DE-9IM relation}
+line_1 = st_linestring(rbind(c(0,0),c(1,0)))
+line_2 = st_linestring(rbind(c(.5,0),c(.5,1)))
+plot(line_1,col = "green")
+plot(line_2,col = "red", add = TRUE)
+st_relate(line_1, line_2)
+```
+The DE-9IM relation is F01FF0102
+
+- F   Intersection of green lines interior and red lines interior is empty
+- 0   Intersection of green lines interior and red lines boundary results in one point in the middle of the green line
+- 1   Intersection of green lines interior and red lines exterior results in a line covering most parts of the green line
+- F   Intersection of green lines boundary and red lines interior is empty
+- F   Intersection of green lines boundary and red lines boundary is empty
+- 0   Intersection of green lines boundary and red lines exterior results in the two boundary points of the green line
+- 1   Intersection of green lines exterior and red lines interior results in a line covering most parts of the red line
+- 0   Intersection of green lines exterior and red lines boundary results in the upper boundary point of the red line
+- 2   Intersection of green lines exterior and red lines results in a polygonal geometry covering everything except the two lines
+
+(the boundary of a LINESTRING is formed by its two end points)
+
+## 7) Can a set of simple feature polygons form a coverage? If so, under which constraints?
+Yes, but I would say that the set may just contain one polygon, because simple features provide no way of assigning points on the boundary of two adjacent polygons to a single polygon.
+
+## 8) For the nc counties in the dataset that comes with R package sf, find the points touched by four counties.
+```{r}
+# read data
+nc <- st_read(system.file("shape/nc.shp", package="sf"))
+# get intersections
+(nc_geom = st_geometry(nc))
+nc_ints = st_intersection(nc_geom)
+plot(nc_ints, main = "All intersections")
+# Function to check class of intersection objects
+get_points = function(x){
+  if(class(x)[2]=="POINT")  return(x)
+}
+# get points
+points = lapply(nc_ints, get_points)
+points[sapply(points,is.null)] <- NULL
+sf_points = st_sfc(points)
+st_crs(sf_points) = st_crs(nc)
+# get points with four neighbouring geometries (=states)
+touch = st_touches(sf_points, nc_geom)
+four_n = sapply(touch, function(y) which(length(y)==4))
+names(four_n) = seq_along(four_n)
+point_no = array(as.numeric(names(unlist(four_n))))
+result = st_sfc(points[point_no])
+plot(nc_geom, main = "Points touched by four counties")
+plot(result, add = TRUE, col = "red",pch = 10, cex = 2)
+```
+
+## 9) How would figure 3.6 look like if δ for the y-coordinate was positive?
+Only cells that were fully crossed by the red line would be grey.
 
 # Chapter 4: Spherical geometry
 
@@ -80,9 +325,10 @@ usual unit for area, neither for metric nor for imperial units.
 Also, there are deviations from the 1:1 regression line.  Could these
 be explained by the rounding of `AREA` to three digits? If rounding
 to three digits was the only cause of spread around the regression
-line, we would expect a residual standard error similar to
+line, we would expect a residual standard error similar to the standard
+deviation of a uniform distribution with width .001, which is
 ```{r}
-sd(runif(1000, min = -.0005, max = .0005))
+sqrt(0.001^2/12)
 ```
 but the one obtained int he regression is three times larger. Also,
 the units of `AREA` would be 1e10 $m^2$, or 1e4 $km^2$, which is
@@ -110,7 +356,7 @@ We now get a much better fit, a near perfect correlation, and a
 regression standard error that corresponds exactly to what one
 would expect after rounding `AREA` to three digits.
 
-A further "red flag" that counts against the constant (1e10) conversion
+A further "red flag" against the constant (1e10) conversion
 hypothesis is the spatial pattern of the regression residuals
 obtained by the first approach:
 ```{r}
@@ -118,7 +364,7 @@ nc$resid = residuals(lm(area2 ~ AREA, nc))
 plot(nc["resid"])
 ```
 
-these residuals clearly showh a North-South trend, corresponding
+these residuals clearly show a North-South trend, corresponding
 to the effect that the Earth's curvature has been ignored during
 the computation of `AREA` (ellipsoidal coordinates were treated
 as if they were Cartesian). "Square degrees" become smaller when
@@ -126,7 +372,7 @@ going north.
 
 The "unit" of the `AREA` variable is hence "square degree". This
 is a meaningless unit for area on the sphere, because a unit square
-degree does not have a constant area.
+degree does not have a constant area. 
 
 ## 4 type of `area`
 
