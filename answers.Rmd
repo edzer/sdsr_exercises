@@ -12,7 +12,7 @@ output:
 
 # Chapter 1: Intro
 
-## 1. List five differences between raster and vector data.
+## ex 1.1. List five differences between raster and vector data.
 
 - raster data have values for pixels, vector data for points, lines of polygons
 - spatial locations of raster pixels are constrained to a grid,
@@ -43,7 +43,7 @@ more easily represented by raster data, and _spatially_ discrete
 features, such as houses and roads, which are easier represented
 by vector data.
 
-## 2. In addition to those listed below figure 1.1, list five further graphical components that are often found on a map.
+## ex 1.2. In addition to those listed below figure 1.1, list five further graphical components that are often found on a map.
 
 * scale bar
 * data source
@@ -51,7 +51,7 @@ by vector data.
 * orientation indicator, north arrow
 * further reference elements: seas, land mass, rivers
 
-## 3. Why the numeric information shown in figure 1.4 misleading (or meaningless):
+## ex 1.3. Why the numeric information shown in figure 1.4 misleading (or meaningless):
 
 The values shown in figure 1.4 are population _total_ associated
 with their respective counties.  Without the county boundaries the
@@ -59,7 +59,7 @@ meaning disappears: raster pixels do not contain population totals
 per pixel, population totals over larger regions or populations
 densities can no longer be derived based on this raster map alone.
 
-## 4. Under which conditions would you expect strong differences when doing geometrical operations on $S^2$, compared to doing them on $R^2$
+## ex 1.4. Under which conditions would you expect strong differences when doing geometrical operations on $S^2$, compared to doing them on $R^2$
 
 * when computing distances between two points at large distance from each other
 * when determining what the shortest line is between two points,
@@ -68,7 +68,7 @@ densities can no longer be derived based on this raster map alone.
 
 # Chapter 2: Coordinates
 
-## 1. list three geographic measures that do not have a natural zero origin
+## ex 2.1. list three geographic measures that do not have a natural zero origin
 
 * longitude: the zero meridian is arbitrary, 100 years ago there were many other zero meridians fashionable
 * latitude: the equator may feel like a natural zero, but one could
@@ -76,7 +76,7 @@ densities can no longer be derived based on this raster map alone.
   origins and orientation for longitude and latitude.
 * altitude (measured w.r.t. mean sea level, geoid, or ellispoid)
 
-## 2 - 4
+## ex 2.2 - 2.4
 
 (thanks to Jonas Hurst)
 
@@ -147,7 +147,7 @@ Unit of all results are kilometers.
 
 (thanks to Jannis Fröhlking)
 
-## 1 Give two examples of geometries in 2-D (flat) space that are not simple feature geometries, and create a plot of them.
+## ex 3.1 Give two examples of geometries in 2-D (flat) space that are not simple feature geometries, and create a plot of them.
 
 ```{r}
 library(sf)
@@ -158,19 +158,19 @@ st_is_simple(x1)
 st_is_simple(x2)
 ```
 
-## 2) Recompute the coordinates 10.542, 0.01, 45321.789 using precision values 1, 1e3, 1e6, and 1e-2.
+## ex 3.2 Recompute the coordinates 10.542, 0.01, 45321.789 using precision values 1, 1e3, 1e6, and 1e-2.
 ```{r 2) precicsion}
 for(i in c(1,1e3,1e6,1e-2)) 
   print(round(i * c(10.542, 0.01, 45321.789))/i)
 ```
-## 3) Describe a practical problem for which an n-ary intersection would be needed.
+## ex 3.3 Describe a practical problem for which an n-ary intersection would be needed.
 
 * for a long-term set of polygons with fire extents, find the polygons that underwent
   0, 1, 2, 3, ... fires
 * for a set of extents of n individual plant species, find polygons with 0, 1, ..., n species, or
   find the polygon(s) that contain a particular subset of plant species.
 
-## 4) How can you create a Voronoi diagram (figure 3.3) that has closed polygons for every point?
+## ex 3.4 How can you create a Voronoi diagram (figure 3.3) that has closed polygons for every point?
 
 Voronoi diagrams have "open polygons", areas that extend into
 infinity, for boundary points. These cannot be represented by
@@ -195,9 +195,10 @@ v = st_voronoi(mp) %>% st_collection_extract() # pulls POLYGONs out of GC
 plot(st_intersection(v, e3), col = NA, border = 'black', axes=TRUE)
 plot(mp, add = TRUE)
 title("smaller, intersected envelope")
+```
 
+## ex 3.5 Give the unary measure dimension for geometries POINT Z (0 1 1), LINESTRING Z (0 0 1,1 1 2), and POLYGON Z ((0 0 0,1 0 0,1 1 0,0 0 0))
 
-## 5) Give the unary measure dimension for geometries POINT Z (0 1 1), LINESTRING Z (0 0 1,1 1 2), and POLYGON Z ((0 0 0,1 0 0,1 1 0,0 0 0))
 ```{r unary measure dimension}
 st_dimension(st_point(c(0,1,1)))
 st_dimension(st_linestring(rbind(c(0,1,1),c(1,1,2))))
@@ -206,7 +207,7 @@ st_dimension(st_polygon(list(rbind(c(0,0,0),c(1,0,0),c(1,1,0),c(0,0,0)))))
 
 (these are all zero-dimensional geometries because they are _points_, irrespective the number of dimensions they're defined in)
 
-## 6) Give the DE-9IM relation between LINESTRING(0 0,1 0) and LINESTRING(0.5 0,0.5 1); explain the individual characters.
+## ex 3.6 Give the DE-9IM relation between LINESTRING(0 0,1 0) and LINESTRING(0.5 0,0.5 1); explain the individual characters.
 ```{r DE-9IM relation}
 line_1 = st_linestring(rbind(c(0,0),c(1,0)))
 line_2 = st_linestring(rbind(c(.5,0),c(.5,1)))
@@ -228,10 +229,10 @@ The DE-9IM relation is F01FF0102
 
 (the boundary of a LINESTRING is formed by its two end points)
 
-## 7) Can a set of simple feature polygons form a coverage? If so, under which constraints?
+## ex 3.7 Can a set of simple feature polygons form a coverage? If so, under which constraints?
 Yes, but I would say that the set may just contain one polygon, because simple features provide no way of assigning points on the boundary of two adjacent polygons to a single polygon.
 
-## 8) For the nc counties in the dataset that comes with R package sf, find the points touched by four counties.
+## ex 3.8 For the nc counties in the dataset that comes with R package sf, find the points touched by four counties.
 ```{r}
 # read data
 nc <- st_read(system.file("shape/nc.shp", package="sf"))
@@ -255,17 +256,181 @@ names(four_n) = seq_along(four_n)
 point_no = array(as.numeric(names(unlist(four_n))))
 result = st_sfc(points[point_no])
 plot(nc_geom, main = "Points touched by four counties")
-plot(result, add = TRUE, col = "red",pch = 10, cex = 2)
+plot(result, add = TRUE, col = "red", pch = 10, cex = 2)
 ```
 
-## 9) How would figure 3.6 look like if δ for the y-coordinate was positive?
-Only cells that were fully crossed by the red line would be grey.
+A more compact way might be to search for points where counties touch
+another county _only_ in a point, which can be found using `st_relate`
+using a `pattern`:
+
+```{r}
+(pts = nc %>% st_relate(pattern = "****0****"))
+nc %>% st_relate(pattern = "****0****") %>% lengths() %>% sum()
+```
+which is, as expected, four times the number of points shown in the plot above.
+
+How can we find these points? See [here](https://edzer.github.io/UseR2017/#higher-level-operations-summarise-interpolate-aggregate-st_join):
+
+```{r}
+nc = st_geometry(nc)
+s2 = sf_use_s2(FALSE) # use GEOM geometry
+pts = st_intersection(nc, nc)
+pts = pts[st_dimension(pts) == 0]
+plot(st_geometry(nc))
+plot(st_geometry(pts), add = TRUE, col = "red", pch = 10, cex = 2)
+sf_use_s2(s2) # set back
+```
+
+## ex 3.9 How would figure 3.6 look like if delta for the y-coordinate was positive?
+Only cells that were fully crossed by the red line would be grey:
+
+```{r}
+library(stars)
+ls = st_sf(a = 2, st_sfc(st_linestring(rbind(c(0.1, 0), c(1, .9)))))
+grd = st_as_stars(st_bbox(ls), nx = 10, ny = 10, xlim = c(0, 1.0), ylim = c(0, 1),
+   values = -1)
+attr(grd, "dimensions")$y$delta = .1
+attr(grd, "dimensions")$y$offset = 0 
+r = st_rasterize(ls, grd, options = "ALL_TOUCHED=TRUE")
+r[r == -1] = NA
+plot(st_geometry(st_as_sf(grd)), border = 'orange', col = NA, 
+     reset = FALSE, key.pos=NULL)
+plot(r, axes = TRUE, add = TRUE, breaks = "equal") # ALL_TOUCHED=FALSE;
+plot(ls, add = TRUE, col = "red", lwd = 2)
+```
+
+The reason is that in this case, _lower_ left corners of grid cells are part
+of the cell, rather than _upper_ left corners.
 
 # Chapter 4: Spherical geometry
 
+## ex 4.1 Straight GeoJSON lines
+
+How does the GeoJSON format define “straight” lines between
+ellipsoidal coordinates (section 3.1.1)? Using this definition of
+straight, how would `LINESTRING(0 85,180 85)` look like in a polar
+projection? How could this geometry be modified to have it cross
+the North Pole?
+
+GeoJSON defines straight lines between pairs of ellipsoidal
+coordinates as the straight line in _Cartesian_ space formed by
+longitude and latitude. This means e.g. that all parallels are
+straight lines.
+
+Using this definition of straight, how would LINESTRING(0 85,180 85) look like in a polar projection? 
+
+Like a half circle:
+```{r}
+library(sf)
+l <- st_as_sfc("LINESTRING(0 85,180 85)") %>%
+	st_segmentize(1) %>%
+	st_set_crs('EPSG:4326')
+plot(st_transform(l, 'EPSG:3995'), col = 'red', lwd = 2,
+	 graticule = TRUE, axes = TRUE, reset = FALSE)
+```
+
+How could this geometry be modified to have it cross the North Pole?
+
+One would have to let it pass through (0 90) and (180, 90):
+```{r}
+library(sf)
+l <- st_as_sfc("LINESTRING(0 85,0 90,180 90,180 85)") %>%
+	st_segmentize(1) %>%
+	st_set_crs('EPSG:4326')
+plot(st_transform(l, 'EPSG:3995'), col = 'red', lwd = 2,
+	 graticule = TRUE, axes = TRUE, reset = FALSE)
+```
+
+
+## ex 4.2 For a typical polygon on $S^2$, how can you find out ring direction?
+
+Ring direction (clock-wise CW, counter clock-wise CCW) is unambiguous
+on $R^2$ but not on $S^2$: on $S^2$ every polygon divides the
+sphere's surface in two parts. When the inside of the polygon is
+taken as the area to the left when traversing the polygons's points
+then for a small polygon, then ring direction is CCW if the area
+of the polygon is smaller than half of the area of the sphere. For
+polygons dividing the sphere in two equal parts (great circles such
+as the equator or meridians) ring direction is ambiguous.
+
+## ex 4.3 Are there advantages of using bounding caps over using bounding boxes? If so, list them.
+
+Bounding caps may be more compact (have a smaller area compared
+to the bounding box corresponding to the same geometries), they
+need fewer parameters, and they are invariant under rotation of
+(the origins of) longitude and latitude. 
+
+For areas covering one of the poles, a bounding box will always need
+to have a longitude range that spans from -180 to 180, irrespective
+whether the geometry is centered around the pole.
+
+
+## ex 4.4 Why is, for small areas, the orthographic projection centered at the area a good approximation of the geometry as handled on $S^2$
+
+Because that is the closest approximation of the geometry on $R^2$.
+
+## ex 4.5 Fiji
+
+For `rnaturalearth::ne_countries(country = "Fiji",
+returnclass="sf")`, check whether the geometry is valid on $R^2$,
+on an orthographic projection centered on the country, and on $S^2$.
+How can the geometry be made valid on `S^2`? Plot the resulting
+geometry back on $R^2$.
+Compare the centroid of the country, as computed on $R^2$ and on
+$S^2$, and the distance between the two.
+
+Valid on $R^2$:
+```{r}
+fi = rnaturalearth::ne_countries(country = "Fiji", returnclass="sf") %>%
+		st_geometry()
+s2 = sf_use_s2(FALSE)
+st_is_valid(fi)
+```
+
+Valid on orthographic projection:
+
+```{r}
+ortho = "+proj=ortho +lon_0=178.6 +lat_0=-17.3"
+st_transform(fi, ortho) %>% st_is_valid()
+plot(st_transform(fi, ortho), border = 'red')
+```
+
+The red line following the antimeridian makes the geometry invalid in
+this projection, and also on $S^2$:
+
+```{r}
+sf_use_s2(TRUE)
+st_is_valid(fi)
+```
+
+Make valid on $S^2$, and plot:
+```{r}
+fi.s2 = st_make_valid(fi)
+st_is_valid(fi.s2)
+plot(st_transform(fi.s2, ortho), border = 'red')
+title("valid")
+```
+
+where we see that the line at the antimeridian has disappeared. This
+makes plotting in $R^2$ look terrible, with lines spanning the globe:
+```{r}
+plot(fi.s2, axes = TRUE)
+```
+
+Compare the centroid of the country, as computed on $R^2$ and on
+$S^2$, and the distance between the two.
+```{r}
+sf_use_s2(FALSE)
+(c1 = st_centroid(fi))
+sf_use_s2(TRUE)
+(c2 = st_centroid(fi.s2))
+st_distance(c1, c2)
+sf_use_s2(s2)
+```
+
 # Chapter 5: Attributes
 
-## 1. type of `State`
+## ex 5.1. type of `State`
 
 The appropriate value would be `constant`: there is no identity
 relationship of `State` to one of the counties in `nc`, and the
@@ -273,13 +438,13 @@ value of `State` is constant through each county in the state
 (every point in every county in the state has this value for
 `State`).
 
-## 2. type of `State` for the entire state
+## ex 5.2. type of `State` for the entire state
 
 Now, the unioned geometry _is_ that of the state, and we can assign
 `identity`: there is only one state of North Carolina, an this
 geometry is its geometry.
 
-## 3.  the `AREA` variable
+## ex 5.3.  the `AREA` variable
 
 <!--
 Use st_area to add a variable with name area to nc. Compare the area and AREA variables in the nc dataset. What are the units of AREA? Are the two linearly related? If there are discrepancies, what could be the cause?
@@ -374,14 +539,14 @@ The "unit" of the `AREA` variable is hence "square degree". This
 is a meaningless unit for area on the sphere, because a unit square
 degree does not have a constant area. 
 
-## 4 type of `area`
+## ex 5.4 type of `area`
 
 "area" is of type aggregate: it is a property of a polygon as a
 whole, not of each individual point in the polygon. It is extensive:
 if we cut a polygon in two parts, the total area is distributed
 over the parts.
 
-## 5 area-weighted interpolation
+## ex 5.5 area-weighted interpolation
 
 From the on-line version of the book we get the code that created the plot:
 ```{r}
