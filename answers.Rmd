@@ -686,3 +686,253 @@ smallest temporal trends in SST values.
 * using percentiles, threshold the trend raster: apply (function: less than / more than)
 
 This gives a two-dimensional data cube (or raster layer: the reclassified trend raster).
+
+
+# Chapter 7: sf, stars
+
+## ex. 7.1
+
+ Find the names of the `nc` counties that intersect `LINESTRING(-84 35,-78 35)`; use `[` for this, and use `st_join()` for this.
+
+```{r}
+(file = system.file("gpkg/nc.gpkg", package="sf"))
+nc = st_read(file)
+line = st_as_sfc("LINESTRING(-84 35,-78 35)", crs = st_crs(nc))
+nc[line,]$NAME
+st_join(st_sf(line), nc)$NAME # left join: `line` should be first argument
+```
+
+## ex. 7.2
+
+Repeat this after setting `sf_use_s2(FALSE)`, and _compute_ the difference (hint: use `setdiff()`), and color the counties of the difference using color '#00880088'.
+
+```{r}
+# save names first:
+sf_use_s2(TRUE)
+names_with_s2 = nc[line,]$NAME
+sf_use_s2(FALSE)
+nc[line,]$NAME
+(diff = setdiff(names_with_s2, nc[line,]$NAME))
+plot(st_geometry(nc))
+plot(st_geometry(nc)[nc$NAME %in% diff], col = "#00880088", add = TRUE)
+```
+
+## ex. 7.3
+
+Plot the two different lines in a single plot; note that R will plot a straight line always straight in the projection currently used; `st_segmentize` can be used to add points on straight line, or on a great circle for ellipsoidal coordinates.
+
+```{r}
+plot(st_geometry(nc))
+plot(st_geometry(nc)[nc$NAME %in% diff], col = "#00880088", add = TRUE)
+plot(line, add = TRUE)
+plot(st_segmentize(line, units::set_units(10, km)), add = TRUE, col = 'red')
+```
+
+## ex. 7.4
+
+NDVI, normalized differenced vegetation index, is computed as `(NIR-R)/(NIR+R)`, with NIR the near infrared and R the red band.  Read the `L7_ETMs.tif` file into object `x`, and distribute the band dimensions over attributes by `split(x, "band")`. Then, add attribute NDVI to this object by using an expression that uses the NIR (band 4) and R (band 3) attributes directly.
+
+
+```{r}
+library(stars)
+(x = read_stars(system.file("tif/L7_ETMs.tif", package = "stars")))
+(x.spl = split(x))
+x.spl$NDVI = (x.spl$X4 - x.spl$X3)/(x.spl$X4 + x.spl$X3)
+plot(x.spl["NDVI"])
+```
+
+## ex. 7.5
+
+Compute NDVI for the `L7_ETMs.tif` image by reducing the band dimension, using `st_apply` and an a function `ndvi = function(x) { (x[4]-x[3])/(x[4]+x[3]) }`. Plot the result, and write the result to a GeoTIFF. 
+
+```{r}
+ndvi_fn = function(x) { (x[4]-x[3])/(x[4]+x[3]) }
+ndvi = st_apply(x, 1:2, ndvi_fn)
+plot(ndvi)
+write_stars(ndvi, "ndvi.tif")
+```
+
+an alternative function is 
+
+```{r}
+ndvi_fn = function(x1,x2,x3,x4,x5,x6) { (x4-x3)/(x4+x3) }
+ndvi2 = st_apply(x, 1:2, ndvi_fn)
+all.equal(ndvi, ndvi2)
+```
+
+This latter function can be much faster, as it is called for chunks
+of data rather than for individual pixels.
+
+## ex. 7.6
+
+Use `st_transform` to transform the `stars` object read from `L7_ETMs.tif` to `EPSG:4326`. Print the object. Is this a regular grid? Plot the first band using arguments `axes=TRUE` and explain why this takes such a long time.
+
+```{r eval=FALSE}
+(x_t = st_transform(x, 'EPSG:4326'))
+plot(x_t[,,,1], axes = TRUE)
+```
+
+the report says it is a curvilinear grid. Plotting takes so long because for
+curvilinear grids, each cell is converted to a small polygon and then plotted.
+
+## ex. 7.7
+
+Use `st_warp` to warp the `L7_ETMs.tif` object to `EPSG:4326`, and plot the resulting object with `axes=TRUE`. Why is the plot created much faster than after `st_transform`?
+
+```{r}
+x_w = st_warp(x, crs = 'EPSG:4326')
+plot(x_w[,,,1], reset = FALSE)
+plot(st_as_sfc(st_bbox(x_w)), col = NA, border = 'red', add = TRUE)
+```
+
+Plotting is faster now because we created a new regular grid. Note
+that the grid border does not align perfectly with the square
+formed by the bounding box (using straight lines in an equidistant
+rectangular projection): white grid cells indicate the misalignment
+due to warping/transforming.
+
+# Chapter 8: large datasets
+
+## ex 8.1
+
+For the S2 image (above), find out in which order the bands are
+using `st_get_dimension_values()`, and try to find out (e.g. by internet
+search) which spectral bands / colors they correspond to.
+
+```{r}
+f = "sentinel/S2A_MSIL1C_20180220T105051_N0206_R051_T32ULE_20180221T134037.zip"
+  granule = system.file(file = f, package = "starsdata")
+file.size(granule)
+base_name = strsplit(basename(granule), ".zip")[[1]]
+s2 = paste0("SENTINEL2_L1C:/vsizip/", granule, "/", base_name, 
+	".SAFE/MTD_MSIL1C.xml:10m:EPSG_32632")
+(p = read_stars(s2, proxy = TRUE))
+st_get_dimension_values(p, "band")
+```
+
+## ex 8.2
+
+Compute NDVI for the S2 image, using `st_apply` and an an appropriate 
+`ndvi` function.  Plot the result to screen, and then write the
+result to a GeoTIFF. Explain the difference in runtime between
+plotting and writing.
+
+```{r}
+ndvi_fn = function(r, g, b, nir) (nir-r)/(nir+r)
+ndvi = st_apply(p, 1:2, ndvi_fn)
+plot(ndvi)
+```
+
+Alternatively, one could use
+```{r}
+ndvi_fn = function(r, g, b, nir) (nir-r)/(nir+r)
+```
+
+but that is much less efficient. Write to a tiff:
+```{r}
+system.time(write_stars(ndvi, "ndvi.tif"))
+```
+
+The runtime difference is caused by the fact that `plot` downsamples,
+so computes a very small fraction of the available pixels, where
+`write_stars` computes all pixels, and then writes them.
+
+## ex 8.3
+
+Plot an RGB composite of the S2 image, using the `rgb` argument
+to `plot()`, and then by using `st_rgb()` first.
+
+```{r}
+plot(p, rgb = 1:3)
+plot(st_rgb(p[,,,1:3], maxColorValue=13600))
+```
+
+## ex 8.4
+
+select five random points from the bounding box of `S2`, and extract
+the band values at these points. What is the class of the object returned?
+Convert the object returned to an `sf` object.
+
+```{r}
+pts =  p %>% st_bbox() %>% st_as_sfc() %>% st_sample(5)
+(p5 = st_extract(p, pts))
+class(p5)
+st_as_sf(p5)
+```
+
+## ex 8.5
+
+For the 10 km radius circle around `POINT(390000  5940000)`, compute
+the mean pixel values of the S2 image when downsampling the images
+with factor 30, and on the original resolution. Compute the relative
+difference between the results.
+
+```{r}
+b = st_buffer(st_sfc(st_point(c(390000, 5940000)), crs = st_crs(p)), 
+	units::set_units(10, km))
+plot(p[,,,1], reset = FALSE, axes = TRUE)
+plot(b, col = NA, border = 'green', add = TRUE)
+p1 = st_as_stars(p, downsample = 30)
+a1 = aggregate(p1, b, mean)
+```
+
+For the full resolution:
+
+```{r eval=FALSE}
+a2 = aggregate(p, b, mean)
+```
+
+Relative differences: we will work on the array of the stars objects:
+
+```{r}
+(a1[[1]] - a2[[1]])/((a1[[1]]+a2[[1]])/2)
+```
+
+Alternatively one could convert `a1` and `a2` to a `data.frame`, using
+`as.data.frame`, and work on the third column of the data frames.
+
+## ex 8.6 
+
+Use `hist` to compute the histogram on the downsampled S2 image.
+Also do this for each of the bands. Use `ggplot2` to compute a
+single plot with all four histograms in facets.
+
+```{r}
+hist(p1)
+hist(p1[,,,1])
+hist(p1[,,,2])
+hist(p1[,,,3])
+hist(p1[,,,4])
+library(ggplot2)
+ggplot(as.data.frame(p1), aes(x = MTD_MSIL1C.xml.10m.EPSG_32632)) +
+		geom_histogram() + facet_wrap(~band)
+```
+
+### ex 8.7
+
+Use `st_crop` to crop the S2 image to the area covered by the 10 km circle.
+Plot the results. Explore the effect of setting argument `crop = FALSE`
+
+```{r}
+plot(st_crop(p, b))
+plot(st_crop(p, b, crop = FALSE))
+```
+
+## ex 8.8
+
+With the downsampled image, compute the logical layer where all four
+bands have pixel values higher than 1000. Use a raster algebra expression
+on the four bands (use `split` first), or use `st_apply` for this.
+
+```{r}
+p_spl = split(p1)
+p_spl$high = p_spl$B4 > 1000 & p_spl$B3 > 1000 & p_spl$B2 > 1000 & p_spl$B8 > 1000
+plot(p_spl["high"])
+```
+
+alternative, using `st_apply` on the band dimension
+
+```{r}
+p2 = st_apply(p1, 1:2, function(x) all(x > 1000))
+plot(p2)
+```
