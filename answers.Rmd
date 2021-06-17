@@ -876,10 +876,10 @@ p1 = st_as_stars(p, downsample = 30)
 a1 = aggregate(p1, b, mean)
 ```
 
-For the full resolution:
+For the full resolution; this takes a while:
 
-```{r eval=FALSE}
-a2 = aggregate(p, b, mean)
+```{r}
+system.time(a2 <- aggregate(p, b, mean))
 ```
 
 Relative differences: we will work on the array of the stars objects:
