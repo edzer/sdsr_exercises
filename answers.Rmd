@@ -791,6 +791,46 @@ formed by the bounding box (using straight lines in an equidistant
 rectangular projection): white grid cells indicate the misalignment
 due to warping/transforming.
 
+## ex. 7.8
+
+Using a vector representation of the raster `L7_ETMs`, plot the
+intersection with a circular area around `POINT(293716 9113692)`
+with radius 75 m,  and compute the area-weighted mean pixel values
+for this circle.  Compare the area-weighted values with those
+obtained by `aggregate` using the vector data, and by `aggregate`
+using the raster data, using `exact=FALSE` (default) and
+`exact=FALSE`.  Explain the differences.
+
+```{r}
+l7 = st_as_sf(x)
+st_agr(l7) = "constant"
+a = st_as_sfc("POINT(293716 9113692)", crs = st_crs(l7)) %>%
+	st_buffer(units::set_units(74, m))
+plot(st_intersection(l7, a))
+(aw = st_interpolate_aw(l7, a, mean, extensive = FALSE))
+(ag_vector  = aggregate(l7, a, mean))
+(ag_rasterF = st_as_sf(aggregate(x, a, mean)))
+(ag_rasterT = st_as_sf(aggregate(x, a, mean, exact = TRUE)))
+rbind(st_drop_geometry(aw),
+	  st_drop_geometry(ag_vector), 
+	  st_drop_geometry(ag_rasterF), 
+	  st_drop_geometry(ag_rasterT))
+```
+
+Area-weighted interpolation computes the area-weighted mean of the
+areas shown in the plot; `aggregate` on the vector values computes
+the _unweighted_ mean over all polygonized pixels that intersect
+with the circle (black lines); `aggregate` on the raster values only
+averages (unweighted) the cells with pixel _centers_ intersecting
+with the circle (light red):
+
+```{r}
+plot(st_geometry(l7)[a])
+plot(a, add = TRUE, col = NA, border = 'red')
+plot(st_as_sf(L7_ETMs[a])[1], add = TRUE, col = '#ff000066')
+plot(st_as_sf(L7_ETMs[a], as_points = TRUE)[1], add = TRUE, pch = 3, col = 1)
+```
+
 # Chapter 8: large datasets
 
 ## ex 8.1
@@ -876,9 +916,9 @@ p1 = st_as_stars(p, downsample = 30)
 a1 = aggregate(p1, b, mean)
 ```
 
-For the full resolution; this takes a while:
+For the full resolution, this takes a while:
 
-```{r}
+```{r eval=TRUE}
 system.time(a2 <- aggregate(p, b, mean))
 ```
 
