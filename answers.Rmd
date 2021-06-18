@@ -728,6 +728,28 @@ plot(line, add = TRUE)
 plot(st_segmentize(line, units::set_units(10, km)), add = TRUE, col = 'red')
 ```
 
+To show that the red line is curved, but only curved in plate carree,
+and not e.g. in an orthographic projection centered at this region,
+we can also plot it in an orthographic projection:
+
+```{r}
+l.gc = st_segmentize(line, units::set_units(10, km))
+l.pc = st_segmentize(st_set_crs(line, NA), 0.1) %>% st_set_crs(st_crs(l.gc))
+o = st_crs("+proj=ortho +lon_0=-80 +lat_0=35")
+plot(st_transform(st_geometry(nc), o), axes = TRUE)
+plot(st_transform(st_geometry(nc), o)[nc$NAME %in% diff],
+	 col = "#00880088", add = TRUE)
+plot(st_transform(l.gc, o), col = 'red', add = TRUE)
+plot(st_transform(l.pc, o), col = 'black', add = TRUE)
+plot(st_transform(line, o), col = 'green', add = TRUE)
+```
+
+The fact that the _unsegmented_ line `line` is straight (R plotted
+it as straight, it contains only the two endpoints) and that it
+covers the red line supports that in this plot, the great circle
+line (red) _is_ plotted straight, and the "straight in plate carree"
+line is not.
+
 ## ex. 7.4
 
 NDVI, normalized differenced vegetation index, is computed as `(NIR-R)/(NIR+R)`, with NIR the near infrared and R the red band.  Read the `L7_ETMs.tif` file into object `x`, and distribute the band dimensions over attributes by `split(x, "band")`. Then, add attribute NDVI to this object by using an expression that uses the NIR (band 4) and R (band 3) attributes directly.
