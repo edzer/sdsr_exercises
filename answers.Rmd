@@ -1151,6 +1151,99 @@ Following the discovery that, irrespective of the number of draws, permutation c
 
 False discovery rate adjustment is required when conducting repeated tests on the same data set. Usually, local measures of spatial autocorrelation are calculated for all the observations in a data set, and so constitute repeated tests. When repeated tests are conducted, the usual reading of confidence intervals and probability values must be adjusted to take the repeated use of the data into account. 
 
+## ex 15.5
+
+If we start with the standard local Moran's $I_i$ for the random values with a slight 1D trend, upgraded to analytical conditional standard deviates, but with only the standard intercept-only mean model, we have a starting point; a fair number of the values exceed 2:
+
+```{r}
+locm <- localmoran(x_t, nb2listw(queen, style="W"), conditional=TRUE,
+    alternative="two.sided")
+```
+
+```{r}
+plot(density(locm[, 4]))
+abline(v=c(-2, 2))
+```
+
+
+```{r}
+grd$locm_sd <- locm[, 4]
+plot(grd[, "locm_sd"]) 
+```
+
+```{r}
+sum(p.adjust(locm[, 5], method="none") < 0.05)
+```
+
+If we apply false discovery rate adjustment, we have just one significant measure:
+
+```{r}
+sum(p.adjust(locm[, 5], method="fdr") < 0.05)
+```
+
+
+In the first Saddlepoint approximation also for the random values with a slight 1D trend, the distribution of standard deviates shifts leftward, with both positive and negative values beyond `abs(2)`:
+
+```{r}
+lm_null <- lm(x_t ~ 1)
+locm_null <- summary(localmoran.sad(lm_null, nb=queen, style="W", 
+    alternative="two.sided"))
+```
+
+```{r}
+plot(density(locm_null[, "Saddlepoint"]))
+abline(v=c(-2, 2))
+```
+
+
+```{r}
+grd$locm_null_sd <- locm_null[, "Saddlepoint"]
+plot(grd[, "locm_null_sd"]) 
+```
+
+```{r}
+sum(p.adjust(locm_null[, "Pr. (Sad)"], method="none") < 0.05)
+```
+
+If we apply false discovery rate adjustment, we also have just one significant measure:
+
+```{r}
+sum(p.adjust(locm_null[, "Pr. (Sad)"], method="fdr") < 0.05)
+```
+
+
+Once we analyse a model including the 1D trend, most of the distribution of standard deviate values is between -2 and 2:
+
+```{r}
+lm_trend <- lm(x_t ~ xy$Var1)
+locm_tr <- summary(localmoran.sad(lm_trend, nb=queen, style="W", 
+    alternative="two.sided"))
+```
+
+
+```{r}
+plot(density(locm_tr[, "Saddlepoint"]))
+abline(v=c(-2, 2))
+```
+
+```{r}
+grd$locm_tr_sd <- locm_tr[, "Saddlepoint"]
+plot(grd[, "locm_tr_sd"]) 
+```
+
+```{r}
+sum(p.adjust(locm_tr[, "Pr. (Sad)"], method="none") < 0.05)
+```
+
+If we apply false discovery rate adjustment, we now have no significant measures, as expected:
+
+```{r}
+sum(p.adjust(locm_tr[, "Pr. (Sad)"], method="fdr") < 0.05)
+```
+
+
+
+
 
 # Chapter 16: Spatial Regression
 
