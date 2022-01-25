@@ -907,7 +907,7 @@ to `plot()`, and then by using `st_rgb()` first.
 
 ```{r}
 plot(p, rgb = 1:3)
-plot(st_rgb(p[,,,1:3], maxColorValue=13600))
+# plot(st_rgb(p[,,,1:3], maxColorValue=13600)) # FIXME: fails
 ```
 
 ## ex 8.4
