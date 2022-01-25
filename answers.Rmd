@@ -1009,7 +1009,7 @@ If dimensionality (point/line/polygon) varies in the data set, geometries must b
 
 ## ex 14.2
 
-Graph-based functions for creating neighbour objects (`spdep::soi.graph()`, `spdep::relativeneigh()` and `spdep::gabrielneigh()`) may not be used if the support of the observations is not that of points on the plane. All other functions may be used with both planar and spherical/elliptical geometries, but the neighbours generated may differ if a non-planar data set is treated as planar.
+Graph-based functions for creating neighbour objects (`spdep::tri2nb()`, `spdep::soi.graph()`, `spdep::relativeneigh()` and `spdep::gabrielneigh()`) may not be used if the support of the observations is not that of points on the plane. All other functions may be used with both planar and spherical/elliptical geometries, but the neighbours generated may differ if a non-planar data set is treated as planar.
 
 ## ex 14.3
 
@@ -1146,19 +1146,14 @@ This is important to understand because the spatial patterning in a variable of 
 
 ## ex 15.3
 
-Following the discovery that, irrespective of the number of draws, permutation conditional standard deviates (omitting the value at $i$) are very close to analytical conditional standard deviates for $I_i$ and $G_i$, it seems that the use of conditional permutation is no longer necessary, unless one wishes to check for robustness against distributional assumptions. It will be interesting to see whether the same holds for local Geary's $C_i$ and other local measures.
-
-## ex 15.4
-
 False discovery rate adjustment is required when conducting repeated tests on the same data set. Usually, local measures of spatial autocorrelation are calculated for all the observations in a data set, and so constitute repeated tests. When repeated tests are conducted, the usual reading of confidence intervals and probability values must be adjusted to take the repeated use of the data into account. 
 
-## ex 15.5
+## ex 15.4
 
 If we start with the standard local Moran's $I_i$ for the random values with a slight 1D trend, upgraded to analytical conditional standard deviates, but with only the standard intercept-only mean model, we have a starting point; a fair number of the values exceed 2:
 
 ```{r}
-locm <- localmoran(x_t, nb2listw(queen, style="W"), conditional=TRUE,
-    alternative="two.sided")
+locm <- localmoran(x_t, nb2listw(queen, style="W"))
 ```
 
 ```{r}
@@ -1187,8 +1182,7 @@ In the first Saddlepoint approximation also for the random values with a slight 
 
 ```{r}
 lm_null <- lm(x_t ~ 1)
-locm_null <- summary(localmoran.sad(lm_null, nb=queen, style="W", 
-    alternative="two.sided"))
+locm_null <- summary(localmoran.sad(lm_null, nb=queen, style="W"))
 ```
 
 ```{r}
@@ -1217,8 +1211,7 @@ Once we analyse a model including the 1D trend, most of the distribution of stan
 
 ```{r}
 lm_trend <- lm(x_t ~ xy$Var1)
-locm_tr <- summary(localmoran.sad(lm_trend, nb=queen, style="W", 
-    alternative="two.sided"))
+locm_tr <- summary(localmoran.sad(lm_trend, nb=queen, style="W"))
 ```
 
 
