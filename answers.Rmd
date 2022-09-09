@@ -1243,13 +1243,16 @@ sum(p.adjust(locm_tr[, "Pr. (Sad)"], method="fdr") < 0.05)
 
 ## ex 16.1
 
-The **HSAR** package includes an upper level polygon support municipality department data set, ans a lower level property data set. Both are `"sf"` objects, in the same projected CRS.  
+The archived **HSAR** package includes an upper level polygon support municipality department data set, ans a lower level property data set. Both are `"sf"` objects, in the same projected CRS, provided locally.  
 
 ```{r}
 library(sf)
-library(HSAR)
-data(depmunic)
-data(properties)
+#library(HSAR)
+#data(depmunic)
+#data(properties)
+unzip("data/PropertiesAthens.zip", files=c("depmunic.RData", "properties.RData"), exdir="data")
+load("data/depmunic.RData")
+load("data/properties.RData")
 depmunic$popdens <- depmunic$population/ (10000*depmunic$area)
 depmunic$foreigners <- 100 * depmunic$pop_rest/ depmunic$population
 depmunic$prgreensp <- depmunic$greensp/ (10000*depmunic$area)
@@ -1283,7 +1286,7 @@ For polygon support, we prefer contiguous neighbours:
 Global spatial autocorrelation is marginally detected for the green space variable:
 
 ```{r}
-spdep::moran.test(depmunic$prgreensp, nb2listw(mun_nb))
+spdep::moran.test(depmunic$prgreensp, spdep::nb2listw(mun_nb))
 ```
 Unlike the vignette, which uses distance neighbours up to 1300 m and creates a very dense representation, we choose `k=4` k-nearest neighbours, then convert to symmetry (note that some point locations are duplicated, preventing the use of spatial indexing):
 
@@ -1293,7 +1296,7 @@ Unlike the vignette, which uses distance neighbours up to 1300 m and creates a v
 Copying out has led to the introduction of very powerful positive spatial autocorrelation in this and other variables copied out:
 
 ```{r}
-spdep::moran.test(properties_in_dd$prgreensp, nb2listw(pr_nb_k4s))
+spdep::moran.test(properties_in_dd$prgreensp, spdep::nb2listw(pr_nb_k4s))
 ```
 
 
@@ -1380,7 +1383,7 @@ First create a spatial weights object from the `k=4` symmetrized neighbour objec
 
 ```{r}
 library(spatialreg)
-lw <- nb2listw(pr_nb_k4s)
+lw <- spdep::nb2listw(pr_nb_k4s)
 ```
 
 Fit a linear model to the lower-level data; all the included variables seem worth retaining:
@@ -1392,12 +1395,12 @@ summary(LM_pr)
 However, there is strong residual autocorrelation:
 
 ```{r}
-lm.morantest(LM_pr, lw)
+spdep::lm.morantest(LM_pr, lw)
 ```
 Robust Lagrange multiplier tests suggest that the fitted model should include a spatial autoregressive process in the residuals, but not in the response:
 
 ```{r}
-lm.LMtests(LM_pr, lw, test=c("RLMerr", "RLMlag"))
+spdep::lm.LMtests(LM_pr, lw, test=c("RLMerr", "RLMlag"))
 ```
 Adding in the copied out municipality department level variables, we see that they do not seem to be worth retaining (unless there are good reasons for doing so); they do however improve model fit:
 
@@ -1426,10 +1429,10 @@ summary(LM_pr_fx)
 ```
 The pre-test output is similar to that for the models considered above:
 ```{r}
-lm.morantest(LM_pr_fx, lw)
+spdep::lm.morantest(LM_pr_fx, lw)
 ```
 ```{r}
-lm.LMtests(LM_pr_fx, lw, test=c("RLMerr", "RLMlag"))
+spdep::lm.LMtests(LM_pr_fx, lw, test=c("RLMerr", "RLMlag"))
 ```
 We may fit a regimes model, where separate regression coefficients are calculated for interactions between the municipality department dummies and the included variables; `size` and `dist_metro` only retian influence for municipality departments 1 and 2:
 
@@ -1439,11 +1442,11 @@ summary(LM_pr_reg)
 ```
 The pre-test results are now changed, with possible spatial processes in both residuals and response being indicated:
 ```{r}
-lm.morantest(LM_pr_reg, lw)
+spdep::lm.morantest(LM_pr_reg, lw)
 ```
 
 ```{r}
-lm.LMtests(LM_pr_reg, lw, test=c("RLMerr", "RLMlag"))
+spdep::lm.LMtests(LM_pr_reg, lw, test=c("RLMerr", "RLMlag"))
 ```
 
 ## ex 17.3
@@ -1536,11 +1539,11 @@ summary(impacts(SLX_pr), short=TRUE, zstats=TRUE)
 ```
 
 ```{r}
-lm.morantest(SLX_pr, lw)
+spdep::lm.morantest(SLX_pr, lw)
 ```
 
 ```{r}
-lm.LMtests(SLX_pr, lw, test=c("RLMerr", "RLMlag"))
+spdep::lm.LMtests(SLX_pr, lw, test=c("RLMerr", "RLMlag"))
 ```
 
 ```{r}
@@ -1549,12 +1552,12 @@ summary(impacts(SLX_pr_md), short=TRUE, zstats=TRUE)
 ```
 
 ```{r}
-lm.morantest(SLX_pr_md, lw)
+spdep::lm.morantest(SLX_pr_md, lw)
 ```
 
 
 ```{r}
-lm.LMtests(SLX_pr_md, lw, test=c("RLMerr", "RLMlag"))
+spdep::lm.LMtests(SLX_pr_md, lw, test=c("RLMerr", "RLMlag"))
 ```
 
 So on balance, the pre-test strategy has not worked out too well; it is unclear what is missing in the model.
