@@ -1127,13 +1127,58 @@ curve from minus infinity up to a given value; one minus that value
 gives the probability of exceeding it.
 
 ```{r}
-b10$p = 1 - pnorm(15, b10$points, b10$pointse)
-g + geom_stars(data = b10, aes(fill = p, x = x, y = y)) + 
+b10$`p(NO2 > 15)` = 1 - pnorm(15, b10$points, b10$pointse)
+g + geom_stars(data = b10, aes(fill = `p(NO2 > 15)`, x = x, y = y)) + 
     geom_sf(data = st_cast(de, "MULTILINESTRING")) + 
     geom_sf(data = no2.sf, col = 'orange') +
-    coord_sf(lims_method = "geometry_bbox") +
-	guides(fill = guide_legend(title="p(NO2 > 15)"))
+    coord_sf(lims_method = "geometry_bbox")
 ```
+
+# Chapter 13: Multivariate and Spatiotemporal Geostatistics
+
+## ex 13.1 
+
+Which fraction of the stations is removed in section \@ref(preparing) when the criterion applied that a station must be 75% complete?
+
+```{r}
+load("ch13.RData")
+sel = apply(aq, 2, function(x) mean(is.na(x)) < 0.25)
+1 - mean(sel)
+```
+meaning, 1.7 percent of the stations were removed in this step. We can use `mean` becasue the logical values `TRUE` and `FALSE` map to 1 and 0, respectively, when treated as numeric.
+
+## ex 13.2
+
+From the hourly time series in `no2.st`, compute daily mean concentrations using `aggregate`, and compute the spatiotemporal variogram of this. How does it compare to the variogram of hourly values?
+
+```{r}
+no2.d = aggregate(no2.st, "1 day", mean, na.rm = TRUE)
+v.d = variogramST(NO2~1, no2.d)
+```
+
+## ex 13.3
+
+Carry out a spatiotemporal interpolation for daily mean values for the days corresponding to those shown in \@ref(fig:plotspatiotemporalpredictions), and compare the results.
+
+```{r}
+prodSumModel <- vgmST("productSum",
+	space = vgm(50, "Exp", 200, 0),
+	time = vgm(20, "Sph", 40, 0),
+	k = 2)
+StAni = estiStAni(v.d, c(0,20000))
+(fitProdSumModel <- fit.StVariogram(v.d, prodSumModel, fit.method = 7,
+	stAni = StAni, method = "L-BFGS-B",
+	control = list(parscale = c(1,10,1,1,0.1,1,10)),
+	lower = rep(0.0001, 7)))
+plot(v.d, fitProdSumModel, wireframe = FALSE, all = TRUE, scales = list(arrows=FALSE), zlim = c(0,50))
+```
+```{r}
+
+```
+
+## ex 13.4
+
+Following the example in the demo scripts pointed at in section \@ref(cokriging), carry out a cokriging on the daily mean station data for the four days shown in \@ref(fig:plotspatiotemporalpredictions).  What are the differences of this approach to spatiotemporal kriging?
 
 
 # Chapter 14: Proximity and Areal Data
@@ -1387,7 +1432,7 @@ sum(p.adjust(locm_tr[, "Pr. (Sad)"], method="fdr") < 0.05)
 
 ## ex 16.1
 
-The **HSAR** package includes an upper level polygon support municipality department data set, ans a lower level property data set. Both are `"sf"` objects, in the same projected CRS.  
+The **HSAR** package includes an upper level polygon support municipality department data set, and a lower level property data set. Both are `"sf"` objects, in the same projected CRS.  
 
 ```{r}
 library(sf)
@@ -1443,7 +1488,7 @@ spdep::moran.test(properties_in_dd$prgreensp, nb2listw(pr_nb_k4s))
 
 ## ex 16.3
 
-The vignette proposes the full property level and municipal department level set of variables straight away. Here we choose the proerty level ones first, and update for the copied out municipal department level ones next:
+The vignette proposes the full property level and municipal department level set of variables straight away. Here we choose the property level ones first, and update for the copied out municipal department level ones next:
 
 ```{r}
 f_pr <- prpsqm ~ size + age + dist_metro
