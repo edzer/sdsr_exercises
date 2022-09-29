@@ -1250,9 +1250,15 @@ library(sf)
 #library(HSAR)
 #data(depmunic)
 #data(properties)
-unzip("data/PropertiesAthens.zip", files=c("depmunic.RData", "properties.RData"), exdir="data")
-load("data/depmunic.RData")
-load("data/properties.RData")
+if (packageVersion("spData") > "2.2.0") {
+  data(depmunic, package="spData")
+  data(properties, package="spData")
+} else {
+  unzip("data/PropertiesAthens.zip", files=c("depmunic.RData",
+    "properties.RData"), exdir="data")
+  load("data/depmunic.RData")
+  load("data/properties.RData")
+}
 depmunic$popdens <- depmunic$population/ (10000*depmunic$area)
 depmunic$foreigners <- 100 * depmunic$pop_rest/ depmunic$population
 depmunic$prgreensp <- depmunic$greensp/ (10000*depmunic$area)
