@@ -1,0 +1,178 @@
+# Geometries
+
+(thanks to Jannis Fröhlking)
+
+## ex 3.1 
+
+Give two examples of geometries in 2-D (flat) space that are not simple feature geometries, and create a plot of them.
+
+```{r}
+library(sf)
+x1 <- st_linestring(rbind(c(0,0),c(2,2),c(0,2),c(2,0)))
+x2 <- st_polygon(list(rbind(c(3,0),c(5,2),c(3,2),c(5,0),c(3,0))))
+plot(c(x1,x2), col = 2:3)
+st_is_simple(x1)
+st_is_simple(x2)
+```
+
+## ex 3.2 
+
+Recompute the coordinates 10.542, 0.01, 45321.789 using precision values 1, 1e3, 1e6, and 1e-2.
+```{r 2) precicsion}
+for(i in c(1,1e3,1e6,1e-2)) 
+  print(round(i * c(10.542, 0.01, 45321.789))/i)
+```
+
+## ex 3.3 
+
+Describe a practical problem for which an n-ary intersection would be needed.
+
+* for a long-term set of polygons with fire extents, find the polygons that underwent
+  0, 1, 2, 3, ... fires
+* for a set of extents of n individual plant species, find polygons with 0, 1, ..., n species, or
+  find the polygon(s) that contain a particular subset of plant species.
+
+## ex 3.4 
+
+How can you create a Voronoi diagram (figure 3.3) that has closed polygons for every point?
+
+Voronoi diagrams have "open polygons", areas that extend into
+infinity, for boundary points. These cannot be represented by
+simple feature geometries. `st_voronoi` chooses a default (square)
+polygon to limit the extent, which can be enlarged. Alternatively,
+the extent can be limited using `st_intersection` on its result:
+
+```{r}
+library(sf)
+par(mfrow = c(2,2))
+set.seed(133331)
+mp = st_multipoint(matrix(runif(20), 10))
+plot(st_voronoi(mp), col = NA, border = 'black')
+plot(mp, add = TRUE)
+title("default extent")
+e2 = st_polygon(list(rbind(c(-5,-5), c(5, -5), c(5,5), c(-5, 5), c(-5,-5))))
+plot(st_voronoi(mp, envelope = e2), col = NA, border = 'black')
+plot(mp, add = TRUE)
+title("enlarged envelope")
+e3 = st_polygon(list(rbind(c(0,0), c(1, 0), c(1, 1), c(0, 1), c(0, 0))))
+v = st_voronoi(mp) %>% st_collection_extract() # pulls POLYGONs out of GC
+plot(st_intersection(v, e3), col = NA, border = 'black', axes=TRUE)
+plot(mp, add = TRUE)
+title("smaller, intersected envelope")
+```
+
+## ex 3.5 
+
+Give the unary measure dimension for geometries POINT Z (0 1 1), LINESTRING Z (0 0 1,1 1 2), and POLYGON Z ((0 0 0,1 0 0,1 1 0,0 0 0))
+
+```{r unary measure dimension}
+st_dimension(st_point(c(0,1,1)))
+st_dimension(st_linestring(rbind(c(0,1,1),c(1,1,2))))
+st_dimension(st_polygon(list(rbind(c(0,0,0),c(1,0,0),c(1,1,0),c(0,0,0)))))
+```
+
+(these are all zero-dimensional geometries because they are _points_, irrespective the number of dimensions they're defined in)
+
+## ex 3.6 
+
+Give the DE-9IM relation between LINESTRING(0 0,1 0) and LINESTRING(0.5 0,0.5 1); explain the individual characters.
+```{r DE-9IM relation}
+line_1 = st_linestring(rbind(c(0,0),c(1,0)))
+line_2 = st_linestring(rbind(c(.5,0),c(.5,1)))
+plot(line_1,col = "green")
+plot(line_2,col = "red", add = TRUE)
+st_relate(line_1, line_2)
+```
+The DE-9IM relation is F01FF0102
+
+- F   Intersection of green lines interior and red lines interior is empty
+- 0   Intersection of green lines interior and red lines boundary results in one point in the middle of the green line
+- 1   Intersection of green lines interior and red lines exterior results in a line covering most parts of the green line
+- F   Intersection of green lines boundary and red lines interior is empty
+- F   Intersection of green lines boundary and red lines boundary is empty
+- 0   Intersection of green lines boundary and red lines exterior results in the two boundary points of the green line
+- 1   Intersection of green lines exterior and red lines interior results in a line covering most parts of the red line
+- 0   Intersection of green lines exterior and red lines boundary results in the upper boundary point of the red line
+- 2   Intersection of green lines exterior and red lines results in a polygonal geometry covering everything except the two lines
+
+(the boundary of a LINESTRING is formed by its two end points)
+
+## ex 3.7 
+
+Can a set of simple feature polygons form a coverage? If so, under which constraints?
+Yes, but I would say that the set may just contain one polygon, because simple features provide no way of assigning points on the boundary of two adjacent polygons to a single polygon.
+
+## ex 3.8 
+
+For the nc counties in the dataset that comes with R package sf, find the points touched by four counties.
+```{r}
+# read data
+nc <- st_read(system.file("shape/nc.shp", package="sf"))
+# get intersections
+(nc_geom = st_geometry(nc))
+nc_ints = st_intersection(nc_geom)
+plot(nc_ints, main = "All intersections")
+# Function to check class of intersection objects
+get_points = function(x){
+  if(class(x)[2]=="POINT")  return(x)
+}
+# get points
+points = lapply(nc_ints, get_points)
+points[sapply(points,is.null)] <- NULL
+sf_points = st_sfc(points)
+st_crs(sf_points) = st_crs(nc)
+# get points with four neighbouring geometries (=states)
+touch = st_touches(sf_points, nc_geom)
+four_n = sapply(touch, function(y) which(length(y)==4))
+names(four_n) = seq_along(four_n)
+point_no = array(as.numeric(names(unlist(four_n))))
+result = st_sfc(points[point_no])
+plot(nc_geom, main = "Points touched by four counties")
+plot(result, add = TRUE, col = "red", pch = 10, cex = 2)
+```
+
+A more compact way might be to search for points where counties touch
+another county _only_ in a point, which can be found using `st_relate`
+using a `pattern`:
+
+```{r}
+(pts = nc %>% st_relate(pattern = "****0****"))
+nc %>% st_relate(pattern = "****0****") %>% lengths() %>% sum()
+```
+which is, as expected, four times the number of points shown in the plot above.
+
+How can we find these points? See [here](https://edzer.github.io/UseR2017/#higher-level-operations-summarise-interpolate-aggregate-st_join):
+
+```{r}
+nc = st_geometry(nc)
+s2 = sf_use_s2(FALSE) # use GEOM geometry
+pts = st_intersection(nc, nc)
+pts = pts[st_dimension(pts) == 0]
+plot(st_geometry(nc))
+plot(st_geometry(pts), add = TRUE, col = "red", pch = 10, cex = 2)
+sf_use_s2(s2) # set back
+```
+
+## ex 3.9 
+
+How would figure 3.6 look like if delta for the y-coordinate was positive?
+Only cells that were fully crossed by the red line would be grey:
+
+```{r}
+library(stars)
+ls = st_sf(a = 2, st_sfc(st_linestring(rbind(c(0.1, 0), c(1, .9)))))
+grd = st_as_stars(st_bbox(ls), nx = 10, ny = 10, xlim = c(0, 1.0), ylim = c(0, 1),
+   values = -1)
+attr(grd, "dimensions")$y$delta = .1
+attr(grd, "dimensions")$y$offset = 0 
+r = st_rasterize(ls, grd, options = "ALL_TOUCHED=TRUE")
+r[r == -1] = NA
+plot(st_geometry(st_as_sf(grd)), border = 'orange', col = NA, 
+     reset = FALSE, key.pos=NULL)
+plot(r, axes = TRUE, add = TRUE, breaks = "equal") # ALL_TOUCHED=FALSE;
+plot(ls, add = TRUE, col = "red", lwd = 2)
+```
+
+The reason is that in this case, _lower_ left corners of grid cells are part
+of the cell, rather than _upper_ left corners.
+

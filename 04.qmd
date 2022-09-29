@@ -1,0 +1,134 @@
+# Spherical geometry
+
+## ex 4.1 
+
+Straight GeoJSON lines
+
+How does the GeoJSON format define “straight” lines between
+ellipsoidal coordinates (section 3.1.1)? Using this definition of
+straight, how would `LINESTRING(0 85,180 85)` look like in a polar
+projection? How could this geometry be modified to have it cross
+the North Pole?
+
+GeoJSON defines straight lines between pairs of ellipsoidal
+coordinates as the straight line in _Cartesian_ space formed by
+longitude and latitude. This means e.g. that all parallels are
+straight lines.
+
+Using this definition of straight, how would LINESTRING(0 85,180 85) look like in a polar projection? 
+
+Like a half circle:
+```{r}
+library(sf)
+l <- st_as_sfc("LINESTRING(0 85,180 85)") %>%
+	st_segmentize(1) %>%
+	st_set_crs('EPSG:4326')
+plot(st_transform(l, 'EPSG:3995'), col = 'red', lwd = 2,
+	 graticule = TRUE, axes = TRUE, reset = FALSE)
+```
+
+How could this geometry be modified to have it cross the North Pole?
+
+One would have to let it pass through (0 90) and (180, 90):
+```{r}
+library(sf)
+l <- st_as_sfc("LINESTRING(0 85,0 90,180 90,180 85)") %>%
+	st_segmentize(1) %>%
+	st_set_crs('EPSG:4326')
+plot(st_transform(l, 'EPSG:3995'), col = 'red', lwd = 2,
+	 graticule = TRUE, axes = TRUE, reset = FALSE)
+```
+
+
+## ex 4.2 
+
+For a typical polygon on $S^2$, how can you find out ring direction?
+
+Ring direction (clock-wise CW, counter clock-wise CCW) is unambiguous
+on $R^2$ but not on $S^2$: on $S^2$ every polygon divides the
+sphere's surface in two parts. When the inside of the polygon is
+taken as the area to the left when traversing the polygons's points
+then for a small polygon, then ring direction is CCW if the area
+of the polygon is smaller than half of the area of the sphere. For
+polygons dividing the sphere in two equal parts (great circles such
+as the equator or meridians) ring direction is ambiguous.
+
+## ex 4.3 
+
+Are there advantages of using bounding caps over using bounding boxes? If so, list them.
+
+Bounding caps may be more compact (have a smaller area compared
+to the bounding box corresponding to the same geometries), they
+need fewer parameters, and they are invariant under rotation of
+(the origins of) longitude and latitude. 
+
+For areas covering one of the poles, a bounding box will always need
+to have a longitude range that spans from -180 to 180, irrespective
+whether the geometry is centered around the pole.
+
+
+## ex 4.4 
+
+Why is, for small areas, the orthographic projection centered at the area a good approximation of the geometry as handled on $S^2$
+
+Because that is the closest approximation of the geometry on $R^2$.
+
+## ex 4.5 Fiji
+
+For `rnaturalearth::ne_countries(country = "Fiji",
+returnclass="sf")`, check whether the geometry is valid on $R^2$,
+on an orthographic projection centered on the country, and on $S^2$.
+How can the geometry be made valid on `S^2`? Plot the resulting
+geometry back on $R^2$.
+Compare the centroid of the country, as computed on $R^2$ and on
+$S^2$, and the distance between the two.
+
+Valid on $R^2$:
+```{r}
+fi = rnaturalearth::ne_countries(country = "Fiji", returnclass="sf") %>%
+		st_geometry()
+s2 = sf_use_s2(FALSE)
+st_is_valid(fi)
+```
+
+Valid on orthographic projection:
+
+```{r}
+ortho = "+proj=ortho +lon_0=178.6 +lat_0=-17.3"
+st_transform(fi, ortho) %>% st_is_valid()
+plot(st_transform(fi, ortho), border = 'red')
+```
+
+The red line following the antimeridian makes the geometry invalid in
+this projection, and also on $S^2$:
+
+```{r}
+sf_use_s2(TRUE)
+st_is_valid(fi)
+```
+
+Make valid on $S^2$, and plot:
+```{r}
+fi.s2 = st_make_valid(fi)
+st_is_valid(fi.s2)
+plot(st_transform(fi.s2, ortho), border = 'red')
+title("valid")
+```
+
+where we see that the line at the antimeridian has disappeared. This
+makes plotting in $R^2$ look terrible, with lines spanning the globe:
+```{r}
+plot(fi.s2, axes = TRUE)
+```
+
+Compare the centroid of the country, as computed on $R^2$ and on
+$S^2$, and the distance between the two.
+```{r}
+sf_use_s2(FALSE)
+(c1 = st_centroid(fi))
+sf_use_s2(TRUE)
+(c2 = st_centroid(fi.s2))
+st_distance(c1, c2)
+sf_use_s2(s2)
+```
+

@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Edzer Pebesma, Roger Bivand">
-<meta name="dcterms.date" content="2022-09-29">
 
-<title>Spatial Data Science</title>
+<title>Spatial Data Science - 6&nbsp; Data Cubes</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -32,7 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./01.html" rel="next">
+<link href="./07.html" rel="next">
+<link href="./05.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -62,6 +61,7 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -71,7 +71,7 @@ ul.task-list li input[type="checkbox"] {
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Spatial Data Science</h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Cubes</span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -99,7 +99,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">Spatial Data Science, with applications in R</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">Spatial Data Science, with applications in R</a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -129,7 +129,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Cubes</span></a>
+  <a href="./06.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Cubes</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -196,46 +196,102 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#spatial-data-science-with-applications-in-r" id="toc-spatial-data-science-with-applications-in-r" class="nav-link active" data-scroll-target="#spatial-data-science-with-applications-in-r">Spatial Data Science, with applications in R</a></li>
+  <li><a href="#ex-6.1." id="toc-ex-6.1." class="nav-link active" data-scroll-target="#ex-6.1."><span class="toc-section-number">6.1</span>  ex 6.1.</a></li>
+  <li><a href="#ex-6.2." id="toc-ex-6.2." class="nav-link" data-scroll-target="#ex-6.2."><span class="toc-section-number">6.2</span>  ex 6.2.</a></li>
+  <li><a href="#ex-6.3." id="toc-ex-6.3." class="nav-link" data-scroll-target="#ex-6.3."><span class="toc-section-number">6.3</span>  ex 6.3.</a></li>
+  <li><a href="#ex-6.4." id="toc-ex-6.4." class="nav-link" data-scroll-target="#ex-6.4."><span class="toc-section-number">6.4</span>  ex 6.4.</a></li>
+  <li><a href="#ex-6.5." id="toc-ex-6.5." class="nav-link" data-scroll-target="#ex-6.5."><span class="toc-section-number">6.5</span>  ex 6.5.</a></li>
+  <li><a href="#ex-6.5.1" id="toc-ex-6.5.1" class="nav-link" data-scroll-target="#ex-6.5.1"><span class="toc-section-number">6.6</span>  ex 6.5.1</a></li>
+  <li><a href="#ex-6.5.2" id="toc-ex-6.5.2" class="nav-link" data-scroll-target="#ex-6.5.2"><span class="toc-section-number">6.7</span>  ex 6.5.2</a></li>
+  <li><a href="#ex-6.5.3" id="toc-ex-6.5.3" class="nav-link" data-scroll-target="#ex-6.5.3"><span class="toc-section-number">6.8</span>  ex 6.5.3</a></li>
   </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/index.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/06.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Spatial Data Science</h1>
-<p class="subtitle lead">answers to exercises</p>
+<h1 class="title d-none d-lg-block"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Cubes</span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Edzer Pebesma, Roger Bivand </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">September 29, 2022</p>
-    </div>
-  </div>
     
   </div>
   
 
 </header>
 
-<section id="spatial-data-science-with-applications-in-r" class="level1 unnumbered">
-<h1 class="unnumbered">Spatial Data Science, with applications in R</h1>
-<p>Book found at: <a href="https://r-spatial.org/book">https://r-spatial.org/book/</a></p>
-<p>Answers to most of the exercises</p>
+<section id="ex-6.1." class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="ex-6.1."><span class="header-section-number">6.1</span> ex 6.1.</h2>
+<p>Why is it difficult to represent trajectories, sequences of <span class="math inline">\((x,y,t)\)</span> obtained by tracking moving objects, by data cubes as described in this chapter?</p>
+<ul>
+<li>rounding <span class="math inline">\((x,y,t)\)</span> to the discrete set of dimension values in a data cube may cause loss of information</li>
+<li>if the dimensions all have a high resolution, data loss is limited but the data cube will be very sparse; this will only be effective if a system capable of storing sparse data cubes is used (e.g.&nbsp;SciDB, TileDB)</li>
+</ul>
+</section>
+<section id="ex-6.2." class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="ex-6.2."><span class="header-section-number">6.2</span> ex 6.2.</h2>
+<p>In a socio-economic vector data cube with variables population, life expectancy, and gross domestic product ordered by dimensions country and year, which variables have block support for the spatial dimension, and which have block support for the temporal dimension?</p>
+<ul>
+<li>population has spatial block support (total over an area), typically not temporal block support (but the population e.g.&nbsp;on a particular day of the year)</li>
+<li>life expectancy is calculated over the total population of the country, and as such has spatial block support; it has temporal block support as the number of deaths over a particular period are counted, it is not clear whether this always corresponds to a single year or a longer period.</li>
+<li>GDP has both spatial and temporal block support: it is a total over an area and a time period.</li>
+</ul>
+</section>
+<section id="ex-6.3." class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="ex-6.3."><span class="header-section-number">6.3</span> ex 6.3.</h2>
+<p>The Sentinel-2 satellites collect images in 12 spectral bands; list advantages and disadvantages to represent them as (i) different data cubes, (ii) a data cube with 12 attributes, one for each band, and (iii) a single attribute data cube with a spectral dimension.</p>
+<ul>
+<li>as (i): it would be easy to cope with the differences in cell sizes;</li>
+<li>as (ii): one would have to cope with differences in cell sizes (10, 20, 60m), and it would not be easy to consider the spectral reflectance curve of individual pixels</li>
+<li>as (iii): as (ii) but it would be easier to consider (analyse, classify, reduce) spectral reflectance curves, as they are now organized in a dimension</li>
+</ul>
+</section>
+<section id="ex-6.4." class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="ex-6.4."><span class="header-section-number">6.4</span> ex 6.4.</h2>
+<p>Explain why a curvilinear raster as shown in figure 1.5 can be considered a special case of a data cube.</p>
+<ul>
+<li>Curvilinear grids do not have a simple relationship between dimension index (row/col, i/j) to coordinate values (lon/lat, x/y): one needs both row and col to find the coordinate pair, and from a coordinate pair a rather complex look-up to find the corresponding row and column.</li>
+</ul>
+</section>
+<section id="ex-6.5." class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="ex-6.5."><span class="header-section-number">6.5</span> ex 6.5.</h2>
+<p>Explain how the following problems can be solved with data cube operations <code>filter</code>, <code>apply</code>, <code>reduce</code> and/or <code>aggregate</code>, and in which order. Also mention for each which function is applied, and what the dimensionality of the resulting data cube is (if any):</p>
+</section>
+<section id="ex-6.5.1" class="level2" data-number="6.6">
+<h2 data-number="6.6" class="anchored" data-anchor-id="ex-6.5.1"><span class="header-section-number">6.6</span> ex 6.5.1</h2>
+<p>from hourly <span class="math inline">\(PM_{10}\)</span> measurements for a set of air quality monitoring stations, compute per station the amount of days per year that the average daily <span class="math inline">\(PM_{10}\)</span> value exceeds 50 <span class="math inline">\(\mu g/m^3\)</span></p>
+<ul>
+<li>convert measured hourly values into daily averages: aggregate (from hourly to daily, function: mean)</li>
+<li>convert daily averages into TRUE/FALSE whether the daily average exceeds 50: apply (function: larger-than)</li>
+<li>compute the number of days: reduce time (function: sum)</li>
+</ul>
+<p>This gives a one-dimensional data cube, with dimension “station”</p>
+</section>
+<section id="ex-6.5.2" class="level2" data-number="6.7">
+<h2 data-number="6.7" class="anchored" data-anchor-id="ex-6.5.2"><span class="header-section-number">6.7</span> ex 6.5.2</h2>
+<p>for a sequence of aerial images of an oil spill, find the time at which the oil spill had its largest extent, and the corresponding extent</p>
+<ul>
+<li>for each image, classify pixels into oil/no oil: apply (function: classify)</li>
+<li>for each image, compute size (extent) of oil spill: reduce space (function: sum)</li>
+<li>for the extent time series, find time of maximum: reduce time (function: which.max, then look up time)</li>
+</ul>
+<p>This gives a zero-dimensional data cube (a scalar).</p>
+</section>
+<section id="ex-6.5.3" class="level2" data-number="6.8">
+<h2 data-number="6.8" class="anchored" data-anchor-id="ex-6.5.3"><span class="header-section-number">6.8</span> ex 6.5.3</h2>
+<p>from a 10-year period with global daily sea surface temperature (SST) raster maps, find the area with the 10% largest and 10% smallest temporal trends in SST values.</p>
+<ul>
+<li>from daily SST to trend values per pixel: reduce time (function: trend function, <code>lm</code>)</li>
+<li>from trend raster, find 10- and 90-percentile: reduce space (function: quantile)</li>
+<li>using percentiles, threshold the trend raster: apply (function: less than / more than)</li>
+</ul>
+<p>This gives a two-dimensional data cube (or raster layer: the reclassified trend raster).</p>
 
 
 </section>
@@ -341,10 +397,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
+      <a href="./05.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Attributes</span></span>
+      </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./01.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Intro</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./07.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">sf, stars</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

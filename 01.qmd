@@ -1,0 +1,64 @@
+# Intro
+
+## ex 1.1. 
+
+List five differences between raster and vector data.
+
+- raster data have values for pixels, vector data for points, lines of polygons
+- spatial locations of raster pixels are constrained to a grid,
+  vector data coordinates can have arbitrary locations (only limited
+  by floating point representation of coordinates)
+- raster data lend themselves well to represent spatially
+  continuously observed variables (such as imagery) or spatially
+  continuously varying variables (such as elevation or temperature);
+  vector data lend themselves well to represent spatially discrete
+  features such as houses and roads, or administrative regions.
+- raster data cover their spatial extent completely: every point
+  is part of a single pixel; vector data may contain holes, or have
+  intersecting geometries where points belong to multiple polygons.
+- the operations on raster data are often simple mathematical
+  (raster algebra) operations that include spatial operations; such 
+  simple operations are usually not available for vector data.
+- raster data has trivial topology: it is clear which 4 or 8 pixels
+  are the neighbours of every pixel; for vector data spatial there
+  are more types of relationships, and these relationships are more
+  complicated to detect.
+
+The answer "Raster data is continuous data while vector data is
+discrete data." is not complete: a raster of land use type represens
+a discrete (type) variable, a polygon map with population density
+represents a continuous variable. The difference lies in _spatially_
+continuous variables like elevation or temperature which are
+more easily represented by raster data, and _spatially_ discrete
+features, such as houses and roads, which are easier represented
+by vector data.
+
+## ex 1.2. 
+
+In addition to those listed below figure 1.1, list five further graphical components that are often found on a map.
+
+* scale bar
+* data source
+* well defined title, subtitle
+* orientation indicator, north arrow
+* further reference elements: seas, land mass, rivers
+
+## ex 1.3. 
+
+Why the numeric information shown in figure 1.4 misleading (or meaningless):
+
+The values shown in figure 1.4 are population _total_ associated
+with their respective counties.  Without the county boundaries the
+meaning disappears: raster pixels do not contain population totals
+per pixel, population totals over larger regions or populations
+densities can no longer be derived based on this raster map alone.
+
+## ex 1.4. 
+
+Under which conditions would you expect strong differences when doing geometrical operations on $S^2$, compared to doing them on $R^2$
+
+* when computing distances between two points at large distance from each other
+* when determining what the shortest line is between two points,
+  in particular near to the poles, or when the antimeridian crosses
+  this line
+

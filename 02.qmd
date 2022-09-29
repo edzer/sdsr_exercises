@@ -1,0 +1,78 @@
+# Coordinates
+
+## ex 2.1. 
+
+List three geographic measures that do not have a natural zero origin
+
+* longitude: the zero meridian is arbitrary, 100 years ago there were many other zero meridians fashionable
+* latitude: the equator may feel like a natural zero, but one could
+  equally use the North Pole as zero, or choose entirely different
+  origins and orientation for longitude and latitude.
+* altitude (measured w.r.t. mean sea level, geoid, or ellispoid)
+
+## ex 2.2 - 2.4
+
+(thanks to Jonas Hurst)
+
+Convert the (x, y) point s (10, 2), (-10, -1), (10, -2) and (0, 10) to polar cooridnates
+
+```{r}
+cart2polar = function(x, y){
+  r = sqrt(x*x + y*y)  # compute r (distance from origin)
+  phi = atan2(y, x)  # compute phi (angle between point and positive x axis in rad)
+  phi_deg = phi * 180 / pi  #  compute angle in deg
+  result = c(r, phi_deg)
+  return(result)
+}
+
+cart2polar(10, 2)
+cart2polar(-10, -1)
+cart2polar(10, -2)
+cart2polar(0, 10)
+```
+
+## Convert from Polar to Cartesian
+
+Convert the polar (r, phi) points (10, 45°), (0, 100°) and (5, 259°) to Cartesian coordinates
+
+```{r}
+deg2rad = function(angle_degree) {
+  angle_degree * pi / 180
+}
+
+polar2cart = function(r, phi_deg){
+  # phi must be in degrees
+  phi_rad = deg2rad(phi_deg)  # convert phi in degrees to radians
+  x = r * cos(phi_rad)
+  y = r * sin(phi_rad)
+  c(x, y) # return value
+}
+
+polar2cart(10, 45)
+polar2cart(0, 100)
+polar2cart(5, 259)
+```
+
+assuming the Earth is a sphere with a radius of 6371 km, compute for (lambda, phi) points the great circle distance between (10, 10) and (11, 10), between (10, 80)    >and (11, 80), between (10, 10) and (10, 11) and between (10, 80) and (10, 81).
+
+```{r}
+distOnSphere = function(l1, phi1, l2, phi2, radius) {
+  l1_rad = deg2rad(l1)
+  l2_rad = deg2rad(l2)
+  phi1_rad = deg2rad(phi1)
+  phi2_rad = deg2rad(phi2)
+
+  theta = acos(
+    sin(phi1_rad) * sin(phi2_rad) +
+    cos(phi1_rad) * cos(phi2_rad) * cos(abs(l1_rad - l2_rad))
+  )
+  radius * theta # return value
+}
+
+radius = 3671
+distOnSphere(10, 10, 11, 10, radius)
+distOnSphere(10, 80, 11, 80, radius)
+distOnSphere(10, 10, 10, 11, radius)
+distOnSphere(10, 80, 10, 81, radius)
+```
+Unit of all results are kilometers.

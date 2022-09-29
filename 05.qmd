@@ -1,0 +1,170 @@
+# Attributes
+
+## ex 5.1. 
+
+type of `State`
+
+The appropriate value would be `constant`: there is no identity
+relationship of `State` to one of the counties in `nc`, and the
+value of `State` is constant through each county in the state
+(every point in every county in the state has this value for
+`State`).
+
+## ex 5.2. 
+
+type of `State` for the entire state
+
+Now, the unioned geometry _is_ that of the state, and we can assign
+`identity`: there is only one state of North Carolina, an this
+geometry is its geometry.
+
+## ex 5.3. 
+
+the `AREA` variable
+
+<!--
+Use st_area to add a variable with name area to nc. Compare the area and AREA variables in the nc dataset. What are the units of AREA? Are the two linearly related? If there are discrepancies, what could be the cause?
+-->
+
+The `nc` dataset is rather old, and did not come with an extensive
+report how, in detail, certain variables such as `AREA` were derived,
+so some detective work is needed here. How did people do this,
+more than three decades ago?
+
+We can now compute `area` by
+```{r}
+library(sf)
+nc = read_sf(system.file("gpkg/nc.gpkg", package="sf"))
+nc$AREA[1:10]
+s2 = sf_use_s2(FALSE) # use spherical geometry:
+nc$area = a_sph = st_area(nc)
+nc$area[1:10]
+sf_use_s2(TRUE) # use ellipsoidal geometry:
+nc$area = a_ell = st_area(nc)
+nc$area[1:10]
+sf_use_s2(s2) # set back to original
+cor(a_ell, a_sph)
+```
+and this gives the area, in square metres, computed using either
+ellipsoidal or spherical geometry. We see that these are not
+identical, but nearly perfectly linearly correlated.
+
+A first hypothesis might be a constant factor between the `area`
+and `AREA` variables. For this, we could try a power of 10:
+```{r}
+nc$area2 = units::drop_units(nc$area / 1e10)
+cor(nc$AREA, nc$area2)
+summary(lm(area2 ~ AREA, nc))
+plot(area2 ~ AREA, nc)
+abline(0, 1)
+```
+
+and we see a pretty good, close to 1:1 correspondence! But the
+factor 1e10 is strange: it does not convert square metres into a
+usual unit for area, neither for metric nor for imperial units.
+
+Also, there are deviations from the 1:1 regression line.  Could these
+be explained by the rounding of `AREA` to three digits? If rounding
+to three digits was the only cause of spread around the regression
+line, we would expect a residual standard error similar to the standard
+deviation of a uniform distribution with width .001, which is
+```{r}
+sqrt(0.001^2/12)
+```
+but the one obtained int he regression is three times larger. Also,
+the units of `AREA` would be 1e10 $m^2$, or 1e4 $km^2$, which is
+odd and could ring some bells: one degree latitude corresponds
+roughly to 111 km, so one "square degree" at the equator corresponds
+roughly to $1.11^2 \times 10^4$, and at 35 degrees North roughly to
+```{r}
+111 ^ 2 * cos(35 / 180 * pi)
+```
+which closely corresponds to the regression slope found above.
+
+We can compute "square degree" area by using the $R^2$ area routines,
+e.g. obtained when we set the CRS to `NA`:
+
+```{r}
+nc2 = nc
+st_crs(nc2) = NA
+nc2$area = st_area(nc2) # "square degrees"
+plot(area ~ AREA, nc2)
+abline(0,1)
+cor(nc2$area, nc2$AREA)
+summary(lm(area ~ AREA, nc2))
+```
+We now get a much better fit, a near perfect correlation, and a
+regression standard error that corresponds exactly to what one
+would expect after rounding `AREA` to three digits.
+
+A further "red flag" against the constant (1e10) conversion
+hypothesis is the spatial pattern of the regression residuals
+obtained by the first approach:
+```{r}
+nc$resid = residuals(lm(area2 ~ AREA, nc))
+plot(nc["resid"])
+```
+
+these residuals clearly show a North-South trend, corresponding
+to the effect that the Earth's curvature has been ignored during
+the computation of `AREA` (ellipsoidal coordinates were treated
+as if they were Cartesian). "Square degrees" become smaller when
+going north.
+
+The "unit" of the `AREA` variable is hence "square degree". This
+is a meaningless unit for area on the sphere, because a unit square
+degree does not have a constant area. 
+
+## ex 5.4 
+
+type of `area`
+
+"area" is of type `aggregate`: it is a property of a polygon as a
+whole, not of each individual point in the polygon. It is extensive:
+if we cut a polygon in two parts, the total area is distributed
+over the parts.
+
+## ex 5.5 
+
+area-weighted interpolation
+
+From the on-line version of the book we get the code that created the plot:
+```{r}
+g = st_make_grid(st_bbox(st_as_sfc("LINESTRING(0 0,1 1)")), n = c(2,2))
+par(mar = rep(0,4))
+plot(g)
+plot(g[1] * diag(c(3/4, 1)) + c(0.25, 0.125), add = TRUE, lty = 2)
+text(c(.2, .8, .2, .8), c(.2, .2, .8, .8), c(1,2,4,8), col = 'red')
+```
+
+A question is how we can make `g` into an `sf` object with the right
+attribute values associated with the right geometries. We try values
+`1:4`:
+```
+sf = st_sf(x = 1:4, geom = g)
+plot(sf)
+```
+and see the order of the geometries: row-wise, bottom row first, so
+```{r}
+sf = st_sf(x = c(1,2,4,8), geom = g)
+plot(sf)
+```
+gives us the source object. We create target geometries by
+```{r}
+dashed = g[1] * diag(c(3/4, 1)) + c(0.25, 0.125)
+box = st_union(g)
+c(dashed, box)
+```
+and can call `st_interpolate_aw` to compute the area-weighted interpolations:
+```{r}
+st_interpolate_aw(sf, c(dashed, box), extensive = TRUE)
+st_interpolate_aw(sf, c(dashed, box), extensive = FALSE)
+```
+This generates a warning, which we can get rid of by setting the `agr` to
+`constant`:
+```{r}
+st_agr(sf) = "constant"
+st_interpolate_aw(sf, c(dashed, box), FALSE)
+```
+
+

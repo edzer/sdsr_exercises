@@ -1,0 +1,104 @@
+# Proximity and Areal Data
+
+## ex 14.1
+
+If dimensionality (point/line/polygon) varies in the data set, geometries must be reduced to the lowest dimension present (usually points). If all the observations are polygonal (polygon or multipolygon), contiguities (shared boundaries) are a sparse and robust neighbour representation (`spdep::poly2nb()`). Polygons may also be reduced to points by taking for example centroids, but neighbours found by triangulating points may not be the same as contiguity neighbours for the polygons being represented by these centroids (`spdep::tri2nb()`). If the geometries are multipoint, they must also be reduced to a single point. If the geometries have point rather than areal support, for example real estate transaction data, k-nearest neighbour (`spdep::knn2nb(spdep::knearneigh())`), graph-based (`spdep::graph2nb()` applied to the output of `spdep::soi.graph()`, `spdep::relativeneigh()` or `spdep::gabrielneigh()`) and distance-based methods (spdep::dnearneigh()`) may be used.
+
+## ex 14.2
+
+Graph-based functions for creating neighbour objects (`spdep::tri2nb()`, `spdep::soi.graph()`, `spdep::relativeneigh()` and `spdep::gabrielneigh()`) may not be used if the support of the observations is not that of points on the plane. All other functions may be used with both planar and spherical/elliptical geometries, but the neighbours generated may differ if a non-planar data set is treated as planar.
+
+## ex 14.3
+
+A chessboard is an $8 \times 8$ grid:
+
+```{r}
+xy <- data.frame(expand.grid(1:8, 1:8), col=rep(c(rep(c("black", "white"), 4), rep(c("white", "black"), 4)), 4))
+library(stars)
+library(sf)
+(xy %>% st_as_stars() %>% st_as_sf() -> grd)
+```
+
+```{r}
+library(spdep)
+(rook <- poly2nb(grd, queen=FALSE))
+```
+The `rook` neighbours also form a grid, where the neighbours share a grid edge:
+
+```{r}
+plot(st_geometry(grd), col=grd$col) 
+plot(rook, xy, add=TRUE, col="grey")
+```
+
+
+```{r}
+(queen <- poly2nb(grd, queen=TRUE))
+```
+The `queen` neighbours add neighbours sharing only one corner point:
+```{r}
+plot(st_geometry(grd), col=grd$col) 
+plot(queen, xy, add=TRUE, col="grey")
+```
+
+and the difference yields neighbours sharing not more than one boundary point:
+
+```{r}
+plot(st_geometry(grd), col=grd$col) 
+plot(diffnb(queen, rook), xy, add=TRUE, col="grey")
+```
+
+## ex 14.4
+
+We can access cardinalities using `card()`, and tabulate their frequencies for the chessboard rook case:
+
+```{r}
+((rook %>% card() -> rc) %>% table() -> t)
+```
+Taking the counts found, we can construct the weights corresponding to those neighbour counts:
+
+```{r}
+1/rev(as.numeric(names(t)))
+```
+Plotting the row-standardized weights, we see that they up-weight the neighbours of observations with few neighbours, and down-weight the neighbours of observations with more neighbours:
+
+```{r}
+grd$rc <- as.factor(1/rc)
+plot(grd[, "rc"], main="rook row-standardized weights", key.width = lcm(2.5))
+```
+
+We can also use the cardinality frequency table to find counts of neighbours with (increasing) weights:
+
+```{r}
+unname(rev(t))*rev(as.numeric(names(t)))
+```
+This can be confirmed by tabulating the frequencies of weights yielded by `nb2listw()`:
+
+```{r}
+table(unlist(nb2listw(rook, style="W")$weights))
+```
+Repeating for the `queen` case again shows how row-standardization can engender edge effects:
+
+```{r}
+((queen %>% card() -> rc) %>% table() -> t)
+```
+```{r}
+1/rev(as.numeric(names(t)))
+```
+```{r}
+grd$rc <- as.factor(1/rc)
+plot(grd[, "rc"], main = "rook row-standardised weights", key.width = lcm(2.5))
+```
+
+```{r}
+unname(rev(t))*rev(as.numeric(names(t)))
+```
+
+
+```{r}
+table(unlist(nb2listw(queen, style="W")$weights))
+```
+
+```{r}
+save(list = ls(), file = "ch14.RData")
+```
+

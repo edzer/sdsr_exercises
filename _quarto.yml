@@ -1,0 +1,62 @@
+project:
+  type: book
+
+book:
+  title: "Spatial Data Science"
+  subtitle: "answers to exercises"
+  author: "Edzer Pebesma, Roger Bivand"
+  date: "9/29/2022"
+  site-url: https://edzer.github.io/sdsr_exercises/
+  repo-url: https://github.com/edzer/sdsr_exercises/
+  repo-branch: main
+  repo-actions: [edit]
+  chapters:
+    - index.qmd
+    - 01.qmd
+    - 02.qmd
+    - 03.qmd
+    - 04.qmd
+    - 05.qmd
+    - 06.qmd
+    - 07.qmd
+    - 08.qmd
+    - 09.qmd
+    - 10.qmd
+    - 11.qmd
+    - 12.qmd
+    - 13.qmd
+    - 14.qmd
+    - 15.qmd
+    - 16.qmd
+    - 17.qmd
+
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#" 
+    R.options:
+      knitr.graphics.auto_pdf: true
+      dplyr.print_min: 6
+      dplyr.print_max: 6
+      stars.crs: 17
+      digits: 3
+
+format:
+  html:
+    number-depth: 2
+    theme: cosmo
+    code-fold: false
+    code-summary: "Code"
+    knitr:
+      opts_chunk:
+        R.options:
+          width: 68
+# pdf: 
+#   documentclass: krantz
+#   pdf-engine: pdflatex
+#   keep-tex: true
+#   collapse: true
+#   knitr:
+#     opts_chunk:
+#       R.options:
+#         width: 62

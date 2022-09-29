@@ -1,0 +1,147 @@
+# Large datasets
+
+## ex 9.1
+
+For the S2 image (above), find out in which order the bands are
+using `st_get_dimension_values()`, and try to find out (e.g. by internet
+search) which spectral bands / colors they correspond to.
+
+```{r}
+f = "sentinel/S2A_MSIL1C_20180220T105051_N0206_R051_T32ULE_20180221T134037.zip"
+  granule = system.file(file = f, package = "starsdata")
+file.size(granule)
+base_name = strsplit(basename(granule), ".zip")[[1]]
+s2 = paste0("SENTINEL2_L1C:/vsizip/", granule, "/", base_name, 
+	".SAFE/MTD_MSIL1C.xml:10m:EPSG_32632")
+library(stars)
+(p = read_stars(s2, proxy = TRUE))
+st_get_dimension_values(p, "band")
+```
+
+## ex 9.2
+
+Compute NDVI for the S2 image, using `st_apply` and an an appropriate 
+`ndvi` function.  Plot the result to screen, and then write the
+result to a GeoTIFF. Explain the difference in runtime between
+plotting and writing.
+
+```{r}
+ndvi_fn = function(r, g, b, nir) (nir-r)/(nir+r)
+ndvi = st_apply(p, 1:2, ndvi_fn)
+plot(ndvi)
+```
+
+Alternatively, one could use
+```{r}
+ndvi_fn = function(r, g, b, nir) (nir-r)/(nir+r)
+```
+
+but that is much less efficient. Write to a tiff:
+```{r}
+system.time(write_stars(ndvi, "ndvi.tif"))
+```
+
+The runtime difference is caused by the fact that `plot` downsamples,
+so computes a very small fraction of the available pixels, where
+`write_stars` computes all pixels, and then writes them.
+
+## ex 9.3
+
+Plot an RGB composite of the S2 image, using the `rgb` argument
+to `plot()`, and then by using `st_rgb()` first.
+
+```{r}
+plot(p, rgb = 1:3)
+# plot(st_rgb(p[,,,1:3], maxColorValue=13600)) # FIXME: fails
+```
+
+## ex 9.4
+
+select five random points from the bounding box of `S2`, and extract
+the band values at these points. What is the class of the object returned?
+Convert the object returned to an `sf` object.
+
+```{r}
+pts =  p %>% st_bbox() %>% st_as_sfc() %>% st_sample(5)
+(p5 = st_extract(p, pts))
+class(p5)
+st_as_sf(p5)
+```
+
+## ex 9.5
+
+For the 10 km radius circle around `POINT(390000  5940000)`, compute
+the mean pixel values of the S2 image when downsampling the images
+with factor 30, and on the original resolution. Compute the relative
+difference between the results.
+
+```{r}
+b = st_buffer(st_sfc(st_point(c(390000, 5940000)), crs = st_crs(p)), 
+	units::set_units(10, km))
+plot(p[,,,1], reset = FALSE, axes = TRUE)
+plot(b, col = NA, border = 'green', add = TRUE)
+p1 = st_as_stars(p, downsample = 30)
+a1 = aggregate(p1, b, mean)
+```
+
+For the full resolution, this takes a while:
+
+```{r eval=TRUE}
+system.time(a2 <- aggregate(p, b, mean))
+```
+
+Relative differences: we will work on the array of the stars objects:
+
+```{r}
+(a1[[1]] - a2[[1]])/((a1[[1]]+a2[[1]])/2)
+```
+
+Alternatively one could convert `a1` and `a2` to a `data.frame`, using
+`as.data.frame`, and work on the third column of the data frames.
+
+## ex 9.6 
+
+Use `hist` to compute the histogram on the downsampled S2 image.
+Also do this for each of the bands. Use `ggplot2` to compute a
+single plot with all four histograms in facets.
+
+```{r}
+hist(p1)
+hist(p1[,,,1])
+hist(p1[,,,2])
+hist(p1[,,,3])
+hist(p1[,,,4])
+library(ggplot2)
+ggplot(as.data.frame(p1), aes(x = EPSG_32632)) +
+		geom_histogram() + facet_wrap(~band)
+```
+
+## ex 9.7
+
+Use `st_crop` to crop the S2 image to the area covered by the 10 km circle.
+Plot the results. Explore the effect of setting argument `crop = FALSE`
+
+```{r}
+plot(st_crop(p, b))
+plot(st_crop(p, b, crop = FALSE))
+```
+
+## ex 9.8
+
+With the downsampled image, compute the logical layer where all four
+bands have pixel values higher than 1000. Use a raster algebra expression
+on the four bands (use `split` first), or use `st_apply` for this.
+
+```{r}
+p_spl = split(p1)
+p_spl$high = p_spl$B4 > 1000 & p_spl$B3 > 1000 & p_spl$B2 > 1000 & p_spl$B8 > 1000
+plot(p_spl["high"])
+```
+
+alternative, using `st_apply` on the band dimension
+
+```{r}
+p2 = st_apply(p1, 1:2, function(x) all(x > 1000))
+plot(p2)
+```
+

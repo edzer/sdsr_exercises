@@ -1,0 +1,166 @@
+# sf, stars
+
+## ex. 7.1
+
+ Find the names of the `nc` counties that intersect `LINESTRING(-84 35,-78 35)`; use `[` for this, and use `st_join()` for this.
+
+```{r}
+library(sf)
+library(stars)
+(file = system.file("gpkg/nc.gpkg", package="sf"))
+nc = st_read(file)
+line = st_as_sfc("LINESTRING(-84 35,-78 35)", crs = st_crs(nc))
+nc[line,]$NAME
+st_join(st_sf(line), nc)$NAME # left join: `line` should be first argument
+```
+
+## ex. 7.2
+
+Repeat this after setting `sf_use_s2(FALSE)`, and _compute_ the difference (hint: use `setdiff()`), and color the counties of the difference using color '#00880088'.
+
+```{r}
+# save names first:
+sf_use_s2(TRUE)
+names_with_s2 = nc[line,]$NAME
+sf_use_s2(FALSE)
+nc[line,]$NAME
+(diff = setdiff(names_with_s2, nc[line,]$NAME))
+plot(st_geometry(nc))
+plot(st_geometry(nc)[nc$NAME %in% diff], col = "#00880088", add = TRUE)
+```
+
+## ex. 7.3
+
+Plot the two different lines in a single plot; note that R will plot a straight line always straight in the projection currently used; `st_segmentize` can be used to add points on straight line, or on a great circle for ellipsoidal coordinates.
+
+```{r}
+plot(st_geometry(nc))
+plot(st_geometry(nc)[nc$NAME %in% diff], col = "#00880088", add = TRUE)
+plot(line, add = TRUE)
+plot(st_segmentize(line, units::set_units(10, km)), add = TRUE, col = 'red')
+```
+
+To show that the red line is curved, but only curved in plate carree,
+and not e.g. in an orthographic projection centered at this region,
+we can also plot it in an orthographic projection:
+
+```{r}
+l.gc = st_segmentize(line, units::set_units(10, km))
+l.pc = st_segmentize(st_set_crs(line, NA), 0.1) %>% st_set_crs(st_crs(l.gc))
+o = st_crs("+proj=ortho +lon_0=-80 +lat_0=35")
+plot(st_transform(st_geometry(nc), o), axes = TRUE)
+plot(st_transform(st_geometry(nc), o)[nc$NAME %in% diff],
+	 col = "#00880088", add = TRUE)
+plot(st_transform(l.gc, o), col = 'red', add = TRUE)
+plot(st_transform(l.pc, o), col = 'black', add = TRUE)
+plot(st_transform(line, o), col = 'green', add = TRUE)
+```
+
+The fact that the _unsegmented_ line `line` is straight (R plotted
+it as straight, it contains only the two endpoints) and that it
+covers the red line supports that in this plot, the great circle
+line (red) _is_ plotted straight, and the "straight in plate carree"
+line is not.
+
+## ex. 7.4
+
+NDVI, normalized differenced vegetation index, is computed as `(NIR-R)/(NIR+R)`, with NIR the near infrared and R the red band.  Read the `L7_ETMs.tif` file into object `x`, and distribute the band dimensions over attributes by `split(x, "band")`. Then, add attribute NDVI to this object by using an expression that uses the NIR (band 4) and R (band 3) attributes directly.
+
+
+```{r}
+library(stars)
+(x = read_stars(system.file("tif/L7_ETMs.tif", package = "stars")))
+(x.spl = split(x))
+x.spl$NDVI = (x.spl$X4 - x.spl$X3)/(x.spl$X4 + x.spl$X3)
+plot(x.spl["NDVI"])
+```
+
+## ex. 7.5
+
+Compute NDVI for the `L7_ETMs.tif` image by reducing the band dimension, using `st_apply` and an a function `ndvi = function(x) { (x[4]-x[3])/(x[4]+x[3]) }`. Plot the result, and write the result to a GeoTIFF. 
+
+```{r}
+ndvi_fn = function(x) { (x[4]-x[3])/(x[4]+x[3]) }
+ndvi = st_apply(x, 1:2, ndvi_fn)
+plot(ndvi)
+write_stars(ndvi, "ndvi.tif")
+```
+
+an alternative function is 
+
+```{r}
+ndvi_fn = function(x1,x2,x3,x4,x5,x6) { (x4-x3)/(x4+x3) }
+ndvi2 = st_apply(x, 1:2, ndvi_fn)
+all.equal(ndvi, ndvi2)
+```
+
+This latter function can be much faster, as it is called for chunks
+of data rather than for individual pixels.
+
+## ex. 7.6
+
+Use `st_transform` to transform the `stars` object read from `L7_ETMs.tif` to `EPSG:4326`. Print the object. Is this a regular grid? Plot the first band using arguments `axes=TRUE` and explain why this takes such a long time.
+
+```{r eval=FALSE}
+(x_t = st_transform(x, 'EPSG:4326'))
+plot(x_t[,,,1], axes = TRUE)
+```
+
+the printed summary shows that this is a curvilinear grid. Plotting takes so long because for curvilinear grids, each cell is converted to a small polygon and then plotted.
+
+## ex. 7.7
+
+Use `st_warp` to warp the `L7_ETMs.tif` object to `EPSG:4326`, and plot the resulting object with `axes=TRUE`. Why is the plot created much faster than after `st_transform`?
+
+```{r}
+x_w = st_warp(x, crs = 'EPSG:4326')
+plot(x_w[,,,1], reset = FALSE)
+plot(st_as_sfc(st_bbox(x_w)), col = NA, border = 'red', add = TRUE)
+```
+
+Plotting is faster now because we created a new regular grid. Note
+that the grid border does not align perfectly with the square
+formed by the bounding box (using straight lines in an equidistant
+rectangular projection): white grid cells indicate the misalignment
+due to warping/transforming.
+
+## ex. 7.8
+
+Using a vector representation of the raster `L7_ETMs`, plot the
+intersection with a circular area around `POINT(293716 9113692)`
+with radius 75 m,  and compute the area-weighted mean pixel values
+for this circle.  Compare the area-weighted values with those
+obtained by `aggregate` using the vector data, and by `aggregate`
+using the raster data, using `exact=FALSE` (default) and
+`exact=FALSE`.  Explain the differences.
+
+```{r}
+l7 = st_as_sf(x)
+st_agr(l7) = "constant"
+a = st_as_sfc("POINT(293716 9113692)", crs = st_crs(l7)) %>%
+	st_buffer(units::set_units(74, m))
+plot(st_intersection(l7, a))
+(aw = st_interpolate_aw(l7, a, mean, extensive = FALSE))
+(ag_vector  = aggregate(l7, a, mean))
+(ag_rasterF = st_as_sf(aggregate(x, a, mean)))
+(ag_rasterT = st_as_sf(aggregate(x, a, mean, exact = TRUE)))
+rbind(st_drop_geometry(aw),
+	  st_drop_geometry(ag_vector), 
+	  st_drop_geometry(ag_rasterF), 
+	  st_drop_geometry(ag_rasterT))
+```
+
+Area-weighted interpolation computes the area-weighted mean of the
+areas shown in the plot; `aggregate` on the vector values computes
+the _unweighted_ mean over all polygonized pixels that intersect
+with the circle (black lines); `aggregate` on the raster values only
+averages (unweighted) the cells with pixel _centers_ intersecting
+with the circle (light red):
+
+```{r}
+plot(st_geometry(l7)[a])
+plot(a, add = TRUE, col = NA, border = 'red')
+plot(st_as_sf(L7_ETMs[a])[1], add = TRUE, col = '#ff000066')
+plot(st_as_sf(L7_ETMs[a], as_points = TRUE)[1], add = TRUE, pch = 3, col = 1)
+```
+

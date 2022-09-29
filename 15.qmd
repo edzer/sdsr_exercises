@@ -1,0 +1,144 @@
+# Measures of spatial autocorrelation
+
+```{r}
+load("ch14.RData")
+library(sf)
+library(spdep)
+```
+
+## ex 15.1
+
+Re-using the objects from exercise 14.3, we have:
+
+```{r}
+(grd$col |> factor() -> COL) |> table()
+```
+In the `rook` case, no `black:black` or `white:white` neighbours are found, differing greatly from the expected values, which are based on  non-free sampling from the proportions of colours in the data. Highly significant spatial autocorrelation is detected:
+
+```{r}
+(jc_r <- joincount.multi(COL, listw=nb2listw(rook, style="B")))
+```
+In the `queen` neighbour case, no spatial autocorrelation is found, despite a chessboard looking spatially structured:
+
+```{r}
+joincount.multi(COL, listw=nb2listw(queen, style="B"))
+```
+This is because we have chosen to see all eight neighbour grid cells as neighbours (away from the edges of the board), so the two categories occur equally often as neighbour values, as expected.
+
+
+## ex 15.2
+
+First, create an uncorrelated variable, and confirm that it is uncorrelated:
+
+```{r}
+set.seed(1)
+x <- rnorm(nrow(grd))
+moran.test(x, nb2listw(queen, style="W"), randomisation=FALSE, alternative="two.sided")
+```
+Next inject patterning into the variable by adding a linear trend:
+
+```{r}
+x_t <- x + (0.15 * xy$Var1)
+moran.test(x_t, nb2listw(queen, style="W"), randomisation=FALSE, alternative="two.sided")
+```
+Test again having taken the residuals from a linear model removing the injected trend:
+
+```{r}
+lm.morantest(lm(x_t ~ xy$Var1), nb2listw(queen, style="W"), alternative="two.sided")
+```
+This is important to understand because the spatial patterning in a variable of interest, and picked up by a global measure of spatial autocorrelation, may be driven by an omitted variable. If we cannot add that variable, a latent variable or mixed effects model may be a good choice.
+
+## ex 15.3
+
+False discovery rate adjustment is required when conducting repeated tests on the same data set. Usually, local measures of spatial autocorrelation are calculated for all the observations in a data set, and so constitute repeated tests. When repeated tests are conducted, the usual reading of confidence intervals and probability values must be adjusted to take the repeated use of the data into account. 
+
+## ex 15.4
+
+If we start with the standard local Moran's $I_i$ for the random values with a slight 1D trend, upgraded to analytical conditional standard deviates, but with only the standard intercept-only mean model, we have a starting point; a fair number of the values exceed 2:
+
+```{r}
+locm <- localmoran(x_t, nb2listw(queen, style="W"))
+```
+
+```{r}
+plot(density(locm[, 4]))
+abline(v=c(-2, 2))
+```
+
+
+```{r}
+grd$locm_sd <- locm[, 4]
+plot(grd[, "locm_sd"]) 
+```
+
+```{r}
+sum(p.adjust(locm[, 5], method="none") < 0.05)
+```
+
+If we apply false discovery rate adjustment, we have just one significant measure:
+
+```{r}
+sum(p.adjust(locm[, 5], method="fdr") < 0.05)
+```
+
+
+In the first Saddlepoint approximation also for the random values with a slight 1D trend, the distribution of standard deviates shifts leftward, with both positive and negative values beyond `abs(2)`:
+
+```{r}
+lm_null <- lm(x_t ~ 1)
+locm_null <- summary(localmoran.sad(lm_null, nb=queen, style="W"))
+```
+
+```{r}
+plot(density(locm_null[, "Saddlepoint"]))
+abline(v=c(-2, 2))
+```
+
+
+```{r}
+grd$locm_null_sd <- locm_null[, "Saddlepoint"]
+plot(grd[, "locm_null_sd"]) 
+```
+
+```{r}
+sum(p.adjust(locm_null[, "Pr. (Sad)"], method="none") < 0.05)
+```
+
+If we apply false discovery rate adjustment, we also have just one significant measure:
+
+```{r}
+sum(p.adjust(locm_null[, "Pr. (Sad)"], method="fdr") < 0.05)
+```
+
+
+Once we analyse a model including the 1D trend, most of the distribution of standard deviate values is between -2 and 2:
+
+```{r}
+lm_trend <- lm(x_t ~ xy$Var1)
+locm_tr <- summary(localmoran.sad(lm_trend, nb=queen, style="W"))
+```
+
+
+```{r}
+plot(density(locm_tr[, "Saddlepoint"]))
+abline(v=c(-2, 2))
+```
+
+```{r}
+grd$locm_tr_sd <- locm_tr[, "Saddlepoint"]
+plot(grd[, "locm_tr_sd"]) 
+```
+
+```{r}
+sum(p.adjust(locm_tr[, "Pr. (Sad)"], method="none") < 0.05)
+```
+
+If we apply false discovery rate adjustment, we now have no significant measures, as expected:
+
+```{r}
+sum(p.adjust(locm_tr[, "Pr. (Sad)"], method="fdr") < 0.05)
+```
+
+`localmoran.sad()` or `localmoran.exact()` provide both richer mean models, and estimates of the standard deviates built on the underlying spatial relationships for each observation, rather than analytical or permutation assumptions for the whole data set. This is achieved at the cost of longer compute times and larger memory use, especially when the `Omega=` argument to `localmoran.sad()` or `localmoran.exact.alt()` is used, because this is a dense $n \times n$ matrix.
+
+

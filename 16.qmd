@@ -1,0 +1,147 @@
+# Spatial Regression
+
+
+## ex 16.1
+
+The archived **HSAR** package includes an upper level polygon support municipality department data set, ans a lower level property data set. Both are `"sf"` objects, in the same projected CRS, provided locally.  
+
+```{r}
+library(sf)
+#library(HSAR)
+#data(depmunic)
+#data(properties)
+if (packageVersion("spData") > "2.2.0") {
+  data(depmunic, package="spData")
+  data(properties, package="spData")
+} else {
+  unzip("data/PropertiesAthens.zip", files=c("depmunic.RData",
+    "properties.RData"), exdir="data")
+  load("data/depmunic.RData")
+  load("data/properties.RData")
+}
+depmunic$popdens <- depmunic$population/ (10000*depmunic$area)
+depmunic$foreigners <- 100 * depmunic$pop_rest/ depmunic$population
+depmunic$prgreensp <- depmunic$greensp/ (10000*depmunic$area)
+```
+
+In the vignette, two upper-level variables are added to the six already present, and we change the green space variable scaling to avoid numerical issues in calculating coefficient standard errors.
+
+```{r}
+summary(depmunic)
+```
+The properties data set has only four variables, but with price per square metre already added: 
+
+```{r}
+summary(properties)
+```
+The values of the variables in `depmunic` get copied to each of the properties falling within the boundaries of the municipality departments:
+
+```{r}
+properties_in_dd <- st_join(properties, depmunic, join = st_within)
+```
+
+
+## ex 16.2
+
+For polygon support, we prefer contiguous neighbours:
+
+```{r}
+(mun_nb <- spdep::poly2nb(depmunic, row.names=as.character(depmunic$num_dep)))
+```
+
+Global spatial autocorrelation is marginally detected for the green space variable:
+
+```{r}
+spdep::moran.test(depmunic$prgreensp, spdep::nb2listw(mun_nb))
+```
+Unlike the vignette, which uses distance neighbours up to 1300 m and creates a very dense representation, we choose `k=4` k-nearest neighbours, then convert to symmetry (note that some point locations are duplicated, preventing the use of spatial indexing):
+
+```{r}
+(pr_nb_k4s <- spdep::knn2nb(spdep::knearneigh(properties, k=4), sym=TRUE, row.names=properties$id))
+```
+Copying out has led to the introduction of very powerful positive spatial autocorrelation in this and other variables copied out:
+
+```{r}
+spdep::moran.test(properties_in_dd$prgreensp, spdep::nb2listw(pr_nb_k4s))
+```
+
+
+## ex 16.3
+
+The vignette proposes the full property level and municipal department level set of variables straight away. Here we choose the property level ones first, and update for the copied out municipal department level ones next:
+
+```{r}
+f_pr <- prpsqm ~ size + age + dist_metro
+f_pr_md <- update(f_pr, . ~ . + foreigners + prgreensp + popdens + museums + airbnb)
+```
+
+Adding in the copied out upper level variables appears to account for more of the variability of the response than leaving them out:
+
+```{r}
+library(mgcv)
+pr_base <- gam(f_pr, data=properties_in_dd)
+pr_2lev <- gam(f_pr_md, data=properties_in_dd)
+anova(pr_base, pr_2lev, test="Chisq")
+```
+```{r}
+summary(pr_base)
+```
+
+```{r}
+summary(pr_2lev)
+```
+Adding an upper level IID random effect to the base formula also improves the fit of the model substantially:
+
+```{r}
+pr_base_iid <- gam(update(f_pr, . ~ . + s(num_dep, bs="re")), data=properties_in_dd)
+anova(pr_base, pr_base_iid, test="Chisq")
+```
+
+```{r}
+summary(pr_base_iid)
+```
+
+This improvement is much more moderate when both the upper level variables and IID random effect are present:
+
+```{r}
+pr_2lev_iid <- gam(update(f_pr_md, . ~ . + s(num_dep, bs="re")), data=properties_in_dd)
+anova(pr_2lev, pr_2lev_iid, test="Chisq")
+```
+
+```{r}
+summary(pr_2lev_iid)
+```
+
+## ex 16.4
+
+The `"mrf"` smooth term needs ID keys set so that the neighbour object is correctly matched to the observations. Once these are provided, the properties level model with a municipality department level MRF smooth may be fit:
+
+```{r}
+names(mun_nb) <- attr(mun_nb, "region.id")
+properties_in_dd$num_dep <- factor(properties_in_dd$num_dep)
+pr_base_mrf <- gam(update(f_pr, . ~ . + s(num_dep, bs="mrf", xt=list(nb=mun_nb))),
+    data=properties_in_dd)
+summary(pr_base_mrf)
+```
+Repeating for the extended model with upper level variables present, we see that no more response variability is accounted for than in the lower level variables only MRF RE model, and none of the upper level variables are significant at conventional levels.
+
+```{r}
+pr_2lev_mrf <- gam(update(f_pr_md, . ~ . + s(num_dep, bs="mrf", xt=list(nb=mun_nb))),
+    data=properties_in_dd)
+summary(pr_2lev_mrf)
+```
+It also seems that the model without upper level variables outperforms that with them included:
+```{r}
+anova(pr_base_mrf, pr_2lev_mrf, test="Chisq")
+```
+and the MRF RE outperforms the IID RE:
+
+```{r}
+anova(pr_base_mrf, pr_base_iid, test="Chisq")
+```
+
+
+```{r}
+save(list = ls(), file = "ch16.RData")
+```
+

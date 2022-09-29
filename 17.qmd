@@ -1,0 +1,286 @@
+# Spatial econometrics models
+
+```{r}
+load("ch16.RData")
+library(spdep)
+```
+
+## ex 17.1
+
+First create a spatial weights object from the `k=4` symmetrized neighbour object:
+
+```{r}
+library(spatialreg)
+lw <- spdep::nb2listw(pr_nb_k4s)
+```
+
+Fit a linear model to the lower-level data; all the included variables seem worth retaining:
+
+```{r}
+LM_pr <- lm(f_pr, data=properties_in_dd)
+summary(LM_pr)
+```
+However, there is strong residual autocorrelation:
+
+```{r}
+library(spdep)
+lm.morantest(LM_pr, lw)
+```
+Robust Lagrange multiplier tests suggest that the fitted model should include a spatial autoregressive process in the residuals, but not in the response:
+
+```{r}
+spdep::lm.LMtests(LM_pr, lw, test=c("RLMerr", "RLMlag"))
+```
+Adding in the copied out municipality department level variables, we see that they do not seem to be worth retaining (unless there are good reasons for doing so); they do however improve model fit:
+
+```{r}
+LM_pr_md <- lm(f_pr_md, data=properties_in_dd)
+summary(LM_pr_md)
+```
+The pre-test results are similar to those for the properties-only variables:
+
+```{r}
+lm.morantest(LM_pr_md, lw)
+```
+and the LM tests continue to indicate an omitted spatial process in the residual rather than the response:
+
+```{r}
+lm.LMtests(LM_pr_md, lw, test=c("RLMerr", "RLMlag"))
+```
+
+## ex 17.2
+
+We may update the formula for the properties-only model to include municipality department "fixed effects", dummy variables:
+
+```{r}
+LM_pr_fx <- lm(update(f_pr, . ~ . + num_dep), data=properties_in_dd)
+summary(LM_pr_fx)
+```
+The pre-test output is similar to that for the models considered above:
+```{r}
+spdep::lm.morantest(LM_pr_fx, lw)
+```
+```{r}
+spdep::lm.LMtests(LM_pr_fx, lw, test=c("RLMerr", "RLMlag"))
+```
+We may fit a regimes model, where separate regression coefficients are calculated for interactions between the municipality department dummies and the included variables; `size` and `dist_metro` only retian influence for municipality departments 1 and 2:
+
+```{r}
+LM_pr_reg <- lm(update(f_pr, . ~ num_dep/(0 + .)), data=properties_in_dd)
+summary(LM_pr_reg)
+```
+The pre-test results are now changed, with possible spatial processes in both residuals and response being indicated:
+```{r}
+spdep::lm.morantest(LM_pr_reg, lw)
+```
+
+```{r}
+spdep::lm.LMtests(LM_pr_reg, lw, test=c("RLMerr", "RLMlag"))
+```
+
+## ex 17.3
+
+Fitting models initially by maximum likelihood (GMM may also be used), we pre-compute the eigenvalues:
+
+```{r, cache=TRUE}
+eigs <- eigenw(lw)
+```
+
+The strong residual autocorrelation is picked up by the spatial coefficient, but unfortunately the Hausman test shows strong mis-specification:
+
+```{r}
+SEM_pr <- errorsarlm(f_pr, data=properties_in_dd, listw=lw, Durbin=FALSE,
+    control=list(pre_eig=eigs))
+summary(SEM_pr, Hausman=TRUE)
+```
+
+The Hausman test compares the OLS and SEM coefficient estimates and their standard errors, assessing whether their distributions overlap sufficiently to suggest the absence of major mis-specification:
+
+```{r}
+(LM_coefs <- coef(summary(LM_pr)))
+```
+
+```{r}
+(SEM_coefs <- coef(summary(SEM_pr)))
+```
+The tables are harder to read than the figure, which shows that the coefficient estimates do differ a lot for two variables, somewhat for the intercept, and little for one variable, but where the ML standard error estimate under usual assumptions crosses zero:
+
+```{r}
+opar <- par(mfrow=c(2,2))
+plot(1, type="n", xlim=c(1400, 2500), ylim=c(0, 0.006), xlab=rownames(LM_coefs)[1], ylab="")
+curve(dnorm(x, mean=LM_coefs[1,1], sd=LM_coefs[1,2]), add=TRUE)
+abline(v=LM_coefs[1,1])
+abline(v=SEM_coefs[1,1], lwd=2, col="orange")
+curve(dnorm(x, mean=SEM_coefs[1,1], sd=SEM_coefs[1,2]), add=TRUE, col="orange", lwd=2)
+legend("topright", legend=c("LM", "SEM"), col=c("black", "orange"), lwd=1:2, bty="n")
+plot(1, type="n", xlim=c(1.5, 7), ylim=c(0, 1.1), xlab=rownames(LM_coefs)[2], ylab="")
+curve(dnorm(x, mean=LM_coefs[2,1], sd=LM_coefs[2,2]), add=TRUE)
+abline(v=LM_coefs[2,1])
+abline(v=SEM_coefs[2,1], lwd=2, col="orange")
+curve(dnorm(x, mean=SEM_coefs[2,1], sd=SEM_coefs[2,2]), add=TRUE, col="orange", lwd=2)
+plot(1, type="n", xlim=c(-28, -13), ylim=c(0, 0.4), xlab=rownames(LM_coefs)[3], ylab="")
+curve(dnorm(x, mean=LM_coefs[3,1], sd=LM_coefs[3,2]), add=TRUE)
+abline(v=LM_coefs[3,1])
+abline(v=SEM_coefs[3,1], lwd=2, col="orange")
+curve(dnorm(x, mean=SEM_coefs[3,1], sd=SEM_coefs[3,2]), add=TRUE, col="orange", lwd=2)
+plot(1, type="n", xlim=c(-0.9, 0.3), ylim=c(0, 6), xlab=rownames(LM_coefs)[4], ylab="")
+curve(dnorm(x, mean=LM_coefs[4,1], sd=LM_coefs[4,2]), add=TRUE)
+abline(v=LM_coefs[4,1])
+abline(v=SEM_coefs[4,1], lwd=2, col="orange")
+curve(dnorm(x, mean=SEM_coefs[4,1], sd=SEM_coefs[4,2]), add=TRUE, col="orange", lwd=2)
+par(opar)
+```
+The Hausman test also suggests mis-specification for the SEM model augmented with the municipality department level variables:
+
+```{r}
+SEM_pr_md <- errorsarlm(f_pr_md, data=properties_in_dd, listw=lw, Durbin=FALSE,
+    control=list(pre_eig=eigs))
+summary(SEM_pr_md, Hausman=TRUE)
+```
+Extending to the SDEM models, and reporting impacts:
+
+```{r, cache=TRUE}
+SDEM_pr <- errorsarlm(f_pr, data=properties_in_dd, listw=lw, Durbin=TRUE,
+    control=list(pre_eig=eigs))
+summary(impacts(SDEM_pr), short=TRUE, zstats=TRUE)
+```
+we have Hausman test results still indicating strong mis-specification:
+
+```{r}
+Hausman.test(SDEM_pr)
+```
+The same applies to the properties variables augmented with the municipality department level variables:
+
+```{r, cache=TRUE}
+SDEM_pr_md <- errorsarlm(f_pr_md, data=properties_in_dd, listw=lw, Durbin=TRUE,
+    control=list(pre_eig=eigs))
+summary(impacts(SDEM_pr_md), short=TRUE, zstats=TRUE)
+```
+
+```{r}
+Hausman.test(SDEM_pr_md)
+```
+Reaching out the SLX models does not help, because although - as with the SDEM models - the indirect impacts (coefficients on lagged $X$ variables) are large, so including lagged $X$ variables especially at the properties level seems sensible, there is serious residual autocorrelation, and now the pre-test strategy points to a missing spatial process in the response:
+
+```{r}
+SLX_pr <- lmSLX(f_pr, data=properties_in_dd, listw=lw, Durbin=TRUE)
+summary(impacts(SLX_pr), short=TRUE, zstats=TRUE)
+```
+
+```{r}
+spdep::lm.morantest(SLX_pr, lw)
+```
+
+```{r}
+spdep::lm.LMtests(SLX_pr, lw, test=c("RLMerr", "RLMlag"))
+```
+
+```{r}
+SLX_pr_md <- lmSLX(f_pr_md, data=properties_in_dd, listw=lw, Durbin=TRUE)
+summary(impacts(SLX_pr_md), short=TRUE, zstats=TRUE)
+```
+
+```{r}
+spdep::lm.morantest(SLX_pr_md, lw)
+```
+
+
+```{r}
+spdep::lm.LMtests(SLX_pr_md, lw, test=c("RLMerr", "RLMlag"))
+```
+
+So on balance, the pre-test strategy has not worked out too well; it is unclear what is missing in the model.
+
+## ex 17.4
+
+Turning to estimating the general nested model first, followed by excluding the Durbin (spatially lagged $X$) variables, a likelihood ratio test shows that the spatially lagged $X$ variables should be retained in the model:
+
+```{r, cache=TRUE}
+GNM_pr <- sacsarlm(f_pr, data=properties_in_dd, listw=lw, Durbin=TRUE,
+    control=list(pre_eig1=eigs, pre_eig2=eigs))
+```
+
+```{r, cache=TRUE}
+SARAR_pr <- sacsarlm(f_pr, data=properties_in_dd, listw=lw, 
+    control=list(pre_eig1=eigs, pre_eig2=eigs))
+```
+
+```{r}
+lmtest::lrtest(SARAR_pr, GNM_pr)
+```
+Again using a likelihood ratio test, the GNM model outperforms the SDEM model:
+
+```{r}
+lmtest::lrtest(SDEM_pr, GNM_pr)
+```
+
+```{r, cache=TRUE}
+SDM_pr <- lagsarlm(f_pr, data=properties_in_dd, listw=lw, Durbin=TRUE,
+    control=list(pre_eig=eigs))
+```
+
+as is also the case with the SDM model:
+
+```{r}
+lmtest::lrtest(SDM_pr, GNM_pr)
+```
+and the SLX model:
+
+```{r}
+lmtest::lrtest(SLX_pr, GNM_pr)
+```
+
+Is the inclusion of the municipality department level variables in the GNM model justified?
+
+```{r, cache=TRUE}
+GNM_pr_md <- sacsarlm(f_pr_md, data=properties_in_dd, listw=lw, Durbin=TRUE,
+    control=list(pre_eig1=eigs, pre_eig2=eigs))
+```
+
+No, not really:
+
+```{r}
+lmtest::lrtest(GNM_pr, GNM_pr_md)
+```
+If we drop the municipality department level variables from the Durbin term, we lose fewer degrees of freedom, so preferring the model including the municipality department level variables:
+
+```{r, cache=TRUE}
+GNM_pr_md1 <- sacsarlm(f_pr_md, data=properties_in_dd, listw=lw, 
+    Durbin= ~ size + age + dist_metro,
+    control=list(pre_eig1=eigs, pre_eig2=eigs))
+```
+
+```{r}
+lmtest::lrtest(GNM_pr, GNM_pr_md1)
+```
+Unfortunately, impacts are depressing here:
+
+```{r}
+trs <- trW(as(lw, "CsparseMatrix"))
+i_GNM_pr_md1 <- impacts(GNM_pr_md1, tr=trs, R=2000)
+summary(i_GNM_pr_md1, short=TRUE, zstats=TRUE)
+```
+The values and standard errors of the spatial coefficients suggest numerical problems in finding an optimum where the two coefficients are equally strong but with opposing signs:
+
+```{r}
+c("response"=GNM_pr_md1$rho, "response se"=GNM_pr_md1$rho.se, "residual"=GNM_pr_md1$lambda, "residual se"=GNM_pr_md1$lambda.se)
+```
+
+
+If we fall back on the properties level only GNM, total impacts are only significant in conventional terms for `size`:
+
+```{r}
+i_GNM_pr <- impacts(GNM_pr, tr=trs, R=2000)
+summary(i_GNM_pr, short=TRUE, zstats=TRUE)
+```
+The same problem occurs without the municipality department level variables; the impacts are being driven by the large spatial coefficient on the lagged response:
+
+```{r}
+c("response"=GNM_pr$rho, "response se"=GNM_pr$rho.se, "residual"=GNM_pr$lambda, "residual se"=GNM_pr$lambda.se)
+```
+
+
+
+## ex 17.5
+
+We cannot say that the spatial econometrics approach has reached a clear conclusion. When including the upper level variables, we introduce a lot of spatial autocorrelation at the lower level. It is arguable that the MRF random effect at the upper level and including only the properties level variables gets at least as far as the most complex spatial econometrics models. It is fairly clear that mapping the actual green space and museums, and measuring distance from each property to the attractions would remove the scale problem for those variables. Disaggregation of the foreigners, airbnb and population density variables would be highly desirable. With improvements to the properties level data set, including more variables describing the properties themselves, much of the mis-specification should be removed. 

@@ -1,0 +1,5 @@
+# Spatial Data Science, with applications in R {-}
+
+Book found at: [https://r-spatial.org/book/](https://r-spatial.org/book)
+
+Answers to most of the exercises

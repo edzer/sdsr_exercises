@@ -1,0 +1,49 @@
+# Multivariate and Spatiotemporal Geostatistics
+
+## ex 13.1 
+
+Which fraction of the stations is removed in section \@ref(preparing) when the criterion applied that a station must be 75% complete?
+
+```{r}
+load("ch13.RData")
+sel = apply(aq, 2, function(x) mean(is.na(x)) < 0.25)
+1 - mean(sel)
+```
+meaning, 1.7 percent of the stations were removed in this step. We can use `mean` becasue the logical values `TRUE` and `FALSE` map to 1 and 0, respectively, when treated as numeric.
+
+## ex 13.2
+
+From the hourly time series in `no2.st`, compute daily mean concentrations using `aggregate`, and compute the spatiotemporal variogram of this. How does it compare to the variogram of hourly values?
+
+```{r}
+library(stars)
+no2.d = aggregate(no2.st, "1 day", mean, na.rm = TRUE)
+library(gstat)
+v.d = variogramST(NO2~1, no2.d)
+```
+
+## ex 13.3
+
+Carry out a spatiotemporal interpolation for daily mean values for the days corresponding to those shown in \@ref(fig:plotspatiotemporalpredictions), and compare the results.
+
+```{r}
+prodSumModel <- vgmST("productSum",
+	space = vgm(50, "Exp", 200, 0),
+	time = vgm(20, "Sph", 40, 0),
+	k = 2)
+StAni = estiStAni(v.d, c(0,20000))
+(fitProdSumModel <- fit.StVariogram(v.d, prodSumModel, fit.method = 7,
+	stAni = StAni, method = "L-BFGS-B",
+	control = list(parscale = c(1,10,1,1,0.1,1,10)),
+	lower = rep(0.0001, 7)))
+plot(v.d, fitProdSumModel, wireframe = FALSE, all = TRUE, scales = list(arrows=FALSE), zlim = c(0,50))
+```
+```{r}
+
+```
+
+## ex 13.4
+
+Following the example in the demo scripts pointed at in section \@ref(cokriging), carry out a cokriging on the daily mean station data for the four days shown in \@ref(fig:plotspatiotemporalpredictions).  What are the differences of this approach to spatiotemporal kriging?
+
+
