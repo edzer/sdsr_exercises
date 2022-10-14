@@ -2,7 +2,7 @@ all:
 	quarto render
 
 publish:
-	rm docs/*
+	rm -fr docs/*
 	cp -r _book/* docs/
 	git add docs
 

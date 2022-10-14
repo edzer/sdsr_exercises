@@ -263,7 +263,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#ex-4.2" id="toc-ex-4.2" class="nav-link" data-scroll-target="#ex-4.2"><span class="toc-section-number">4.2</span>  ex 4.2</a></li>
   <li><a href="#ex-4.3" id="toc-ex-4.3" class="nav-link" data-scroll-target="#ex-4.3"><span class="toc-section-number">4.3</span>  ex 4.3</a></li>
   <li><a href="#ex-4.4" id="toc-ex-4.4" class="nav-link" data-scroll-target="#ex-4.4"><span class="toc-section-number">4.4</span>  ex 4.4</a></li>
-  <li><a href="#ex-4.5-fiji" id="toc-ex-4.5-fiji" class="nav-link" data-scroll-target="#ex-4.5-fiji"><span class="toc-section-number">4.5</span>  ex 4.5 Fiji</a></li>
+  <li><a href="#ex-4.5-fiji-in-rnaturalearth" id="toc-ex-4.5-fiji-in-rnaturalearth" class="nav-link" data-scroll-target="#ex-4.5-fiji-in-rnaturalearth"><span class="toc-section-number">4.5</span>  ex 4.5 Fiji in <strong>rnaturalearth</strong></a></li>
+  <li><a href="#ex-4.6" id="toc-ex-4.6" class="nav-link" data-scroll-target="#ex-4.6"><span class="toc-section-number">4.6</span>  ex 4.6</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/04.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -335,8 +336,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Why is, for small areas, the orthographic projection centered at the area a good approximation of the geometry as handled on <span class="math inline">\(S^2\)</span></p>
 <p>Because that is the closest approximation of the geometry on <span class="math inline">\(R^2\)</span>.</p>
 </section>
-<section id="ex-4.5-fiji" class="level2" data-number="4.5">
-<h2 data-number="4.5" class="anchored" data-anchor-id="ex-4.5-fiji"><span class="header-section-number">4.5</span> ex 4.5 Fiji</h2>
+<section id="ex-4.5-fiji-in-rnaturalearth" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="ex-4.5-fiji-in-rnaturalearth"><span class="header-section-number">4.5</span> ex 4.5 Fiji in <strong>rnaturalearth</strong></h2>
 <p>For <code>rnaturalearth::ne_countries(country = "Fiji", returnclass="sf")</code>, check whether the geometry is valid on <span class="math inline">\(R^2\)</span>, on an orthographic projection centered on the country, and on <span class="math inline">\(S^2\)</span>. How can the geometry be made valid on <code>S^2</code>? Plot the resulting geometry back on <span class="math inline">\(R^2\)</span>. Compare the centroid of the country, as computed on <span class="math inline">\(R^2\)</span> and on <span class="math inline">\(S^2\)</span>, and the distance between the two.</p>
 <p>Valid on <span class="math inline">\(R^2\)</span>:</p>
 <div class="cell">
@@ -392,24 +393,45 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Geometry set for 1 feature </span></span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Geometry type: POINT</span></span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Dimension:     XY</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Bounding box:  xmin: 164 ymin: -17.3 xmax: 164 ymax: -17.3</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Bounding box:  xmin: 163.8532 ymin: -17.31631 xmax: 163.8532 ymax: -17.31631</span></span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># CRS:           +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># POINT (164 -17.3)</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># POINT (163.8532 -17.31631)</span></span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="fu">sf_use_s2</span>(<span class="cn">TRUE</span>)</span>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Spherical geometry (s2) switched on</span></span>
 <span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>(<span class="at">c2 =</span> <span class="fu">st_centroid</span>(fi.s2))</span>
 <span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Geometry set for 1 feature </span></span>
 <span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Geometry type: POINT</span></span>
 <span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Dimension:     XY</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Bounding box:  xmin: 179 ymin: -17.3 xmax: 179 ymax: -17.3</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Bounding box:  xmin: 178.5684 ymin: -17.31562 xmax: 178.5684 ymax: -17.31562</span></span>
 <span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co"># CRS:           +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co"># POINT (179 -17.3)</span></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co"># POINT (178.5684 -17.31562)</span></span>
 <span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="fu">st_distance</span>(c1, c2)</span>
 <span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Units: [m]</span></span>
 <span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co">#         [,1]</span></span>
 <span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co"># [1,] 1561723</span></span>
 <span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="fu">sf_use_s2</span>(s2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="ex-4.6" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="ex-4.6"><span class="header-section-number">4.6</span> ex 4.6</h2>
+<p>Consider dataset <code>gisco_countries</code> in R package <strong>giscoR</strong>, and select the country with <code>NAME_ENGL == "Fiji"</code>. Does it have a valid geometry on the sphere? If so, how was this accomplished?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(giscoR)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>gisco_countries <span class="sc">|&gt;</span> <span class="fu">filter</span>(NAME_ENGL <span class="sc">==</span> <span class="st">"Fiji"</span>) <span class="ot">-&gt;</span> fiji</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">st_geometry</span>(fiji) <span class="sc">|&gt;</span> <span class="fu">plot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="04_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>This is not helpful.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_bbox</span>(fiji)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#       xmin       ymin       xmax       ymax </span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># -180.00000  -20.70876  179.99999  -12.46203</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This is more helpful: we see that <code>xmax</code> does not run until 180, but stops just before: the island crossing the antimeridian has been cut in two, and a small gap was created between the parts.</p>
 
 
 </section>
