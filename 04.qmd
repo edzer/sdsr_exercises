@@ -73,7 +73,7 @@ Why is, for small areas, the orthographic projection centered at the area a good
 
 Because that is the closest approximation of the geometry on $R^2$.
 
-## ex 4.5 Fiji
+## ex 4.5 Fiji in **rnaturalearth**
 
 For `rnaturalearth::ne_countries(country = "Fiji",
 returnclass="sf")`, check whether the geometry is valid on $R^2$,
@@ -132,3 +132,26 @@ st_distance(c1, c2)
 sf_use_s2(s2)
 ```
 
+## ex 4.6
+
+Consider dataset `gisco_countries` in R package **giscoR**, and
+select the country with `NAME_ENGL == "Fiji"`. Does it have a valid
+geometry on the sphere? If so, how was this accomplished?
+
+```{r}
+library(giscoR)
+library(tidyverse) |> suppressPackageStartupMessages()
+library(sf)
+gisco_countries |> filter(NAME_ENGL == "Fiji") -> fiji
+st_geometry(fiji) |> plot()
+```
+
+This is not helpful.
+
+```{r}
+st_bbox(fiji)
+```
+
+This is more helpful: we see that `xmax` does not run until 180,
+but stops just before: the island crossing the antimeridian has
+been cut in two, and a small gap was created between the parts.
