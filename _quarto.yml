@@ -39,7 +39,6 @@ knitr:
       dplyr.print_min: 6
       dplyr.print_max: 6
       stars.crs: 17
-      digits: 3
 
 format:
   html:
