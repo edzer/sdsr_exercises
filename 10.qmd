@@ -1,1 +1,130 @@
 # Statistical models for spatial data
+
+## ex 10.1
+
+following the `lm` example of Section 10.2 use a random forest model
+to predict `SID` values (e.g. using package **randomForest**), and 
+plot the random forest predictions against observations, along
+with the $x=y$ line.
+
+```{r}
+library(tidyverse)
+library(sf)
+system.file("gpkg/nc.gpkg", package="sf") |>
+    read_sf() -> nc
+nc |> mutate(SID = SID74/BIR74, NWB = NWBIR74/BIR74) -> nc1
+library(randomForest) |> suppressPackageStartupMessages()
+r = randomForest(SID ~ NWB, nc1)
+nc1$rf = predict(r)
+plot(rf~SID, nc1)
+abline(0, 1)
+```
+
+## ex 10.2
+
+Create a new dataset by randomly sampling 1000 points from the
+`nc` dataset, and rerun the linear regression model of section
+10.2 on this dataset. What has changed?
+
+```{r}
+pts = st_sample(nc, 1000)
+nc2 = st_intersection(nc1, pts)
+lm(SID ~ NWB, nc1) |> summary()
+lm(SID ~ NWB, nc2) |> summary()
+```
+
+we see that the standard error has decreased with a factor 3 (sqrt(10)).
+
+For prediction interval widths:
+```{r}
+lm(SID ~ NWB, nc1) |>
+  predict(nc1, interval = "prediction") -> pr1
+lm(SID ~ NWB, nc2) |>
+  predict(nc1, interval = "prediction") -> pr2
+mean(pr1[,"upr"] - pr1[,"lwr"])
+mean(pr2[,"upr"] - pr2[,"lwr"])
+```
+no change, as this dominated by the residual variance;
+
+Confidence intervals for the predicted means:
+```{r}
+lm(SID ~ NWB, nc1) |>
+  predict(nc1, interval = "confidence") -> pr1
+lm(SID ~ NWB, nc2) |>
+  predict(nc1, interval = "confidence") -> pr2
+mean(pr1[,"upr"] - pr1[,"lwr"])
+mean(pr2[,"upr"] - pr2[,"lwr"])
+```
+drops for larger dataset, as this is dominated by the standard
+errors of estimated coefficients.
+
+## ex 10.3
+
+Redo the water-land classification of section 7.4 using `class::knn`
+instead of `lda`.
+
+Preparing the dataset:
+```{r}
+tif <- system.file("tif/L7_ETMs.tif", package = "stars")
+library(stars)
+(r <- read_stars(tif))
+set.seed(115517)
+pts <- st_bbox(r) |> st_as_sfc() |> st_sample(20)
+(e <- st_extract(r, pts))
+plot(r[,,,1], reset = FALSE)
+col <- rep("yellow", 20)
+col[c(8, 14, 15, 18, 19)] = "red"
+st_as_sf(e) |> st_coordinates() |> text(labels = 1:20, col = col)
+rs <- split(r)
+trn <- st_extract(rs, pts)
+trn$cls <- rep("land", 20)
+trn$cls[c(8, 14, 15, 18, 19)] <- "water"
+```
+
+estimation and prediction happen in one command:
+```{r}
+library(class)
+as.data.frame(trn) |> select(X1, X2, X3, X4, X5, X6) -> tr 
+as.data.frame(rs) |> select(X1, X2, X3, X4, X5, X6) -> test
+rs$cls = knn(tr, test, trn$cl, k = 5)
+plot(rs["cls"])
+```
+
+## ex 10.4
+
+For the `nc` data: estimation
+```{r}
+st_centroid(nc1) |> st_coordinates() -> cc
+bind_cols(nc1, cc) |> transmute(X=X, Y=Y, SID=SID, NWB=NWB) -> nc2
+(lm0 <- lm(SID ~ NWB, nc1)) |> summary()
+(lm1 <- lm(SID ~ NWB+X+Y, nc2)) |> summary()
+(lm2 <- lm(SID ~ NWB+X+Y+I(X^2)+I(Y^2)+X*Y, nc2)) |> summary()
+```
+The first order model seems to have significant coordinate effects,
+for the second order model none of the coordinate effects are
+significant.
+
+Prediction:
+```{r}
+nc1$pr0 <- lm0 |> predict(nc2)
+nc1$pr1 <- lm1 |> predict(nc2)
+nc1$pr2 <- lm2 |> predict(nc2)
+nc1[c("pr0", "pr1", "pr2")] |> st_as_stars() |> merge() |> plot(breaks = "equal")
+```
+Largely the same pattern is shown in the predictions, some extremes get more
+extreme.
+
+For the `knn` on the remote sensing data:
+```{r}
+cbind(as.data.frame(trn), st_coordinates(trn)) |> 
+  select(X, Y, X1, X2, X3, X4, X5, X6) -> tr1
+as.data.frame(rs) |> transmute(X=x, Y=y, X1, X2, X3, X4, X5, X6) -> test1
+rs$cls1 = knn(tr1, test1, trn$cl, k = 5)
+cbind(as.data.frame(trn), st_coordinates(trn)) |> 
+  transmute(X, Y, X2=X^2, Y2=Y^2, XY=X*Y, X1, X2, X3, X4, X5, X6) -> tr2
+as.data.frame(rs) |> 
+  transmute(X=x, Y=y, X2=X^2, Y2=Y^2, XY=X*Y, X1, X2, X3, X4, X5, X6) -> test2
+rs$cls2 = knn(tr2, test2, trn$cl, k = 5)
+rs[c("cls", "cls1", "cls2")] |> merge() |> plot()
+```
+Both models involving coordinates show much worse results!
