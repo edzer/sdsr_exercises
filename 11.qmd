@@ -1,3 +1,81 @@
 # Spatial Point Patterns
 
 (t.b.d.)
+
+## ex 11.1
+
+After loading **spatstat**, recreate the plot obtained by `plot(longleaf)` 
+by using **ggplot2** and `geom_sf()`, and by `sf::plot()`.
+
+```{r}
+library(spatstat)
+library(sf)
+plot(longleaf) # spatstat plot
+
+# using sf::plot() :
+ll = st_as_sf(longleaf)
+box = ll[1,]
+pts = ll[-1,]
+st_geometry(box) |> plot() #cex = 2*marks/max(marks))
+marks = pts$spatstat.geom..marks.x
+st_geometry(pts) |> plot(cex = 2*marks/max(marks), add = TRUE)
+
+# using ggplot2:
+library(ggplot2)
+pts$marks = marks
+ggplot() + geom_sf(data = box) + geom_sf(data = pts, aes(size = marks))
+# how to get open circles? use geom_point():
+p = as.data.frame(st_coordinates(pts))
+ggplot() + geom_sf(data = box) + geom_point(aes(x = X, y = Y), data = p, shape = 1, size = 10 * marks / max(marks))
+```
+
+## ex 11.2
+
+Convert the sample locations of the NO$_2$ data used in [Chapter
+12](https://r-spatial.org/book/12-Interpolation.html) to a `ppp`
+object, with a proper window.
+
+```{r}
+library(tidyverse) |> suppressPackageStartupMessages()
+no2 <- read_csv(system.file("external/no2.csv", 
+    package = "gstat"), show_col_types = FALSE)
+library(sf)
+crs <- st_crs("EPSG:32632")
+st_as_sf(no2, crs = "OGC:CRS84", coords = 
+	c("station_longitude_deg", "station_latitude_deg")) |>
+	st_transform(crs) -> no2.sf
+# read_sf("data/de_nuts1.gpkg") |> st_transform(crs) -> de
+"https://github.com/edzer/sdsr/raw/main/data/de_nuts1.gpkg" |> 
+  read_sf() |> 
+  st_transform(crs) -> de
+# create an observation window sf object that contains the same mark:
+win = st_sf(NO2 = NA, geometry = st_union(st_geometry(de)))
+rbind(win, no2.sf[,"NO2"]) |> as.ppp() -> p
+plot(p)
+```
+
+Alternatively, the `ppp` object can be created stepwise:
+```{r}
+st_union(st_geometry(de)) |> as.owin() -> w
+st_geometry(no2.sf) |> as.ppp(W = w) -> p # requires sf 1.0-9
+marks(p) = no2.sf$NO2
+p
+```
+
+## ex 11.3
+
+Compute and plot the density of the NO$_2$ dataset, import the density as a `stars`
+object and compute the volume under the surface. 
+
+```{r}
+d = density(p)
+plot(d)
+library(stars)
+st_as_stars(d) |> st_set_crs(crs) -> s
+plot(s)
+mean(s[[1]], na.rm = TRUE) * st_area(win)
+```
+this number is close to the number of observations, 
+```{r}
+nrow(no2.sf)
+```

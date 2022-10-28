@@ -1,3 +1,108 @@
 # Plotting
 
-(t.b.d.)
+## ex 8.1
+
+For the countries Indonesia and Canada, create individual plots using
+equirectangular, orthographic, and Lambert equal area projections,
+while choosing projection parameters sensible for the area.
+
+```{r}
+# +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m
+# +proj=ortho +lon_0=0 +lat_0=0
+# +proj=laea +lon_0=0 +lat_0=0
+library(sf)
+library(tidyverse)
+library(rnaturalearth)
+ne = ne_countries(returnclass = "sf")
+ne |> filter(admin == "Canada") -> ca
+ne |> filter(admin == "Indonesia") -> ind
+st_geometry(ca) |> st_centroid()
+ca_eqc = st_crs("+proj=eqc +lat_ts=60.6")
+st_geometry(ca) |> st_transform(ca_eqc) |> plot(axes=TRUE, graticule =TRUE)
+ca_ortho = st_crs("+proj=ortho +lat_0=60.6 +lon_0=-96.4")
+st_geometry(ca) |> st_transform(ca_ortho) |> plot(axes=TRUE, graticule=TRUE)
+ca_laea = st_crs("+proj=laea +lat_0=60.6 +lon_0=-96.4")
+st_geometry(ca) |> st_transform(ca_laea) |> plot(axes=TRUE, graticule=TRUE)
+st_geometry(ind) |> st_centroid()
+in_eqc = st_crs("+proj=eqc +lat_ts=-2.3")
+st_geometry(ind) |> st_transform(in_eqc) |> plot(axes=TRUE, graticule =TRUE)
+in_ortho = st_crs("+proj=ortho +lat_0=-2.3 +lon_0=117")
+st_geometry(ind) |> st_transform(in_ortho) |> plot(axes=TRUE, graticule=TRUE)
+in_laea = st_crs("+proj=laea +lat_0=-2.3 +lon_0=117")
+st_geometry(ind) |> st_transform(in_laea) |> plot(axes=TRUE, graticule=TRUE)
+```
+
+## ex 8.2
+
+Recreate the plot in [Figure
+8.3](https://r-spatial.org/book/08-Plotting.html#fig-figreset)
+with **ggplot2** and with **tmap**.
+
+**ggplot2**:
+```{r}
+library(sf)
+nc <- read_sf(system.file("gpkg/nc.gpkg", package = "sf"))
+b = st_buffer(nc[1,1], units::set_units(10, km)) |> st_cast("LINESTRING")
+library(ggplot2)
+ggplot() + geom_sf(data = nc, aes(fill = BIR74)) +
+		geom_sf(data = b, mapping = aes(colour = 'red')) +
+		scale_fill_gradientn(colours = sf.colors())
+```
+
+**tmap**: see <https://r-tmap.github.io/tmap-book/>
+```{r}
+library(tmap)
+b = st_buffer(nc[1,1], units::set_units(10, km)) |> st_cast("LINESTRING")
+tm_shape(nc) + 
+	tm_polygons("BIR74", title = "BIR74") + 
+	tm_layout(legend.outside=TRUE) +
+	tm_shape(b) +
+	tm_lines(legend.lwd.show = FALSE, col = 'red')
+```
+
+## ex 8.3
+
+Recreate the plot in [Figure
+8.7](https://r-spatial.org/book/08-Plotting.html#fig-tmapstars)
+using the `viridis` colour ramp.
+
+```{r}
+library(stars)
+library(viridis)
+r <- read_stars(system.file("tif/L7_ETMs.tif", package = "stars"))
+tm_shape(r) + tm_raster(palette = viridis(100))
+```
+
+## ex 8.4
+
+View the interactive plot in [Figure
+8.7](https://r-spatial.org/book/08-Plotting.html#fig-tmapstars)
+using the "view" (interactive) mode of `tmap`, and explore which
+interactions are possible;
+
+```{r}
+library(stars)
+library(viridis)
+r <- read_stars(system.file("tif/L7_ETMs.tif", package = "stars"))
+tmap_mode("view")
+tm_shape(r) + tm_raster(palette = viridis(100))
+```
+Interactions: zoom, pan, linked cursor.
+
+Also explore adding `+ tm_facets(as.layers=TRUE)` and try switching
+layers on and off.
+```{r}
+tmap_mode("view")
+tm_shape(r) + tm_raster(palette = viridis(100)) + 
+		tm_facets(as.layers=TRUE)
+```
+Layer switch on left-hand side (layer symbol).
+
+Try also setting a transparency value to 0.5.
+```{r}
+tmap_mode("view")
+tm_shape(r) + tm_raster(palette = viridis(100), alpha = .5) + 
+		tm_facets(as.layers=TRUE)
+```
+This shows the base map shining through transparent raster colors 
+(switch 3 of the 4 layers off to see this).
