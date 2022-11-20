@@ -1,7 +1,5 @@
 # Spatial Point Patterns
 
-(t.b.d.)
-
 ## ex 11.1
 
 After loading **spatstat**, recreate the plot obtained by `plot(longleaf)` 

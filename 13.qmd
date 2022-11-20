@@ -39,11 +39,92 @@ StAni = estiStAni(v.d, c(0,20000))
 plot(v.d, fitProdSumModel, wireframe = FALSE, all = TRUE, scales = list(arrows=FALSE), zlim = c(0,50))
 ```
 ```{r}
-
+if (file.exists("new_int2.RData")) {
+	load("new_int2.RData")
+}
+```{r eval=!exists("new_int2")}
+new_int2 <- krigeST(NO2~1, data = no2.d["NO2"], newdata = grd.st,
+         nmax = 100, stAni = StAni, modelList = fitProdSumModel,
+         progress = FALSE)
+names(new_int2)[2] = "NO2"
+```
+```{r}
+save(list = "new_int2", file = "new_int2.RData")
+```
+```{r}
+library(viridis)
+library(viridisLite)
+library(ggplot2)
+g <- ggplot() + coord_equal() +
+    scale_fill_viridis() +
+    theme_void() +
+    scale_x_discrete(expand=c(0,0)) +
+    scale_y_discrete(expand=c(0,0))
+g + geom_stars(data = new_int2, aes(fill = NO2, x = x, y = y)) +
+    facet_wrap(~as.Date(time)) +
+    geom_sf(data = st_cast(de, "MULTILINESTRING")) +
+    geom_sf(data = no2.sf, col = 'grey', cex = .5) +
+    coord_sf(lims_method = "geometry_bbox")
 ```
 
 ## ex 13.4
 
-Following the example in the demo scripts pointed at in section \@ref(cokriging), carry out a cokriging on the daily mean station data for the four days shown in \@ref(fig:plotspatiotemporalpredictions).  What are the differences of this approach to spatiotemporal kriging?
+Following the example in the demo scripts pointed at in section 13.2, carry out a cokriging on the daily mean station data for the four days shown in figure 13.5.  What are the differences of this approach to spatiotemporal kriging?
 
+Here is the demo script in `sf`/`stars` style:
+```{r}
+library(stars)
+library(gstat)
+data(meuse, package = "sp")
+meuse = st_as_sf(meuse, coords = c("x", "y"))
+data(meuse.grid, package = "sp")
+meuse.grid = st_as_stars(meuse.grid)
 
+# cokriging of the four heavy metal variables
+gstat(id="zn", formula=log(zinc)~1, data=meuse, nmax = 10) |>
+  gstat("cu", log(copper)~1, meuse, nmax = 10) |>
+  gstat("cd", log(cadmium)~1, meuse, nmax = 10) |>
+  gstat("pb", log(lead)~1, meuse, nmax = 10) |>
+  gstat(model=vgm(1, "Sph", 900, 1), fill.all = TRUE) -> meuse.g
+ 
+x <- variogram(meuse.g, cutoff=1000)
+meuse.fit = fit.lmc(x, meuse.g)
+plot(x, model = meuse.fit)
+z <- predict(meuse.fit, newdata = meuse.grid)
+
+z[c(1,3,5,7)] |> merge() |> plot()
+z[c(2,4,6,9)] |> setNames(paste0(c("zn", "cu", "pb", "cd"), ": se")) |> 
+   merge() |> sqrt() |> plot()
+
+```
+
+Now for the NO2 data:
+```{r}
+time(no2.d) -> days
+time(grd.st) -> times
+which(days %in% times) -> sel
+no2.dr = aperm(no2.d, 2:1)
+no2.dr[,, sel[1] ] |> adrop() |> st_as_sf() |> na.omit() -> no2_t1
+no2.dr[,, sel[2] ] |> adrop() |> st_as_sf() |> na.omit() -> no2_t2
+no2.dr[,, sel[3] ] |> adrop() |> st_as_sf() |> na.omit() -> no2_t3
+no2.dr[,, sel[4] ] |> adrop() |> st_as_sf() |> na.omit() -> no2_t4
+
+# cokriging of the four days:
+gstat(id="no2_t1", formula=NO2~1, data=no2_t1, nmax = 10) |>
+  gstat("no2_t2", NO2~1, no2_t2, nmax = 10) |>
+  gstat("no2_t3", NO2~1, no2_t3, nmax = 10) |>
+  gstat("no2_t4", NO2~1, no2_t4, nmax = 10) |>
+  gstat(model=vgm(1, "Exp", 50000, 1), fill.all = TRUE) -> no2.g
+ 
+x <- variogram(no2.g, cutoff=400000)
+no2.fit = fit.lmc(x[x$dist > 0,], no2.g, correct.diagonal = 1.01)
+plot(x, model = no2.fit) # ???
+z <- predict(no2.fit, newdata = adrop(grd.st[,,,1]))
+
+de1 = st_cast(st_geometry(de), "MULTILINESTRING")
+hook = function() { plot(de1, add = TRUE, col = 'darkgreen') }
+z[c(1,3,5,7)] |> setNames(times) |> merge() |> plot(hook=hook)
+z[c(1,3,5,7)] |> setNames(times) |> merge() |> plot(hook=hook, breaks = "equal")
+z[c(2,4,6,9)] |> setNames(paste(times, "se")) |> 
+   merge() |> sqrt() |> plot(hook=hook, breaks = "equal")
+```
