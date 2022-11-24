@@ -93,8 +93,8 @@ plot(x, model = meuse.fit)
 z <- predict(meuse.fit, newdata = meuse.grid)
 
 z[c(1,3,5,7)] |> merge() |> plot()
-z[c(2,4,6,9)] |> setNames(paste0(c("zn", "cu", "pb", "cd"), ": se")) |> 
-   merge() |> sqrt() |> plot()
+z[c(2,4,6,8)] |> setNames(paste0(c("zn", "cu", "cd", "pb"), ": se")) |> 
+   merge() |> sqrt() |> plot() #breaks = "equal")
 
 ```
 
@@ -110,10 +110,10 @@ no2.dr[,, sel[3] ] |> adrop() |> st_as_sf() |> na.omit() -> no2_t3
 no2.dr[,, sel[4] ] |> adrop() |> st_as_sf() |> na.omit() -> no2_t4
 
 # cokriging of the four days:
-gstat(id="no2_t1", formula=NO2~1, data=no2_t1, nmax = 10) |>
-  gstat("no2_t2", NO2~1, no2_t2, nmax = 10) |>
-  gstat("no2_t3", NO2~1, no2_t3, nmax = 10) |>
-  gstat("no2_t4", NO2~1, no2_t4, nmax = 10) |>
+gstat(id="no2_t1", formula=NO2~1, data=no2_t1, nmax = 100) |>
+  gstat("no2_t2", NO2~1, no2_t2, nmax = 100) |>
+  gstat("no2_t3", NO2~1, no2_t3, nmax = 100) |>
+  gstat("no2_t4", NO2~1, no2_t4, nmax = 100) |>
   gstat(model=vgm(1, "Exp", 50000, 1), fill.all = TRUE) -> no2.g
  
 x <- variogram(no2.g, cutoff=400000)
@@ -125,6 +125,6 @@ de1 = st_cast(st_geometry(de), "MULTILINESTRING")
 hook = function() { plot(de1, add = TRUE, col = 'darkgreen') }
 z[c(1,3,5,7)] |> setNames(times) |> merge() |> plot(hook=hook)
 z[c(1,3,5,7)] |> setNames(times) |> merge() |> plot(hook=hook, breaks = "equal")
-z[c(2,4,6,9)] |> setNames(paste(times, "se")) |> 
+z[c(2,4,6,8)] |> setNames(paste(times, "se")) |> 
    merge() |> sqrt() |> plot(hook=hook, breaks = "equal")
 ```
