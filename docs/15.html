@@ -259,10 +259,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ex-15.1" id="toc-ex-15.1" class="nav-link active" data-scroll-target="#ex-15.1"><span class="toc-section-number">15.1</span>  ex 15.1</a></li>
-  <li><a href="#ex-15.2" id="toc-ex-15.2" class="nav-link" data-scroll-target="#ex-15.2"><span class="toc-section-number">15.2</span>  ex 15.2</a></li>
-  <li><a href="#ex-15.3" id="toc-ex-15.3" class="nav-link" data-scroll-target="#ex-15.3"><span class="toc-section-number">15.3</span>  ex 15.3</a></li>
-  <li><a href="#ex-15.4" id="toc-ex-15.4" class="nav-link" data-scroll-target="#ex-15.4"><span class="toc-section-number">15.4</span>  ex 15.4</a></li>
+  <li><a href="#exercise-15.1" id="toc-exercise-15.1" class="nav-link active" data-scroll-target="#exercise-15.1">Exercise 15.1</a></li>
+  <li><a href="#exercise-15.2" id="toc-exercise-15.2" class="nav-link" data-scroll-target="#exercise-15.2">Exercise 15.2</a></li>
+  <li><a href="#exercise-15.3" id="toc-exercise-15.3" class="nav-link" data-scroll-target="#exercise-15.3">Exercise 15.3</a></li>
+  <li><a href="#exercise-15.4" id="toc-exercise-15.4" class="nav-link" data-scroll-target="#exercise-15.4">Exercise 15.4</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/15.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -294,8 +294,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading required package: sp</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading required package: spData</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="ex-15.1" class="level2" data-number="15.1">
-<h2 data-number="15.1" class="anchored" data-anchor-id="ex-15.1"><span class="header-section-number">15.1</span> ex 15.1</h2>
+<section id="exercise-15.1" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-15.1">Exercise 15.1</h2>
 <p>Re-using the objects from exercise 14.3, we have:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(grd<span class="sc">$</span>col <span class="sc">|&gt;</span> <span class="fu">factor</span>() <span class="ot">-&gt;</span> COL) <span class="sc">|&gt;</span> <span class="fu">table</span>()</span>
@@ -323,8 +323,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>This is because we have chosen to see all eight neighbour grid cells as neighbours (away from the edges of the board), so the two categories occur equally often as neighbour values, as expected.</p>
 </section>
-<section id="ex-15.2" class="level2" data-number="15.2">
-<h2 data-number="15.2" class="anchored" data-anchor-id="ex-15.2"><span class="header-section-number">15.2</span> ex 15.2</h2>
+<section id="exercise-15.2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-15.2">Exercise 15.2</h2>
 <p>First, create an uncorrelated variable, and confirm that it is uncorrelated:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
@@ -379,12 +379,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>This is important to understand because the spatial patterning in a variable of interest, and picked up by a global measure of spatial autocorrelation, may be driven by an omitted variable. If we cannot add that variable, a latent variable or mixed effects model may be a good choice.</p>
 </section>
-<section id="ex-15.3" class="level2" data-number="15.3">
-<h2 data-number="15.3" class="anchored" data-anchor-id="ex-15.3"><span class="header-section-number">15.3</span> ex 15.3</h2>
+<section id="exercise-15.3" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-15.3">Exercise 15.3</h2>
 <p>False discovery rate adjustment is required when conducting repeated tests on the same data set. Usually, local measures of spatial autocorrelation are calculated for all the observations in a data set, and so constitute repeated tests. When repeated tests are conducted, the usual reading of confidence intervals and probability values must be adjusted to take the repeated use of the data into account.</p>
 </section>
-<section id="ex-15.4" class="level2" data-number="15.4">
-<h2 data-number="15.4" class="anchored" data-anchor-id="ex-15.4"><span class="header-section-number">15.4</span> ex 15.4</h2>
+<section id="exercise-15.4" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-15.4">Exercise 15.4</h2>
 <p>If we start with the standard local Moran’s <span class="math inline">\(I_i\)</span> for the random values with a slight 1D trend, upgraded to analytical conditional standard deviates, but with only the standard intercept-only mean model, we have a starting point; a fair number of the values exceed 2:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>locm <span class="ot">&lt;-</span> <span class="fu">localmoran</span>(x_t, <span class="fu">nb2listw</span>(queen, <span class="at">style=</span><span class="st">"W"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>

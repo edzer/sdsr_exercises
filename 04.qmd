@@ -1,6 +1,6 @@
 # Spherical geometry
 
-## ex 4.1 
+## Exercise 4.1  {-}
 
 Straight GeoJSON lines
 
@@ -40,7 +40,7 @@ plot(st_transform(l, 'EPSG:3995'), col = 'red', lwd = 2,
 ```
 
 
-## ex 4.2 
+## Exercise 4.2  {-}
 
 For a typical polygon on $S^2$, how can you find out ring direction?
 
@@ -53,7 +53,7 @@ of the polygon is smaller than half of the area of the sphere. For
 polygons dividing the sphere in two equal parts (great circles such
 as the equator or meridians) ring direction is ambiguous.
 
-## ex 4.3 
+## Exercise 4.3  {-}
 
 Are there advantages of using bounding caps over using bounding boxes? If so, list them.
 
@@ -67,13 +67,15 @@ to have a longitude range that spans from -180 to 180, irrespective
 whether the geometry is centered around the pole.
 
 
-## ex 4.4 
+## Exercise 4.4  {-}
 
 Why is, for small areas, the orthographic projection centered at the area a good approximation of the geometry as handled on $S^2$
 
 Because that is the closest approximation of the geometry on $R^2$.
 
-## ex 4.5 Fiji in **rnaturalearth**
+## Exercise 4.5 {-}
+
+Fiji in **rnaturalearth**
 
 For `rnaturalearth::ne_countries(country = "Fiji",
 returnclass="sf")`, check whether the geometry is valid on $R^2$,
@@ -132,7 +134,7 @@ st_distance(c1, c2)
 sf_use_s2(s2)
 ```
 
-## ex 4.6
+## Exercise 4.6 {-}
 
 Consider dataset `gisco_countries` in R package **giscoR**, and
 select the country with `NAME_ENGL == "Fiji"`. Does it have a valid

@@ -5,7 +5,7 @@ load("ch16.RData")
 library(spdep)
 ```
 
-## ex 17.1
+## Exercise 17.1 {-}
 
 First create a spatial weights object from the `k=4` symmetrized neighbour object:
 
@@ -48,7 +48,7 @@ and the LM tests continue to indicate an omitted spatial process in the residual
 lm.LMtests(LM_pr_md, lw, test=c("RLMerr", "RLMlag"))
 ```
 
-## ex 17.2
+## Exercise 17.2 {-}
 
 We may update the formula for the properties-only model to include municipality department "fixed effects", dummy variables:
 
@@ -78,7 +78,7 @@ spdep::lm.morantest(LM_pr_reg, lw)
 spdep::lm.LMtests(LM_pr_reg, lw, test=c("RLMerr", "RLMlag"))
 ```
 
-## ex 17.3
+## Exercise 17.3 {-}
 
 Fitting models initially by maximum likelihood (GMM may also be used), we pre-compute the eigenvalues:
 
@@ -191,7 +191,7 @@ spdep::lm.LMtests(SLX_pr_md, lw, test=c("RLMerr", "RLMlag"))
 
 So on balance, the pre-test strategy has not worked out too well; it is unclear what is missing in the model.
 
-## ex 17.4
+## Exercise 17.4 {-}
 
 Turning to estimating the general nested model first, followed by excluding the Durbin (spatially lagged $X$) variables, a likelihood ratio test shows that the spatially lagged $X$ variables should be retained in the model:
 
@@ -281,6 +281,6 @@ c("response"=GNM_pr$rho, "response se"=GNM_pr$rho.se, "residual"=GNM_pr$lambda, 
 
 
 
-## ex 17.5
+## Exercise 17.5 {-}
 
 We cannot say that the spatial econometrics approach has reached a clear conclusion. When including the upper level variables, we introduce a lot of spatial autocorrelation at the lower level. It is arguable that the MRF random effect at the upper level and including only the properties level variables gets at least as far as the most complex spatial econometrics models. It is fairly clear that mapping the actual green space and museums, and measuring distance from each property to the attractions would remove the scale problem for those variables. Disaggregation of the foreigners, airbnb and population density variables would be highly desirable. With improvements to the properties level data set, including more variables describing the properties themselves, much of the mis-specification should be removed. 

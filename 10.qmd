@@ -1,6 +1,6 @@
 # Statistical models for spatial data
 
-## ex 10.1
+## Exercise 10.1 {-}
 
 following the `lm` example of Section 10.2 use a random forest model
 to predict `SID` values (e.g. using package **randomForest**), and 
@@ -20,7 +20,7 @@ plot(rf~SID, nc1)
 abline(0, 1)
 ```
 
-## ex 10.2
+## Exercise 10.2 {-}
 
 Create a new dataset by randomly sampling 1000 points from the
 `nc` dataset, and rerun the linear regression model of section
@@ -58,7 +58,7 @@ mean(pr2[,"upr"] - pr2[,"lwr"])
 drops for larger dataset, as this is dominated by the standard
 errors of estimated coefficients.
 
-## ex 10.3
+## Exercise 10.3 {-}
 
 Redo the water-land classification of section 7.4 using `class::knn`
 instead of `lda`.
@@ -90,7 +90,7 @@ rs$cls = knn(tr, test, trn$cl, k = 5)
 plot(rs["cls"])
 ```
 
-## ex 10.4
+## Exercise 10.4 {-}
 
 For the `nc` data: estimation
 ```{r}

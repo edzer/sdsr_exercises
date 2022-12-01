@@ -2,7 +2,7 @@
 
 (thanks to Jannis Fröhlking)
 
-## ex 3.1 
+## Exercise 3.1  {-}
 
 Give two examples of geometries in 2-D (flat) space that are not simple feature geometries, and create a plot of them.
 
@@ -15,7 +15,7 @@ st_is_simple(x1)
 st_is_simple(x2)
 ```
 
-## ex 3.2 
+## Exercise 3.2  {-}
 
 Recompute the coordinates 10.542, 0.01, 45321.789 using precision values 1, 1e3, 1e6, and 1e-2.
 ```{r 2) precicsion}
@@ -23,7 +23,7 @@ for(i in c(1,1e3,1e6,1e-2))
   print(round(i * c(10.542, 0.01, 45321.789))/i)
 ```
 
-## ex 3.3 
+## Exercise 3.3  {-}
 
 Describe a practical problem for which an n-ary intersection would be needed.
 
@@ -32,7 +32,7 @@ Describe a practical problem for which an n-ary intersection would be needed.
 * for a set of extents of n individual plant species, find polygons with 0, 1, ..., n species, or
   find the polygon(s) that contain a particular subset of plant species.
 
-## ex 3.4 
+## Exercise 3.4  {-}
 
 How can you create a Voronoi diagram (figure 3.3) that has closed polygons for every point?
 
@@ -61,7 +61,7 @@ plot(mp, add = TRUE)
 title("smaller, intersected envelope")
 ```
 
-## ex 3.5 
+## Exercise 3.5  {-}
 
 Give the unary measure dimension for geometries POINT Z (0 1 1), LINESTRING Z (0 0 1,1 1 2), and POLYGON Z ((0 0 0,1 0 0,1 1 0,0 0 0))
 
@@ -73,7 +73,7 @@ st_dimension(st_polygon(list(rbind(c(0,0,0),c(1,0,0),c(1,1,0),c(0,0,0)))))
 
 (these are all zero-dimensional geometries because they are _points_, irrespective the number of dimensions they're defined in)
 
-## ex 3.6 
+## Exercise 3.6  {-}
 
 Give the DE-9IM relation between LINESTRING(0 0,1 0) and LINESTRING(0.5 0,0.5 1); explain the individual characters.
 ```{r DE-9IM relation}
@@ -97,12 +97,12 @@ The DE-9IM relation is F01FF0102
 
 (the boundary of a LINESTRING is formed by its two end points)
 
-## ex 3.7 
+## Exercise 3.7  {-}
 
 Can a set of simple feature polygons form a coverage? If so, under which constraints?
 Yes, but I would say that the set may just contain one polygon, because simple features provide no way of assigning points on the boundary of two adjacent polygons to a single polygon.
 
-## ex 3.8 
+## Exercise 3.8  {-}
 
 For the nc counties in the dataset that comes with R package sf, find the points touched by four counties.
 ```{r}
@@ -153,7 +153,7 @@ plot(st_geometry(pts), add = TRUE, col = "red", pch = 10, cex = 2)
 sf_use_s2(s2) # set back
 ```
 
-## ex 3.9 
+## Exercise 3.9  {-}
 
 How would figure 3.6 look like if delta for the y-coordinate was positive?
 Only cells that were fully crossed by the red line would be grey:

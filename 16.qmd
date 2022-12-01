@@ -1,7 +1,7 @@
 # Spatial Regression
 
 
-## ex 16.1
+## Exercise 16.1 {-}
 
 The archived **HSAR** package includes an upper level polygon support municipality department data set, ans a lower level property data set. Both are `"sf"` objects, in the same projected CRS, provided locally.  
 
@@ -41,7 +41,7 @@ properties_in_dd <- st_join(properties, depmunic, join = st_within)
 ```
 
 
-## ex 16.2
+## Exercise 16.2 {-}
 
 For polygon support, we prefer contiguous neighbours:
 
@@ -66,7 +66,7 @@ spdep::moran.test(properties_in_dd$prgreensp, spdep::nb2listw(pr_nb_k4s))
 ```
 
 
-## ex 16.3
+## Exercise 16.3 {-}
 
 The vignette proposes the full property level and municipal department level set of variables straight away. Here we choose the property level ones first, and update for the copied out municipal department level ones next:
 
@@ -112,7 +112,7 @@ anova(pr_2lev, pr_2lev_iid, test="Chisq")
 summary(pr_2lev_iid)
 ```
 
-## ex 16.4
+## Exercise 16.4 {-}
 
 The `"mrf"` smooth term needs ID keys set so that the neighbour object is correctly matched to the observations. Once these are provided, the properties level model with a municipality department level MRF smooth may be fit:
 

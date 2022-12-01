@@ -1,6 +1,6 @@
 # Plotting
 
-## ex 8.1
+## Exercise 8.1 {-}
 
 For the countries Indonesia and Canada, create individual plots using
 equirectangular, orthographic, and Lambert equal area projections,
@@ -32,7 +32,7 @@ in_laea = st_crs("+proj=laea +lat_0=-2.3 +lon_0=117")
 st_geometry(ind) |> st_transform(in_laea) |> plot(axes=TRUE, graticule=TRUE)
 ```
 
-## ex 8.2
+## Exercise 8.2 {-}
 
 Recreate the plot in [Figure
 8.3](https://r-spatial.org/book/08-Plotting.html#fig-figreset)
@@ -60,7 +60,7 @@ tm_shape(nc) +
 	tm_lines(legend.lwd.show = FALSE, col = 'red')
 ```
 
-## ex 8.3
+## Exercise 8.3 {-}
 
 Recreate the plot in [Figure
 8.7](https://r-spatial.org/book/08-Plotting.html#fig-tmapstars)
@@ -73,7 +73,7 @@ r <- read_stars(system.file("tif/L7_ETMs.tif", package = "stars"))
 tm_shape(r) + tm_raster(palette = viridis(100))
 ```
 
-## ex 8.4
+## Exercise 8.4 {-}
 
 View the interactive plot in [Figure
 8.7](https://r-spatial.org/book/08-Plotting.html#fig-tmapstars)

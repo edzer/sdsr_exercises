@@ -1,6 +1,6 @@
 # Spatial Point Patterns
 
-## ex 11.1
+## Exercise 11.1 {-}
 
 After loading **spatstat**, recreate the plot obtained by `plot(longleaf)` 
 by using **ggplot2** and `geom_sf()`, and by `sf::plot()`.
@@ -27,7 +27,7 @@ p = as.data.frame(st_coordinates(pts))
 ggplot() + geom_sf(data = box) + geom_point(aes(x = X, y = Y), data = p, shape = 1, size = 10 * marks / max(marks))
 ```
 
-## ex 11.2
+## Exercise 11.2 {-}
 
 Convert the sample locations of the NO$_2$ data used in [Chapter
 12](https://r-spatial.org/book/12-Interpolation.html) to a `ppp`
@@ -60,7 +60,7 @@ marks(p) = no2.sf$NO2
 p
 ```
 
-## ex 11.3
+## Exercise 11.3 {-}
 
 Compute and plot the density of the NO$_2$ dataset, import the density as a `stars`
 object and compute the volume under the surface. 

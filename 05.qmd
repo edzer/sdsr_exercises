@@ -1,6 +1,6 @@
 # Attributes
 
-## ex 5.1. 
+## Exercise 5.1. {-}
 
 type of `State`
 
@@ -10,7 +10,7 @@ value of `State` is constant through each county in the state
 (every point in every county in the state has this value for
 `State`).
 
-## ex 5.2. 
+## Exercise 5.2. {-}
 
 type of `State` for the entire state
 
@@ -18,7 +18,7 @@ Now, the unioned geometry _is_ that of the state, and we can assign
 `identity`: there is only one state of North Carolina, an this
 geometry is its geometry.
 
-## ex 5.3. 
+## Exercise 5.3. {-}
 
 the `AREA` variable
 
@@ -115,7 +115,7 @@ The "unit" of the `AREA` variable is hence "square degree". This
 is a meaningless unit for area on the sphere, because a unit square
 degree does not have a constant area. 
 
-## ex 5.4 
+## Exercise 5.4 {-}
 
 type of `area`
 
@@ -124,7 +124,7 @@ whole, not of each individual point in the polygon. It is extensive:
 if we cut a polygon in two parts, the total area is distributed
 over the parts.
 
-## ex 5.5 
+## Exercise 5.5 {-}
 
 area-weighted interpolation
 

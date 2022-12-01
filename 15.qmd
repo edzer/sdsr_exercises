@@ -6,7 +6,7 @@ library(sf)
 library(spdep)
 ```
 
-## ex 15.1
+## Exercise 15.1 {-}
 
 Re-using the objects from exercise 14.3, we have:
 
@@ -26,7 +26,7 @@ joincount.multi(COL, listw=nb2listw(queen, style="B"))
 This is because we have chosen to see all eight neighbour grid cells as neighbours (away from the edges of the board), so the two categories occur equally often as neighbour values, as expected.
 
 
-## ex 15.2
+## Exercise 15.2 {-}
 
 First, create an uncorrelated variable, and confirm that it is uncorrelated:
 
@@ -48,11 +48,11 @@ lm.morantest(lm(x_t ~ xy$Var1), nb2listw(queen, style="W"), alternative="two.sid
 ```
 This is important to understand because the spatial patterning in a variable of interest, and picked up by a global measure of spatial autocorrelation, may be driven by an omitted variable. If we cannot add that variable, a latent variable or mixed effects model may be a good choice.
 
-## ex 15.3
+## Exercise 15.3 {-}
 
 False discovery rate adjustment is required when conducting repeated tests on the same data set. Usually, local measures of spatial autocorrelation are calculated for all the observations in a data set, and so constitute repeated tests. When repeated tests are conducted, the usual reading of confidence intervals and probability values must be adjusted to take the repeated use of the data into account. 
 
-## ex 15.4
+## Exercise 15.4 {-}
 
 If we start with the standard local Moran's $I_i$ for the random values with a slight 1D trend, upgraded to analytical conditional standard deviates, but with only the standard intercept-only mean model, we have a starting point; a fair number of the values exceed 2:
 

@@ -1,6 +1,6 @@
 # sf, stars
 
-## ex. 7.1
+## Exercise 7.1 {-}
 
  Find the names of the `nc` counties that intersect `LINESTRING(-84 35,-78 35)`; use `[` for this, and use `st_join()` for this.
 
@@ -14,7 +14,7 @@ nc[line,]$NAME
 st_join(st_sf(line), nc)$NAME # left join: `line` should be first argument
 ```
 
-## ex. 7.2
+## Exercise 7.2 {-}
 
 Repeat this after setting `sf_use_s2(FALSE)`, and _compute_ the difference (hint: use `setdiff()`), and color the counties of the difference using color '#00880088'.
 
@@ -29,7 +29,7 @@ plot(st_geometry(nc))
 plot(st_geometry(nc)[nc$NAME %in% diff], col = "#00880088", add = TRUE)
 ```
 
-## ex. 7.3
+## Exercise 7.3 {-}
 
 Plot the two different lines in a single plot; note that R will plot a straight line always straight in the projection currently used; `st_segmentize` can be used to add points on straight line, or on a great circle for ellipsoidal coordinates.
 
@@ -62,7 +62,7 @@ covers the red line supports that in this plot, the great circle
 line (red) _is_ plotted straight, and the "straight in plate carree"
 line is not.
 
-## ex. 7.4
+## Exercise 7.4 {-}
 
 NDVI, normalized differenced vegetation index, is computed as `(NIR-R)/(NIR+R)`, with NIR the near infrared and R the red band.  Read the `L7_ETMs.tif` file into object `x`, and distribute the band dimensions over attributes by `split(x, "band")`. Then, add attribute NDVI to this object by using an expression that uses the NIR (band 4) and R (band 3) attributes directly.
 
@@ -75,7 +75,7 @@ x.spl$NDVI = (x.spl$X4 - x.spl$X3)/(x.spl$X4 + x.spl$X3)
 plot(x.spl["NDVI"])
 ```
 
-## ex. 7.5
+## Exercise 7.5 {-}
 
 Compute NDVI for the `L7_ETMs.tif` image by reducing the band dimension, using `st_apply` and an a function `ndvi = function(x) { (x[4]-x[3])/(x[4]+x[3]) }`. Plot the result, and write the result to a GeoTIFF. 
 
@@ -97,7 +97,7 @@ all.equal(ndvi, ndvi2)
 This latter function can be much faster, as it is called for chunks
 of data rather than for individual pixels.
 
-## ex. 7.6
+## Exercise 7.6 {-}
 
 Use `st_transform` to transform the `stars` object read from `L7_ETMs.tif` to `EPSG:4326`. Print the object. Is this a regular grid? Plot the first band using arguments `axes=TRUE` and explain why this takes such a long time.
 
@@ -108,7 +108,7 @@ plot(x_t[,,,1], axes = TRUE)
 
 the printed summary shows that this is a curvilinear grid. Plotting takes so long because for curvilinear grids, each cell is converted to a small polygon and then plotted.
 
-## ex. 7.7
+## Exercise 7.7 {-}
 
 Use `st_warp` to warp the `L7_ETMs.tif` object to `EPSG:4326`, and plot the resulting object with `axes=TRUE`. Why is the plot created much faster than after `st_transform`?
 
@@ -124,7 +124,7 @@ formed by the bounding box (using straight lines in an equidistant
 rectangular projection): white grid cells indicate the misalignment
 due to warping/transforming.
 
-## ex. 7.8
+## Exercise 7.8 {-}
 
 Using a vector representation of the raster `L7_ETMs`, plot the
 intersection with a circular area around `POINT(293716 9113692)`

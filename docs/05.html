@@ -259,11 +259,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ex-5.1." id="toc-ex-5.1." class="nav-link active" data-scroll-target="#ex-5.1."><span class="toc-section-number">5.1</span>  ex 5.1.</a></li>
-  <li><a href="#ex-5.2." id="toc-ex-5.2." class="nav-link" data-scroll-target="#ex-5.2."><span class="toc-section-number">5.2</span>  ex 5.2.</a></li>
-  <li><a href="#ex-5.3." id="toc-ex-5.3." class="nav-link" data-scroll-target="#ex-5.3."><span class="toc-section-number">5.3</span>  ex 5.3.</a></li>
-  <li><a href="#ex-5.4" id="toc-ex-5.4" class="nav-link" data-scroll-target="#ex-5.4"><span class="toc-section-number">5.4</span>  ex 5.4</a></li>
-  <li><a href="#ex-5.5" id="toc-ex-5.5" class="nav-link" data-scroll-target="#ex-5.5"><span class="toc-section-number">5.5</span>  ex 5.5</a></li>
+  <li><a href="#exercise-5.1." id="toc-exercise-5.1." class="nav-link active" data-scroll-target="#exercise-5.1.">Exercise 5.1.</a></li>
+  <li><a href="#exercise-5.2." id="toc-exercise-5.2." class="nav-link" data-scroll-target="#exercise-5.2.">Exercise 5.2.</a></li>
+  <li><a href="#exercise-5.3." id="toc-exercise-5.3." class="nav-link" data-scroll-target="#exercise-5.3.">Exercise 5.3.</a></li>
+  <li><a href="#exercise-5.4" id="toc-exercise-5.4" class="nav-link" data-scroll-target="#exercise-5.4">Exercise 5.4</a></li>
+  <li><a href="#exercise-5.5" id="toc-exercise-5.5" class="nav-link" data-scroll-target="#exercise-5.5">Exercise 5.5</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/05.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -287,18 +287,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="ex-5.1." class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="ex-5.1."><span class="header-section-number">5.1</span> ex 5.1.</h2>
+<section id="exercise-5.1." class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-5.1.">Exercise 5.1.</h2>
 <p>type of <code>State</code></p>
 <p>The appropriate value would be <code>constant</code>: there is no identity relationship of <code>State</code> to one of the counties in <code>nc</code>, and the value of <code>State</code> is constant through each county in the state (every point in every county in the state has this value for <code>State</code>).</p>
 </section>
-<section id="ex-5.2." class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="ex-5.2."><span class="header-section-number">5.2</span> ex 5.2.</h2>
+<section id="exercise-5.2." class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-5.2.">Exercise 5.2.</h2>
 <p>type of <code>State</code> for the entire state</p>
 <p>Now, the unioned geometry <em>is</em> that of the state, and we can assign <code>identity</code>: there is only one state of North Carolina, an this geometry is its geometry.</p>
 </section>
-<section id="ex-5.3." class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="ex-5.3."><span class="header-section-number">5.3</span> ex 5.3.</h2>
+<section id="exercise-5.3." class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-5.3.">Exercise 5.3.</h2>
 <p>the <code>AREA</code> variable</p>
 <!--
 Use st_area to add a variable with name area to nc. Compare the area and AREA variables in the nc dataset. What are the units of AREA? Are the two linearly related? If there are discrepancies, what could be the cause?
@@ -416,13 +416,13 @@ Use st_area to add a variable with name area to nc. Compare the area and AREA va
 <p>these residuals clearly show a North-South trend, corresponding to the effect that the Earth’s curvature has been ignored during the computation of <code>AREA</code> (ellipsoidal coordinates were treated as if they were Cartesian). “Square degrees” become smaller when going north.</p>
 <p>The “unit” of the <code>AREA</code> variable is hence “square degree”. This is a meaningless unit for area on the sphere, because a unit square degree does not have a constant area.</p>
 </section>
-<section id="ex-5.4" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="ex-5.4"><span class="header-section-number">5.4</span> ex 5.4</h2>
+<section id="exercise-5.4" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-5.4">Exercise 5.4</h2>
 <p>type of <code>area</code></p>
 <p>“area” is of type <code>aggregate</code>: it is a property of a polygon as a whole, not of each individual point in the polygon. It is extensive: if we cut a polygon in two parts, the total area is distributed over the parts.</p>
 </section>
-<section id="ex-5.5" class="level2" data-number="5.5">
-<h2 data-number="5.5" class="anchored" data-anchor-id="ex-5.5"><span class="header-section-number">5.5</span> ex 5.5</h2>
+<section id="exercise-5.5" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-5.5">Exercise 5.5</h2>
 <p>area-weighted interpolation</p>
 <p>From the on-line version of the book we get the code that created the plot:</p>
 <div class="cell">

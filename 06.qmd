@@ -1,6 +1,6 @@
 # Data Cubes
 
-## ex 6.1. 
+## Exercise 6.1.  {-}
 
 Why is it difficult to represent trajectories, sequences of $(x,y,t)$
 obtained by tracking moving objects, by data cubes as described in
@@ -12,7 +12,7 @@ this chapter?
   data cube will be very sparse; this will only be effective if a system
   capable of storing sparse data cubes is used (e.g. SciDB, TileDB)
 
-## ex 6.2. 
+## Exercise 6.2.  {-}
 
 In a socio-economic vector data cube with variables population,
 life expectancy, and gross domestic product ordered by dimensions
@@ -30,7 +30,7 @@ day of the year)
   and a time period.
 
 
-## ex 6.3. 
+## Exercise 6.3.  {-}
 
 The Sentinel-2 satellites collect images in 12 spectral bands;
 list advantages and disadvantages to represent them as (i) different
@@ -43,7 +43,7 @@ and (iii) a single attribute data cube with a spectral dimension.
 * as (iii): as (ii) but it would be easier to consider (analyse, classify, reduce)
   spectral reflectance curves, as they are now organized in a dimension
 
-## ex 6.4. 
+## Exercise 6.4.  {-}
 
 Explain why a curvilinear raster as shown in figure 1.5 can be
 considered a special case of a data cube.
@@ -54,14 +54,14 @@ one needs both row and col to find the coordinate pair, and from a
 coordinate pair a rather complex look-up to find the corresponding
 row and column.
 
-## ex 6.5. 
+## Exercise 6.5.  {-}
 
 Explain how the following problems can be solved with data cube
 operations `filter`, `apply`, `reduce` and/or `aggregate`, and
 in which order. Also mention for each which function is applied,
 and what the dimensionality of the resulting data cube is (if any):
 
-## ex 6.5.1 
+## Exercise 6.5.1  {-}
 
 from hourly $PM_{10}$ measurements for a set of air quality
 monitoring stations, compute per station the amount of days per
@@ -73,7 +73,7 @@ year that the average daily $PM_{10}$ value exceeds 50 $\mu g/m^3$
 
 This gives a one-dimensional data cube, with dimension "station"
 
-## ex 6.5.2 
+## Exercise 6.5.2  {-}
 
 for a sequence of aerial images of an oil spill, find the time at
 which the oil spill had its largest extent, and the corresponding
@@ -85,7 +85,7 @@ extent
 
 This gives a zero-dimensional data cube (a scalar).
 
-## ex 6.5.3
+## Exercise 6.5.3 {-}
 
 from a 10-year period with global daily sea surface temperature
 (SST) raster maps, find the area with the 10% largest and 10%

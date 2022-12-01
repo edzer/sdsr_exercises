@@ -259,12 +259,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ex-4.1" id="toc-ex-4.1" class="nav-link active" data-scroll-target="#ex-4.1"><span class="toc-section-number">4.1</span>  ex 4.1</a></li>
-  <li><a href="#ex-4.2" id="toc-ex-4.2" class="nav-link" data-scroll-target="#ex-4.2"><span class="toc-section-number">4.2</span>  ex 4.2</a></li>
-  <li><a href="#ex-4.3" id="toc-ex-4.3" class="nav-link" data-scroll-target="#ex-4.3"><span class="toc-section-number">4.3</span>  ex 4.3</a></li>
-  <li><a href="#ex-4.4" id="toc-ex-4.4" class="nav-link" data-scroll-target="#ex-4.4"><span class="toc-section-number">4.4</span>  ex 4.4</a></li>
-  <li><a href="#ex-4.5-fiji-in-rnaturalearth" id="toc-ex-4.5-fiji-in-rnaturalearth" class="nav-link" data-scroll-target="#ex-4.5-fiji-in-rnaturalearth"><span class="toc-section-number">4.5</span>  ex 4.5 Fiji in <strong>rnaturalearth</strong></a></li>
-  <li><a href="#ex-4.6" id="toc-ex-4.6" class="nav-link" data-scroll-target="#ex-4.6"><span class="toc-section-number">4.6</span>  ex 4.6</a></li>
+  <li><a href="#exercise-4.1" id="toc-exercise-4.1" class="nav-link active" data-scroll-target="#exercise-4.1">Exercise 4.1</a></li>
+  <li><a href="#exercise-4.2" id="toc-exercise-4.2" class="nav-link" data-scroll-target="#exercise-4.2">Exercise 4.2</a></li>
+  <li><a href="#exercise-4.3" id="toc-exercise-4.3" class="nav-link" data-scroll-target="#exercise-4.3">Exercise 4.3</a></li>
+  <li><a href="#exercise-4.4" id="toc-exercise-4.4" class="nav-link" data-scroll-target="#exercise-4.4">Exercise 4.4</a></li>
+  <li><a href="#exercise-4.5" id="toc-exercise-4.5" class="nav-link" data-scroll-target="#exercise-4.5">Exercise 4.5</a></li>
+  <li><a href="#exercise-4.6" id="toc-exercise-4.6" class="nav-link" data-scroll-target="#exercise-4.6">Exercise 4.6</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/04.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -288,8 +288,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="ex-4.1" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="ex-4.1"><span class="header-section-number">4.1</span> ex 4.1</h2>
+<section id="exercise-4.1" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-4.1">Exercise 4.1</h2>
 <p>Straight GeoJSON lines</p>
 <p>How does the GeoJSON format define “straight” lines between ellipsoidal coordinates (section 3.1.1)? Using this definition of straight, how would <code>LINESTRING(0 85,180 85)</code> look like in a polar projection? How could this geometry be modified to have it cross the North Pole?</p>
 <p>GeoJSON defines straight lines between pairs of ellipsoidal coordinates as the straight line in <em>Cartesian</em> space formed by longitude and latitude. This means e.g.&nbsp;that all parallels are straight lines.</p>
@@ -321,24 +321,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="ex-4.2" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="ex-4.2"><span class="header-section-number">4.2</span> ex 4.2</h2>
+<section id="exercise-4.2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-4.2">Exercise 4.2</h2>
 <p>For a typical polygon on <span class="math inline">\(S^2\)</span>, how can you find out ring direction?</p>
 <p>Ring direction (clock-wise CW, counter clock-wise CCW) is unambiguous on <span class="math inline">\(R^2\)</span> but not on <span class="math inline">\(S^2\)</span>: on <span class="math inline">\(S^2\)</span> every polygon divides the sphere’s surface in two parts. When the inside of the polygon is taken as the area to the left when traversing the polygons’s points then for a small polygon, then ring direction is CCW if the area of the polygon is smaller than half of the area of the sphere. For polygons dividing the sphere in two equal parts (great circles such as the equator or meridians) ring direction is ambiguous.</p>
 </section>
-<section id="ex-4.3" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="ex-4.3"><span class="header-section-number">4.3</span> ex 4.3</h2>
+<section id="exercise-4.3" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-4.3">Exercise 4.3</h2>
 <p>Are there advantages of using bounding caps over using bounding boxes? If so, list them.</p>
 <p>Bounding caps may be more compact (have a smaller area compared to the bounding box corresponding to the same geometries), they need fewer parameters, and they are invariant under rotation of (the origins of) longitude and latitude.</p>
 <p>For areas covering one of the poles, a bounding box will always need to have a longitude range that spans from -180 to 180, irrespective whether the geometry is centered around the pole.</p>
 </section>
-<section id="ex-4.4" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="ex-4.4"><span class="header-section-number">4.4</span> ex 4.4</h2>
+<section id="exercise-4.4" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-4.4">Exercise 4.4</h2>
 <p>Why is, for small areas, the orthographic projection centered at the area a good approximation of the geometry as handled on <span class="math inline">\(S^2\)</span></p>
 <p>Because that is the closest approximation of the geometry on <span class="math inline">\(R^2\)</span>.</p>
 </section>
-<section id="ex-4.5-fiji-in-rnaturalearth" class="level2" data-number="4.5">
-<h2 data-number="4.5" class="anchored" data-anchor-id="ex-4.5-fiji-in-rnaturalearth"><span class="header-section-number">4.5</span> ex 4.5 Fiji in <strong>rnaturalearth</strong></h2>
+<section id="exercise-4.5" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-4.5">Exercise 4.5</h2>
+<p>Fiji in <strong>rnaturalearth</strong></p>
 <p>For <code>rnaturalearth::ne_countries(country = "Fiji", returnclass="sf")</code>, check whether the geometry is valid on <span class="math inline">\(R^2\)</span>, on an orthographic projection centered on the country, and on <span class="math inline">\(S^2\)</span>. How can the geometry be made valid on <code>S^2</code>? Plot the resulting geometry back on <span class="math inline">\(R^2\)</span>. Compare the centroid of the country, as computed on <span class="math inline">\(R^2\)</span> and on <span class="math inline">\(S^2\)</span>, and the distance between the two.</p>
 <p>Valid on <span class="math inline">\(R^2\)</span>:</p>
 <div class="cell">
@@ -413,8 +414,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="fu">sf_use_s2</span>(s2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="ex-4.6" class="level2" data-number="4.6">
-<h2 data-number="4.6" class="anchored" data-anchor-id="ex-4.6"><span class="header-section-number">4.6</span> ex 4.6</h2>
+<section id="exercise-4.6" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-4.6">Exercise 4.6</h2>
 <p>Consider dataset <code>gisco_countries</code> in R package <strong>giscoR</strong>, and select the country with <code>NAME_ENGL == "Fiji"</code>. Does it have a valid geometry on the sphere? If so, how was this accomplished?</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(giscoR)</span>

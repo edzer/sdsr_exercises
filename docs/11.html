@@ -259,9 +259,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ex-11.1" id="toc-ex-11.1" class="nav-link active" data-scroll-target="#ex-11.1"><span class="toc-section-number">11.1</span>  ex 11.1</a></li>
-  <li><a href="#ex-11.2" id="toc-ex-11.2" class="nav-link" data-scroll-target="#ex-11.2"><span class="toc-section-number">11.2</span>  ex 11.2</a></li>
-  <li><a href="#ex-11.3" id="toc-ex-11.3" class="nav-link" data-scroll-target="#ex-11.3"><span class="toc-section-number">11.3</span>  ex 11.3</a></li>
+  <li><a href="#exercise-11.1" id="toc-exercise-11.1" class="nav-link active" data-scroll-target="#exercise-11.1">Exercise 11.1</a></li>
+  <li><a href="#exercise-11.2" id="toc-exercise-11.2" class="nav-link" data-scroll-target="#exercise-11.2">Exercise 11.2</a></li>
+  <li><a href="#exercise-11.3" id="toc-exercise-11.3" class="nav-link" data-scroll-target="#exercise-11.3">Exercise 11.3</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/11.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -285,8 +285,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="ex-11.1" class="level2" data-number="11.1">
-<h2 data-number="11.1" class="anchored" data-anchor-id="ex-11.1"><span class="header-section-number">11.1</span> ex 11.1</h2>
+<section id="exercise-11.1" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-11.1">Exercise 11.1</h2>
 <p>After loading <strong>spatstat</strong>, recreate the plot obtained by <code>plot(longleaf)</code> by using <strong>ggplot2</strong> and <code>geom_sf()</code>, and by <code>sf::plot()</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spatstat)</span>
@@ -339,8 +339,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="ex-11.2" class="level2" data-number="11.2">
-<h2 data-number="11.2" class="anchored" data-anchor-id="ex-11.2"><span class="header-section-number">11.2</span> ex 11.2</h2>
+<section id="exercise-11.2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-11.2">Exercise 11.2</h2>
 <p>Convert the sample locations of the NO<span class="math inline">\(_2\)</span> data used in <a href="https://r-spatial.org/book/12-Interpolation.html">Chapter 12</a> to a <code>ppp</code> object, with a proper window.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
@@ -376,8 +376,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># units</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="ex-11.3" class="level2" data-number="11.3">
-<h2 data-number="11.3" class="anchored" data-anchor-id="ex-11.3"><span class="header-section-number">11.3</span> ex 11.3</h2>
+<section id="exercise-11.3" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-11.3">Exercise 11.3</h2>
 <p>Compute and plot the density of the NO<span class="math inline">\(_2\)</span> dataset, import the density as a <code>stars</code> object and compute the volume under the surface.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">=</span> <span class="fu">density</span>(p)</span>

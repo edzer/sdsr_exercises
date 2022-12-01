@@ -259,10 +259,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ex-14.1" id="toc-ex-14.1" class="nav-link active" data-scroll-target="#ex-14.1"><span class="toc-section-number">14.1</span>  ex 14.1</a></li>
-  <li><a href="#ex-14.2" id="toc-ex-14.2" class="nav-link" data-scroll-target="#ex-14.2"><span class="toc-section-number">14.2</span>  ex 14.2</a></li>
-  <li><a href="#ex-14.3" id="toc-ex-14.3" class="nav-link" data-scroll-target="#ex-14.3"><span class="toc-section-number">14.3</span>  ex 14.3</a></li>
-  <li><a href="#ex-14.4" id="toc-ex-14.4" class="nav-link" data-scroll-target="#ex-14.4"><span class="toc-section-number">14.4</span>  ex 14.4</a></li>
+  <li><a href="#exercise-14.1" id="toc-exercise-14.1" class="nav-link active" data-scroll-target="#exercise-14.1">Exercise 14.1</a></li>
+  <li><a href="#exercise-14.2" id="toc-exercise-14.2" class="nav-link" data-scroll-target="#exercise-14.2">Exercise 14.2</a></li>
+  <li><a href="#exercise-14.3" id="toc-exercise-14.3" class="nav-link" data-scroll-target="#exercise-14.3">Exercise 14.3</a></li>
+  <li><a href="#exercise-14.4" id="toc-exercise-14.4" class="nav-link" data-scroll-target="#exercise-14.4">Exercise 14.4</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/14.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -286,16 +286,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="ex-14.1" class="level2" data-number="14.1">
-<h2 data-number="14.1" class="anchored" data-anchor-id="ex-14.1"><span class="header-section-number">14.1</span> ex 14.1</h2>
-<p>If dimensionality (point/line/polygon) varies in the data set, geometries must be reduced to the lowest dimension present (usually points). If all the observations are polygonal (polygon or multipolygon), contiguities (shared boundaries) are a sparse and robust neighbour representation (<code>spdep::poly2nb()</code>). Polygons may also be reduced to points by taking for example centroids, but neighbours found by triangulating points may not be the same as contiguity neighbours for the polygons being represented by these centroids (<code>spdep::tri2nb()</code>). If the geometries are multipoint, they must also be reduced to a single point. If the geometries have point rather than areal support, for example real estate transaction data, k-nearest neighbour (<code>spdep::knn2nb(spdep::knearneigh())</code>), graph-based (<code>spdep::graph2nb()</code> applied to the output of <code>spdep::soi.graph()</code>, <code>spdep::relativeneigh()</code> or <code>spdep::gabrielneigh()</code>) and distance-based methods (spdep::dnearneigh()`) may be used.</p>
+<section id="exercise-14.1" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-14.1">Exercise 14.1</h2>
+<p>If dimensionality (point/line/polygon) varies in the data set, geometries must be reduced to the lowest dimension present (usually points). If all the observations are polygonal (polygon or multipolygon), contiguities (shared boundaries) are a sparse and robust neighbour representation (<code>spdep::poly2nb()</code>). Polygons may also be reduced to points by taking for example centroids, but neighbours found by triangulating points may not be the same as contiguity neighbours for the polygons being represented by these centroids (<code>spdep::tri2nb()</code>). If the geometries are multipoint, they must also be reduced to a single point. If the geometries have point rather than areal support, for example real estate transaction data, k-nearest neighbour (<code>spdep::knn2nb(spdep::knearneigh())</code>), graph-based (<code>spdep::graph2nb()</code> applied to the output of <code>spdep::soi.graph()</code>, <code>spdep::relativeneigh()</code> or <code>spdep::gabrielneigh()</code>) and distance-based methods (<code>spdep::dnearneigh()</code>) may be used.</p>
 </section>
-<section id="ex-14.2" class="level2" data-number="14.2">
-<h2 data-number="14.2" class="anchored" data-anchor-id="ex-14.2"><span class="header-section-number">14.2</span> ex 14.2</h2>
+<section id="exercise-14.2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-14.2">Exercise 14.2</h2>
 <p>Graph-based functions for creating neighbour objects (<code>spdep::tri2nb()</code>, <code>spdep::soi.graph()</code>, <code>spdep::relativeneigh()</code> and <code>spdep::gabrielneigh()</code>) may not be used if the support of the observations is not that of points on the plane. All other functions may be used with both planar and spherical/elliptical geometries, but the neighbours generated may differ if a non-planar data set is treated as planar.</p>
 </section>
-<section id="ex-14.3" class="level2" data-number="14.3">
-<h2 data-number="14.3" class="anchored" data-anchor-id="ex-14.3"><span class="header-section-number">14.3</span> ex 14.3</h2>
+<section id="exercise-14.3" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-14.3">Exercise 14.3</h2>
 <p>A chessboard is an <span class="math inline">\(8 \times 8\)</span> grid:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>xy <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">expand.grid</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>), <span class="at">col=</span><span class="fu">rep</span>(<span class="fu">c</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"white"</span>), <span class="dv">4</span>), <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"white"</span>, <span class="st">"black"</span>), <span class="dv">4</span>)), <span class="dv">4</span>))</span>
@@ -367,8 +367,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="ex-14.4" class="level2" data-number="14.4">
-<h2 data-number="14.4" class="anchored" data-anchor-id="ex-14.4"><span class="header-section-number">14.4</span> ex 14.4</h2>
+<section id="exercise-14.4" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-14.4">Exercise 14.4</h2>
 <p>We can access cardinalities using <code>card()</code>, and tabulate their frequencies for the chessboard rook case:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>((rook <span class="sc">%&gt;%</span> <span class="fu">card</span>() <span class="ot">-&gt;</span> rc) <span class="sc">%&gt;%</span> <span class="fu">table</span>() <span class="ot">-&gt;</span> t)</span>

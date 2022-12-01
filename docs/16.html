@@ -258,10 +258,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ex-16.1" id="toc-ex-16.1" class="nav-link active" data-scroll-target="#ex-16.1"><span class="toc-section-number">16.1</span>  ex 16.1</a></li>
-  <li><a href="#ex-16.2" id="toc-ex-16.2" class="nav-link" data-scroll-target="#ex-16.2"><span class="toc-section-number">16.2</span>  ex 16.2</a></li>
-  <li><a href="#ex-16.3" id="toc-ex-16.3" class="nav-link" data-scroll-target="#ex-16.3"><span class="toc-section-number">16.3</span>  ex 16.3</a></li>
-  <li><a href="#ex-16.4" id="toc-ex-16.4" class="nav-link" data-scroll-target="#ex-16.4"><span class="toc-section-number">16.4</span>  ex 16.4</a></li>
+  <li><a href="#exercise-16.1" id="toc-exercise-16.1" class="nav-link active" data-scroll-target="#exercise-16.1">Exercise 16.1</a></li>
+  <li><a href="#exercise-16.2" id="toc-exercise-16.2" class="nav-link" data-scroll-target="#exercise-16.2">Exercise 16.2</a></li>
+  <li><a href="#exercise-16.3" id="toc-exercise-16.3" class="nav-link" data-scroll-target="#exercise-16.3">Exercise 16.3</a></li>
+  <li><a href="#exercise-16.4" id="toc-exercise-16.4" class="nav-link" data-scroll-target="#exercise-16.4">Exercise 16.4</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/16.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -285,8 +285,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="ex-16.1" class="level2" data-number="16.1">
-<h2 data-number="16.1" class="anchored" data-anchor-id="ex-16.1"><span class="header-section-number">16.1</span> ex 16.1</h2>
+<section id="exercise-16.1" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-16.1">Exercise 16.1</h2>
 <p>The archived <strong>HSAR</strong> package includes an upper level polygon support municipality department data set, ans a lower level property data set. Both are <code>"sf"</code> objects, in the same projected CRS, provided locally.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
@@ -362,8 +362,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>properties_in_dd <span class="ot">&lt;-</span> <span class="fu">st_join</span>(properties, depmunic, <span class="at">join =</span> st_within)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="ex-16.2" class="level2" data-number="16.2">
-<h2 data-number="16.2" class="anchored" data-anchor-id="ex-16.2"><span class="header-section-number">16.2</span> ex 16.2</h2>
+<section id="exercise-16.2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-16.2">Exercise 16.2</h2>
 <p>For polygon support, we prefer contiguous neighbours:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>(mun_nb <span class="ot">&lt;-</span> spdep<span class="sc">::</span><span class="fu">poly2nb</span>(depmunic, <span class="at">row.names=</span><span class="fu">as.character</span>(depmunic<span class="sc">$</span>num_dep)))</span>
@@ -418,8 +418,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#      0.9757099996     -0.0010010010      0.0003573715</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="ex-16.3" class="level2" data-number="16.3">
-<h2 data-number="16.3" class="anchored" data-anchor-id="ex-16.3"><span class="header-section-number">16.3</span> ex 16.3</h2>
+<section id="exercise-16.3" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-16.3">Exercise 16.3</h2>
 <p>The vignette proposes the full property level and municipal department level set of variables straight away. Here we choose the property level ones first, and update for the copied out municipal department level ones next:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>f_pr <span class="ot">&lt;-</span> prpsqm <span class="sc">~</span> size <span class="sc">+</span> age <span class="sc">+</span> dist_metro</span>
@@ -585,8 +585,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a><span class="co"># GCV = 5.3252e+05  Scale est. = 5.2731e+05  n = 1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="ex-16.4" class="level2" data-number="16.4">
-<h2 data-number="16.4" class="anchored" data-anchor-id="ex-16.4"><span class="header-section-number">16.4</span> ex 16.4</h2>
+<section id="exercise-16.4" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-16.4">Exercise 16.4</h2>
 <p>The <code>"mrf"</code> smooth term needs ID keys set so that the neighbour object is correctly matched to the observations. Once these are provided, the properties level model with a municipality department level MRF smooth may be fit:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(mun_nb) <span class="ot">&lt;-</span> <span class="fu">attr</span>(mun_nb, <span class="st">"region.id"</span>)</span>

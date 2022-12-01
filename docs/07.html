@@ -258,14 +258,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ex.-7.1" id="toc-ex.-7.1" class="nav-link active" data-scroll-target="#ex.-7.1"><span class="toc-section-number">7.1</span>  ex. 7.1</a></li>
-  <li><a href="#ex.-7.2" id="toc-ex.-7.2" class="nav-link" data-scroll-target="#ex.-7.2"><span class="toc-section-number">7.2</span>  ex. 7.2</a></li>
-  <li><a href="#ex.-7.3" id="toc-ex.-7.3" class="nav-link" data-scroll-target="#ex.-7.3"><span class="toc-section-number">7.3</span>  ex. 7.3</a></li>
-  <li><a href="#ex.-7.4" id="toc-ex.-7.4" class="nav-link" data-scroll-target="#ex.-7.4"><span class="toc-section-number">7.4</span>  ex. 7.4</a></li>
-  <li><a href="#ex.-7.5" id="toc-ex.-7.5" class="nav-link" data-scroll-target="#ex.-7.5"><span class="toc-section-number">7.5</span>  ex. 7.5</a></li>
-  <li><a href="#ex.-7.6" id="toc-ex.-7.6" class="nav-link" data-scroll-target="#ex.-7.6"><span class="toc-section-number">7.6</span>  ex. 7.6</a></li>
-  <li><a href="#ex.-7.7" id="toc-ex.-7.7" class="nav-link" data-scroll-target="#ex.-7.7"><span class="toc-section-number">7.7</span>  ex. 7.7</a></li>
-  <li><a href="#ex.-7.8" id="toc-ex.-7.8" class="nav-link" data-scroll-target="#ex.-7.8"><span class="toc-section-number">7.8</span>  ex. 7.8</a></li>
+  <li><a href="#exercise-7.1" id="toc-exercise-7.1" class="nav-link active" data-scroll-target="#exercise-7.1">Exercise 7.1</a></li>
+  <li><a href="#exercise-7.2" id="toc-exercise-7.2" class="nav-link" data-scroll-target="#exercise-7.2">Exercise 7.2</a></li>
+  <li><a href="#exercise-7.3" id="toc-exercise-7.3" class="nav-link" data-scroll-target="#exercise-7.3">Exercise 7.3</a></li>
+  <li><a href="#exercise-7.4" id="toc-exercise-7.4" class="nav-link" data-scroll-target="#exercise-7.4">Exercise 7.4</a></li>
+  <li><a href="#exercise-7.5" id="toc-exercise-7.5" class="nav-link" data-scroll-target="#exercise-7.5">Exercise 7.5</a></li>
+  <li><a href="#exercise-7.6" id="toc-exercise-7.6" class="nav-link" data-scroll-target="#exercise-7.6">Exercise 7.6</a></li>
+  <li><a href="#exercise-7.7" id="toc-exercise-7.7" class="nav-link" data-scroll-target="#exercise-7.7">Exercise 7.7</a></li>
+  <li><a href="#exercise-7.8" id="toc-exercise-7.8" class="nav-link" data-scroll-target="#exercise-7.8">Exercise 7.8</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/07.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -289,8 +289,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="ex.-7.1" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="ex.-7.1"><span class="header-section-number">7.1</span> ex. 7.1</h2>
+<section id="exercise-7.1" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-7.1">Exercise 7.1</h2>
 <p>Find the names of the <code>nc</code> counties that intersect <code>LINESTRING(-84 35,-78 35)</code>; use <code>[</code> for this, and use <code>st_join()</code> for this.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
@@ -321,8 +321,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># [13] "Scotland"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="ex.-7.2" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="ex.-7.2"><span class="header-section-number">7.2</span> ex. 7.2</h2>
+<section id="exercise-7.2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-7.2">Exercise 7.2</h2>
 <p>Repeat this after setting <code>sf_use_s2(FALSE)</code>, and <em>compute</em> the difference (hint: use <code>setdiff()</code>), and color the counties of the difference using color ‘#00880088’.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># save names first:</span></span>
@@ -347,8 +347,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="ex.-7.3" class="level2" data-number="7.3">
-<h2 data-number="7.3" class="anchored" data-anchor-id="ex.-7.3"><span class="header-section-number">7.3</span> ex. 7.3</h2>
+<section id="exercise-7.3" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-7.3">Exercise 7.3</h2>
 <p>Plot the two different lines in a single plot; note that R will plot a straight line always straight in the projection currently used; <code>st_segmentize</code> can be used to add points on straight line, or on a great circle for ellipsoidal coordinates.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">st_geometry</span>(nc))</span>
@@ -376,8 +376,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>The fact that the <em>unsegmented</em> line <code>line</code> is straight (R plotted it as straight, it contains only the two endpoints) and that it covers the red line supports that in this plot, the great circle line (red) <em>is</em> plotted straight, and the “straight in plate carree” line is not.</p>
 </section>
-<section id="ex.-7.4" class="level2" data-number="7.4">
-<h2 data-number="7.4" class="anchored" data-anchor-id="ex.-7.4"><span class="header-section-number">7.4</span> ex. 7.4</h2>
+<section id="exercise-7.4" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-7.4">Exercise 7.4</h2>
 <p>NDVI, normalized differenced vegetation index, is computed as <code>(NIR-R)/(NIR+R)</code>, with NIR the near infrared and R the red band. Read the <code>L7_ETMs.tif</code> file into object <code>x</code>, and distribute the band dimensions over attributes by <code>split(x, "band")</code>. Then, add attribute NDVI to this object by using an expression that uses the NIR (band 4) and R (band 3) attributes directly.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stars)</span>
@@ -412,8 +412,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 </section>
-<section id="ex.-7.5" class="level2" data-number="7.5">
-<h2 data-number="7.5" class="anchored" data-anchor-id="ex.-7.5"><span class="header-section-number">7.5</span> ex. 7.5</h2>
+<section id="exercise-7.5" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-7.5">Exercise 7.5</h2>
 <p>Compute NDVI for the <code>L7_ETMs.tif</code> image by reducing the band dimension, using <code>st_apply</code> and an a function <code>ndvi = function(x) { (x[4]-x[3])/(x[4]+x[3]) }</code>. Plot the result, and write the result to a GeoTIFF.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>ndvi_fn <span class="ot">=</span> <span class="cf">function</span>(x) { (x[<span class="dv">4</span>]<span class="sc">-</span>x[<span class="dv">3</span>])<span class="sc">/</span>(x[<span class="dv">4</span>]<span class="sc">+</span>x[<span class="dv">3</span>]) }</span>
@@ -433,8 +433,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>This latter function can be much faster, as it is called for chunks of data rather than for individual pixels.</p>
 </section>
-<section id="ex.-7.6" class="level2" data-number="7.6">
-<h2 data-number="7.6" class="anchored" data-anchor-id="ex.-7.6"><span class="header-section-number">7.6</span> ex. 7.6</h2>
+<section id="exercise-7.6" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-7.6">Exercise 7.6</h2>
 <p>Use <code>st_transform</code> to transform the <code>stars</code> object read from <code>L7_ETMs.tif</code> to <code>EPSG:4326</code>. Print the object. Is this a regular grid? Plot the first band using arguments <code>axes=TRUE</code> and explain why this takes such a long time.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>(<span class="at">x_t =</span> <span class="fu">st_transform</span>(x, <span class="st">'EPSG:4326'</span>))</span>
@@ -442,8 +442,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>the printed summary shows that this is a curvilinear grid. Plotting takes so long because for curvilinear grids, each cell is converted to a small polygon and then plotted.</p>
 </section>
-<section id="ex.-7.7" class="level2" data-number="7.7">
-<h2 data-number="7.7" class="anchored" data-anchor-id="ex.-7.7"><span class="header-section-number">7.7</span> ex. 7.7</h2>
+<section id="exercise-7.7" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-7.7">Exercise 7.7</h2>
 <p>Use <code>st_warp</code> to warp the <code>L7_ETMs.tif</code> object to <code>EPSG:4326</code>, and plot the resulting object with <code>axes=TRUE</code>. Why is the plot created much faster than after <code>st_transform</code>?</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x_w <span class="ot">=</span> <span class="fu">st_warp</span>(x, <span class="at">crs =</span> <span class="st">'EPSG:4326'</span>)</span>
@@ -455,8 +455,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>Plotting is faster now because we created a new regular grid. Note that the grid border does not align perfectly with the square formed by the bounding box (using straight lines in an equidistant rectangular projection): white grid cells indicate the misalignment due to warping/transforming.</p>
 </section>
-<section id="ex.-7.8" class="level2" data-number="7.8">
-<h2 data-number="7.8" class="anchored" data-anchor-id="ex.-7.8"><span class="header-section-number">7.8</span> ex. 7.8</h2>
+<section id="exercise-7.8" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-7.8">Exercise 7.8</h2>
 <p>Using a vector representation of the raster <code>L7_ETMs</code>, plot the intersection with a circular area around <code>POINT(293716 9113692)</code> with radius 75 m, and compute the area-weighted mean pixel values for this circle. Compare the area-weighted values with those obtained by <code>aggregate</code> using the vector data, and by <code>aggregate</code> using the raster data, using <code>exact=FALSE</code> (default) and <code>exact=FALSE</code>. Explain the differences.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>l7 <span class="ot">=</span> <span class="fu">st_as_sf</span>(x)</span>

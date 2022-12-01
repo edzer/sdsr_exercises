@@ -1,6 +1,6 @@
 # Coordinates
 
-## ex 2.1. 
+## Exercise 2.1.  {-}
 
 List three geographic measures that do not have a natural zero origin
 
@@ -10,7 +10,7 @@ List three geographic measures that do not have a natural zero origin
   origins and orientation for longitude and latitude.
 * altitude (measured w.r.t. mean sea level, geoid, or ellispoid)
 
-## ex 2.2 - 2.4
+## Exercises 2.2 {-}
 
 (thanks to Jonas Hurst)
 
@@ -31,7 +31,7 @@ cart2polar(10, -2)
 cart2polar(0, 10)
 ```
 
-## Convert from Polar to Cartesian
+## Exercise 2.3 {-}
 
 Convert the polar (r, phi) points (10, 45°), (0, 100°) and (5, 259°) to Cartesian coordinates
 
@@ -52,6 +52,8 @@ polar2cart(10, 45)
 polar2cart(0, 100)
 polar2cart(5, 259)
 ```
+
+## Exercise 2.4 {-} 
 
 assuming the Earth is a sphere with a radius of 6371 km, compute for (lambda, phi) points the great circle distance between (10, 10) and (11, 10), between (10, 80)    >and (11, 80), between (10, 10) and (10, 11) and between (10, 80) and (10, 81).
 

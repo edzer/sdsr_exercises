@@ -1,6 +1,6 @@
 # Spatial Interpolation
 
-## ex 12.1
+## Exercise 12.1 {-}
 
 _Create a plot like the one in figure 12.13 that has the inverse distance interpolated map of figure 12.2 added on left side._
 
@@ -39,7 +39,7 @@ g + geom_stars(data = km, aes(fill = NO2, x = x, y = y)) +
     coord_sf(lims_method = "geometry_bbox")
 ```
 
-## ex 12.2
+## Exercise 12.2 {-}
 
 _Create a scatter plot of the map values of the idw and kriging map, and a scatter plot of map values of idw and residual kriging._
 
@@ -52,7 +52,7 @@ plot(kr0 ~ kr1, k.df, xlab = "kriging", ylab = "idw")
 plot(kr0 ~ kr2, k.df, xlab = "residual kriging", ylab = "idw")
 ```
 
-## ex 12.3
+## Exercise 12.3 {-}
 
 _Carry out a block kriging by setting the `block` argument in
 `krige()`, and do this for block sizes of 10 km (the grid cell size),
@@ -97,7 +97,7 @@ g + geom_stars(data = b, aes(fill = NO2_SE, x = x, y = y)) +
 
 ```
 
-## ex 12.4
+## Exercise 12.4 {-}
 
 _Based on the residual kriging results obtained above, compute
 maps of the lower and upper boundary of a 95% confidence interval,
@@ -116,7 +116,7 @@ g + geom_stars(data = b, aes(fill = NO2_95CI, x = x, y = y)) +
     coord_sf(lims_method = "geometry_bbox")
 ```	
 
-## ex 12.5
+## Exercise 12.5 {-}
 _Compute and show the map with the probability that NO2 point values
 exceeds the level of 15 ppm, assuming a normal distribution._
 

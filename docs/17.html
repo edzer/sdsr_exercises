@@ -258,11 +258,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ex-17.1" id="toc-ex-17.1" class="nav-link active" data-scroll-target="#ex-17.1"><span class="toc-section-number">17.1</span>  ex 17.1</a></li>
-  <li><a href="#ex-17.2" id="toc-ex-17.2" class="nav-link" data-scroll-target="#ex-17.2"><span class="toc-section-number">17.2</span>  ex 17.2</a></li>
-  <li><a href="#ex-17.3" id="toc-ex-17.3" class="nav-link" data-scroll-target="#ex-17.3"><span class="toc-section-number">17.3</span>  ex 17.3</a></li>
-  <li><a href="#ex-17.4" id="toc-ex-17.4" class="nav-link" data-scroll-target="#ex-17.4"><span class="toc-section-number">17.4</span>  ex 17.4</a></li>
-  <li><a href="#ex-17.5" id="toc-ex-17.5" class="nav-link" data-scroll-target="#ex-17.5"><span class="toc-section-number">17.5</span>  ex 17.5</a></li>
+  <li><a href="#exercise-17.1" id="toc-exercise-17.1" class="nav-link active" data-scroll-target="#exercise-17.1">Exercise 17.1</a></li>
+  <li><a href="#exercise-17.2" id="toc-exercise-17.2" class="nav-link" data-scroll-target="#exercise-17.2">Exercise 17.2</a></li>
+  <li><a href="#exercise-17.3" id="toc-exercise-17.3" class="nav-link" data-scroll-target="#exercise-17.3">Exercise 17.3</a></li>
+  <li><a href="#exercise-17.4" id="toc-exercise-17.4" class="nav-link" data-scroll-target="#exercise-17.4">Exercise 17.4</a></li>
+  <li><a href="#exercise-17.5" id="toc-exercise-17.5" class="nav-link" data-scroll-target="#exercise-17.5">Exercise 17.5</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/17.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -294,8 +294,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading required package: sf</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Linking to GEOS 3.10.2, GDAL 3.4.3, PROJ 8.2.1; sf_use_s2() is TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<section id="ex-17.1" class="level2" data-number="17.1">
-<h2 data-number="17.1" class="anchored" data-anchor-id="ex-17.1"><span class="header-section-number">17.1</span> ex 17.1</h2>
+<section id="exercise-17.1" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-17.1">Exercise 17.1</h2>
 <p>First create a spatial weights object from the <code>k=4</code> symmetrized neighbour object:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spatialreg)</span>
@@ -443,8 +443,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co"># RLMlag = 0.0035207, df = 1, p-value = 0.9527</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="ex-17.2" class="level2" data-number="17.2">
-<h2 data-number="17.2" class="anchored" data-anchor-id="ex-17.2"><span class="header-section-number">17.2</span> ex 17.2</h2>
+<section id="exercise-17.2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-17.2">Exercise 17.2</h2>
 <p>We may update the formula for the properties-only model to include municipality department “fixed effects”, dummy variables:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>LM_pr_fx <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">update</span>(f_pr, . <span class="sc">~</span> . <span class="sc">+</span> num_dep), <span class="at">data=</span>properties_in_dd)</span>
@@ -606,8 +606,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="co"># RLMlag = 19.055, df = 1, p-value = 1.27e-05</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="ex-17.3" class="level2" data-number="17.3">
-<h2 data-number="17.3" class="anchored" data-anchor-id="ex-17.3"><span class="header-section-number">17.3</span> ex 17.3</h2>
+<section id="exercise-17.3" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-17.3">Exercise 17.3</h2>
 <p>Fitting models initially by maximum likelihood (GMM may also be used), we pre-compute the eigenvalues:</p>
 <div class="cell" data-hash="17_cache/html/unnamed-chunk-15_40f4b4caf89f3b55e44eee4566e3840a">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>eigs <span class="ot">&lt;-</span> <span class="fu">eigenw</span>(lw)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -987,8 +987,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>So on balance, the pre-test strategy has not worked out too well; it is unclear what is missing in the model.</p>
 </section>
-<section id="ex-17.4" class="level2" data-number="17.4">
-<h2 data-number="17.4" class="anchored" data-anchor-id="ex-17.4"><span class="header-section-number">17.4</span> ex 17.4</h2>
+<section id="exercise-17.4" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-17.4">Exercise 17.4</h2>
 <p>Turning to estimating the general nested model first, followed by excluding the Durbin (spatially lagged <span class="math inline">\(X\)</span>) variables, a likelihood ratio test shows that the spatially lagged <span class="math inline">\(X\)</span> variables should be retained in the model:</p>
 <div class="cell" data-hash="17_cache/html/unnamed-chunk-31_9092cbe66bb177474b85846f40609f13">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>GNM_pr <span class="ot">&lt;-</span> <span class="fu">sacsarlm</span>(f_pr, <span class="at">data=</span>properties_in_dd, <span class="at">listw=</span>lw, <span class="at">Durbin=</span><span class="cn">TRUE</span>,</span>
@@ -1187,8 +1187,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="co">#      0.88013836      0.01319648     -0.89698401      0.03914224</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="ex-17.5" class="level2" data-number="17.5">
-<h2 data-number="17.5" class="anchored" data-anchor-id="ex-17.5"><span class="header-section-number">17.5</span> ex 17.5</h2>
+<section id="exercise-17.5" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-17.5">Exercise 17.5</h2>
 <p>We cannot say that the spatial econometrics approach has reached a clear conclusion. When including the upper level variables, we introduce a lot of spatial autocorrelation at the lower level. It is arguable that the MRF random effect at the upper level and including only the properties level variables gets at least as far as the most complex spatial econometrics models. It is fairly clear that mapping the actual green space and museums, and measuring distance from each property to the attractions would remove the scale problem for those variables. Disaggregation of the foreigners, airbnb and population density variables would be highly desirable. With improvements to the properties level data set, including more variables describing the properties themselves, much of the mis-specification should be removed.</p>
 
 

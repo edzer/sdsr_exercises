@@ -258,9 +258,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ex-2.1." id="toc-ex-2.1." class="nav-link active" data-scroll-target="#ex-2.1."><span class="toc-section-number">2.1</span>  ex 2.1.</a></li>
-  <li><a href="#ex-2.2---2.4" id="toc-ex-2.2---2.4" class="nav-link" data-scroll-target="#ex-2.2---2.4"><span class="toc-section-number">2.2</span>  ex 2.2 - 2.4</a></li>
-  <li><a href="#convert-from-polar-to-cartesian" id="toc-convert-from-polar-to-cartesian" class="nav-link" data-scroll-target="#convert-from-polar-to-cartesian"><span class="toc-section-number">2.3</span>  Convert from Polar to Cartesian</a></li>
+  <li><a href="#exercise-2.1." id="toc-exercise-2.1." class="nav-link active" data-scroll-target="#exercise-2.1.">Exercise 2.1.</a></li>
+  <li><a href="#exercises-2.2" id="toc-exercises-2.2" class="nav-link" data-scroll-target="#exercises-2.2">Exercises 2.2</a></li>
+  <li><a href="#exercise-2.3" id="toc-exercise-2.3" class="nav-link" data-scroll-target="#exercise-2.3">Exercise 2.3</a></li>
+  <li><a href="#exercise-2.4" id="toc-exercise-2.4" class="nav-link" data-scroll-target="#exercise-2.4">Exercise 2.4</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/02.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -284,8 +285,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 </header>
 
-<section id="ex-2.1." class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="ex-2.1."><span class="header-section-number">2.1</span> ex 2.1.</h2>
+<section id="exercise-2.1." class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-2.1.">Exercise 2.1.</h2>
 <p>List three geographic measures that do not have a natural zero origin</p>
 <ul>
 <li>longitude: the zero meridian is arbitrary, 100 years ago there were many other zero meridians fashionable</li>
@@ -293,8 +294,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>altitude (measured w.r.t. mean sea level, geoid, or ellispoid)</li>
 </ul>
 </section>
-<section id="ex-2.2---2.4" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="ex-2.2---2.4"><span class="header-section-number">2.2</span> ex 2.2 - 2.4</h2>
+<section id="exercises-2.2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercises-2.2">Exercises 2.2</h2>
 <p>(thanks to Jonas Hurst)</p>
 <p>Convert the (x, y) point s (10, 2), (-10, -1), (10, -2) and (0, 10) to polar cooridnates</p>
 <div class="cell">
@@ -316,8 +317,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co"># [1] 10 90</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="convert-from-polar-to-cartesian" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="convert-from-polar-to-cartesian"><span class="header-section-number">2.3</span> Convert from Polar to Cartesian</h2>
+<section id="exercise-2.3" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-2.3">Exercise 2.3</h2>
 <p>Convert the polar (r, phi) points (10, 45°), (0, 100°) and (5, 259°) to Cartesian coordinates</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>deg2rad <span class="ot">=</span> <span class="cf">function</span>(angle_degree) {</span>
@@ -339,6 +340,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="fu">polar2cart</span>(<span class="dv">5</span>, <span class="dv">259</span>)</span>
 <span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># [1] -0.954045 -4.908136</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="exercise-2.4" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-2.4">Exercise 2.4</h2>
 <p>assuming the Earth is a sphere with a radius of 6371 km, compute for (lambda, phi) points the great circle distance between (10, 10) and (11, 10), between (10, 80) &gt;and (11, 80), between (10, 10) and (10, 11) and between (10, 80) and (10, 81).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>distOnSphere <span class="ot">=</span> <span class="cf">function</span>(l1, phi1, l2, phi2, radius) {</span>

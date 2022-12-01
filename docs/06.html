@@ -196,14 +196,14 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#ex-6.1." id="toc-ex-6.1." class="nav-link active" data-scroll-target="#ex-6.1."><span class="toc-section-number">6.1</span>  ex 6.1.</a></li>
-  <li><a href="#ex-6.2." id="toc-ex-6.2." class="nav-link" data-scroll-target="#ex-6.2."><span class="toc-section-number">6.2</span>  ex 6.2.</a></li>
-  <li><a href="#ex-6.3." id="toc-ex-6.3." class="nav-link" data-scroll-target="#ex-6.3."><span class="toc-section-number">6.3</span>  ex 6.3.</a></li>
-  <li><a href="#ex-6.4." id="toc-ex-6.4." class="nav-link" data-scroll-target="#ex-6.4."><span class="toc-section-number">6.4</span>  ex 6.4.</a></li>
-  <li><a href="#ex-6.5." id="toc-ex-6.5." class="nav-link" data-scroll-target="#ex-6.5."><span class="toc-section-number">6.5</span>  ex 6.5.</a></li>
-  <li><a href="#ex-6.5.1" id="toc-ex-6.5.1" class="nav-link" data-scroll-target="#ex-6.5.1"><span class="toc-section-number">6.6</span>  ex 6.5.1</a></li>
-  <li><a href="#ex-6.5.2" id="toc-ex-6.5.2" class="nav-link" data-scroll-target="#ex-6.5.2"><span class="toc-section-number">6.7</span>  ex 6.5.2</a></li>
-  <li><a href="#ex-6.5.3" id="toc-ex-6.5.3" class="nav-link" data-scroll-target="#ex-6.5.3"><span class="toc-section-number">6.8</span>  ex 6.5.3</a></li>
+  <li><a href="#exercise-6.1." id="toc-exercise-6.1." class="nav-link active" data-scroll-target="#exercise-6.1.">Exercise 6.1.</a></li>
+  <li><a href="#exercise-6.2." id="toc-exercise-6.2." class="nav-link" data-scroll-target="#exercise-6.2.">Exercise 6.2.</a></li>
+  <li><a href="#exercise-6.3." id="toc-exercise-6.3." class="nav-link" data-scroll-target="#exercise-6.3.">Exercise 6.3.</a></li>
+  <li><a href="#exercise-6.4." id="toc-exercise-6.4." class="nav-link" data-scroll-target="#exercise-6.4.">Exercise 6.4.</a></li>
+  <li><a href="#exercise-6.5." id="toc-exercise-6.5." class="nav-link" data-scroll-target="#exercise-6.5.">Exercise 6.5.</a></li>
+  <li><a href="#exercise-6.5.1" id="toc-exercise-6.5.1" class="nav-link" data-scroll-target="#exercise-6.5.1">Exercise 6.5.1</a></li>
+  <li><a href="#exercise-6.5.2" id="toc-exercise-6.5.2" class="nav-link" data-scroll-target="#exercise-6.5.2">Exercise 6.5.2</a></li>
+  <li><a href="#exercise-6.5.3" id="toc-exercise-6.5.3" class="nav-link" data-scroll-target="#exercise-6.5.3">Exercise 6.5.3</a></li>
   </ul>
 <div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/06.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
@@ -227,16 +227,16 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="ex-6.1." class="level2" data-number="6.1">
-<h2 data-number="6.1" class="anchored" data-anchor-id="ex-6.1."><span class="header-section-number">6.1</span> ex 6.1.</h2>
+<section id="exercise-6.1." class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-6.1.">Exercise 6.1.</h2>
 <p>Why is it difficult to represent trajectories, sequences of <span class="math inline">\((x,y,t)\)</span> obtained by tracking moving objects, by data cubes as described in this chapter?</p>
 <ul>
 <li>rounding <span class="math inline">\((x,y,t)\)</span> to the discrete set of dimension values in a data cube may cause loss of information</li>
 <li>if the dimensions all have a high resolution, data loss is limited but the data cube will be very sparse; this will only be effective if a system capable of storing sparse data cubes is used (e.g.&nbsp;SciDB, TileDB)</li>
 </ul>
 </section>
-<section id="ex-6.2." class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="ex-6.2."><span class="header-section-number">6.2</span> ex 6.2.</h2>
+<section id="exercise-6.2." class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-6.2.">Exercise 6.2.</h2>
 <p>In a socio-economic vector data cube with variables population, life expectancy, and gross domestic product ordered by dimensions country and year, which variables have block support for the spatial dimension, and which have block support for the temporal dimension?</p>
 <ul>
 <li>population has spatial block support (total over an area), typically not temporal block support (but the population e.g.&nbsp;on a particular day of the year)</li>
@@ -244,8 +244,8 @@ ul.task-list li input[type="checkbox"] {
 <li>GDP has both spatial and temporal block support: it is a total over an area and a time period.</li>
 </ul>
 </section>
-<section id="ex-6.3." class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="ex-6.3."><span class="header-section-number">6.3</span> ex 6.3.</h2>
+<section id="exercise-6.3." class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-6.3.">Exercise 6.3.</h2>
 <p>The Sentinel-2 satellites collect images in 12 spectral bands; list advantages and disadvantages to represent them as (i) different data cubes, (ii) a data cube with 12 attributes, one for each band, and (iii) a single attribute data cube with a spectral dimension.</p>
 <ul>
 <li>as (i): it would be easy to cope with the differences in cell sizes;</li>
@@ -253,19 +253,19 @@ ul.task-list li input[type="checkbox"] {
 <li>as (iii): as (ii) but it would be easier to consider (analyse, classify, reduce) spectral reflectance curves, as they are now organized in a dimension</li>
 </ul>
 </section>
-<section id="ex-6.4." class="level2" data-number="6.4">
-<h2 data-number="6.4" class="anchored" data-anchor-id="ex-6.4."><span class="header-section-number">6.4</span> ex 6.4.</h2>
+<section id="exercise-6.4." class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-6.4.">Exercise 6.4.</h2>
 <p>Explain why a curvilinear raster as shown in figure 1.5 can be considered a special case of a data cube.</p>
 <ul>
 <li>Curvilinear grids do not have a simple relationship between dimension index (row/col, i/j) to coordinate values (lon/lat, x/y): one needs both row and col to find the coordinate pair, and from a coordinate pair a rather complex look-up to find the corresponding row and column.</li>
 </ul>
 </section>
-<section id="ex-6.5." class="level2" data-number="6.5">
-<h2 data-number="6.5" class="anchored" data-anchor-id="ex-6.5."><span class="header-section-number">6.5</span> ex 6.5.</h2>
+<section id="exercise-6.5." class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-6.5.">Exercise 6.5.</h2>
 <p>Explain how the following problems can be solved with data cube operations <code>filter</code>, <code>apply</code>, <code>reduce</code> and/or <code>aggregate</code>, and in which order. Also mention for each which function is applied, and what the dimensionality of the resulting data cube is (if any):</p>
 </section>
-<section id="ex-6.5.1" class="level2" data-number="6.6">
-<h2 data-number="6.6" class="anchored" data-anchor-id="ex-6.5.1"><span class="header-section-number">6.6</span> ex 6.5.1</h2>
+<section id="exercise-6.5.1" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-6.5.1">Exercise 6.5.1</h2>
 <p>from hourly <span class="math inline">\(PM_{10}\)</span> measurements for a set of air quality monitoring stations, compute per station the amount of days per year that the average daily <span class="math inline">\(PM_{10}\)</span> value exceeds 50 <span class="math inline">\(\mu g/m^3\)</span></p>
 <ul>
 <li>convert measured hourly values into daily averages: aggregate (from hourly to daily, function: mean)</li>
@@ -274,8 +274,8 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <p>This gives a one-dimensional data cube, with dimension “station”</p>
 </section>
-<section id="ex-6.5.2" class="level2" data-number="6.7">
-<h2 data-number="6.7" class="anchored" data-anchor-id="ex-6.5.2"><span class="header-section-number">6.7</span> ex 6.5.2</h2>
+<section id="exercise-6.5.2" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-6.5.2">Exercise 6.5.2</h2>
 <p>for a sequence of aerial images of an oil spill, find the time at which the oil spill had its largest extent, and the corresponding extent</p>
 <ul>
 <li>for each image, classify pixels into oil/no oil: apply (function: classify)</li>
@@ -284,8 +284,8 @@ ul.task-list li input[type="checkbox"] {
 </ul>
 <p>This gives a zero-dimensional data cube (a scalar).</p>
 </section>
-<section id="ex-6.5.3" class="level2" data-number="6.8">
-<h2 data-number="6.8" class="anchored" data-anchor-id="ex-6.5.3"><span class="header-section-number">6.8</span> ex 6.5.3</h2>
+<section id="exercise-6.5.3" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="exercise-6.5.3">Exercise 6.5.3</h2>
 <p>from a 10-year period with global daily sea surface temperature (SST) raster maps, find the area with the 10% largest and 10% smallest temporal trends in SST values.</p>
 <ul>
 <li>from daily SST to trend values per pixel: reduce time (function: trend function, <code>lm</code>)</li>
