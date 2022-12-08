@@ -24,6 +24,8 @@ depmunic$foreigners <- 100 * depmunic$pop_rest/ depmunic$population
 depmunic$prgreensp <- depmunic$greensp/ (10000*depmunic$area)
 ```
 
+The vignette `PropertiesAthens.Rmd` can be extracted from the [archived HSAR package](https://cran.r-project.org/src/contrib/Archive/HSAR/HSAR_0.5.1.tar.gz), and can be run and viewed ("Knit") in rstudio by replacing on line 18 the command `library(HSAR)` with `library(Matrix)`.
+
 In the vignette, two upper-level variables are added to the six already present, and we change the green space variable scaling to avoid numerical issues in calculating coefficient standard errors.
 
 ```{r}
