@@ -67,11 +67,24 @@ from hourly $PM_{10}$ measurements for a set of air quality
 monitoring stations, compute per station the amount of days per
 year that the average daily $PM_{10}$ value exceeds 50 $\mu g/m^3$
 
-* convert measured hourly values into daily averages: aggregate (from hourly to daily, function: mean)
+* convert measured hourly values into daily averages: aggregate (from hourly to daily, aggregation function: `mean`)
 * convert daily averages into TRUE/FALSE whether the daily average exceeds 50: apply (function: larger-than)
-* compute the number of days: reduce time (function: sum)
+* compute the number of days: aggregate time  to year (aggregation function: `sum`)
 
 This gives a one-dimensional data cube, with dimension "station"
+
+An example for NO2, 2017, using threshold 25, is given below:
+```{r}
+#| code-fold: true
+load("ch13.RData")
+library(stars)
+a = aggregate(no2.st, "days", mean, na.rm=TRUE) # daily means
+b = a > 25 # threshold
+by_year = aggregate(b, "year", sum, na.rm=TRUE)
+library(ggplot2)
+df = as.data.frame(by_year[,1]) # ignore single valued 2018
+ggplot(df, aes(NO2)) + geom_histogram(bins=15) + xlab("# days")
+```
 
 ## Exercise 6.5.2  {-}
 
@@ -92,9 +105,37 @@ from a 10-year period with global daily sea surface temperature
 smallest temporal trends in SST values.
 
 * from daily SST to trend values per pixel: reduce time (function: trend function, `lm`)
-* from trend raster, find 10- and 90-percentile: reduce space (function: quantile)
+* from trend raster, find 10- and 90-percentile: reduce space (function: `quantile`)
 * using percentiles, threshold the trend raster: apply (function: less than / more than)
 
 This gives a two-dimensional data cube (or raster layer: the reclassified trend raster).
 
-
+An example for SST using only a 9-day time series:
+```{r}
+#| code-fold: true
+library(stars)
+x = c(
+"avhrr-only-v2.19810901.nc",
+"avhrr-only-v2.19810902.nc",
+"avhrr-only-v2.19810903.nc",
+"avhrr-only-v2.19810904.nc",
+"avhrr-only-v2.19810905.nc",
+"avhrr-only-v2.19810906.nc",
+"avhrr-only-v2.19810907.nc",
+"avhrr-only-v2.19810908.nc",
+"avhrr-only-v2.19810909.nc"
+)
+# see the second vignette:
+# install.packages("starsdata", repos = "http://pebesma.staff.ifgi.de", type = "source")
+file_list = system.file(paste0("netcdf/", x), package = "starsdata")
+(y = read_stars(file_list, quiet = TRUE) |> adrop() )
+# compute trend:
+lm1 = function(y) { X=cbind(1, 1:9); if (any(is.na(y))) NA else lm.fit(X,y)$coef[2] }
+tr = st_apply(y[1], c("x","y"), lm1)
+# find .1 and .9 quantile:
+qq = quantile(as.vector(tr[[1]]), c(.1, .9), na.rm = TRUE)
+tr$LH = tr$lm1 * 0
+tr$LH[tr$lm1 < qq[1]] = -1 # lower than .1-quantile
+tr$LH[tr$lm1 > qq[2]] = 1  # above .9-quantile
+plot(tr["LH"])
+```
