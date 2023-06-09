@@ -102,7 +102,8 @@ Now for the NO2 data:
 ```{r}
 time(no2.d) -> days
 time(grd.st) -> times
-which(days %in% times) -> sel
+# which(days %in% times) -> sel
+sel = findInterval(times, days) 
 no2.dr = aperm(no2.d, 2:1)
 no2.dr[,, sel[1] ] |> adrop() |> st_as_sf() |> na.omit() -> no2_t1
 no2.dr[,, sel[2] ] |> adrop() |> st_as_sf() |> na.omit() -> no2_t2

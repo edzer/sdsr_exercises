@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
-
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.269">
-
+<meta name="generator" content="quarto-1.3.353">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-
-
 <title>Spatial Data Science - 10&nbsp; Statistical models for spatial data</title>
 <style>
 code{white-space: pre-wrap;}
@@ -17,9 +14,10 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -46,45 +44,14 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
-    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
-
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
@@ -103,8 +70,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
-<script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -122,156 +88,166 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit"
   }
-}</script>
-
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
+}</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 </head>
-
 <body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
-  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-    <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Statistical models for spatial data</span></h1>
-      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
-        <i class="bi bi-chevron-right"></i>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./10.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Statistical models for spatial data</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
       </button>
     </div>
-  </nav>
-</header>
-<!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Spatial Data Science</a> 
         <div class="sidebar-tools-main">
-    <a href="https://github.com/edzer/sdsr_exercises/" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+    <a href="https://github.com/edzer/sdsr_exercises/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
-      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="mt-2 flex-shrink-0 align-items-center">
         <div class="sidebar-search">
         <div id="quarto-search" class="" title="Search"></div>
         </div>
-      </div>
+        </div>
     <div class="sidebar-menu-container"> 
     <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
+<li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link">Spatial Data Science, with applications in R</a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Spatial Data Science, with applications in R</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./01.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Intro</span></a>
+  <a href="./01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Intro</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./02.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Coordinates</span></a>
+  <a href="./02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Coordinates</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./03.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Geometries</span></a>
+  <a href="./03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Geometries</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./04.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Spherical geometry</span></a>
+  <a href="./04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Spherical geometry</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./05.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Attributes</span></a>
+  <a href="./05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Attributes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./06.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Cubes</span></a>
+  <a href="./06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Cubes</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./07.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">sf, stars</span></a>
+  <a href="./07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">sf, stars</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./08.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Plotting</span></a>
+  <a href="./08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Plotting</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./09.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Large datasets</span></a>
+  <a href="./09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Large datasets</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./10.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Statistical models for spatial data</span></a>
+  <a href="./10.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Statistical models for spatial data</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./11.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Spatial Point Patterns</span></a>
+  <a href="./11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Spatial Point Patterns</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./12.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Spatial Interpolation</span></a>
+  <a href="./12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Spatial Interpolation</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./13.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Multivariate and Spatiotemporal Geostatistics</span></a>
+  <a href="./13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Multivariate and Spatiotemporal Geostatistics</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./14.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Proximity and Areal Data</span></a>
+  <a href="./14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Proximity and Areal Data</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./15.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Measures of spatial autocorrelation</span></a>
+  <a href="./15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Measures of spatial autocorrelation</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./16.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Spatial Regression</span></a>
+  <a href="./16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Spatial Regression</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./17.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Spatial econometrics models</span></a>
+  <a href="./17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Spatial econometrics models</span></span></a>
   </div>
 </li>
     </ul>
-    </div>
-</nav>
+</div>
+</nav><div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#exercise-10.1" id="toc-exercise-10.1" class="nav-link active" data-scroll-target="#exercise-10.1">Exercise 10.1</a></li>
+<li><a href="#exercise-10.1" id="toc-exercise-10.1" class="nav-link active" data-scroll-target="#exercise-10.1">Exercise 10.1</a></li>
   <li><a href="#exercise-10.2" id="toc-exercise-10.2" class="nav-link" data-scroll-target="#exercise-10.2">Exercise 10.2</a></li>
   <li><a href="#exercise-10.3" id="toc-exercise-10.3" class="nav-link" data-scroll-target="#exercise-10.3">Exercise 10.3</a></li>
   <li><a href="#exercise-10.4" id="toc-exercise-10.4" class="nav-link" data-scroll-target="#exercise-10.4">Exercise 10.4</a></li>
-  </ul>
-<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/10.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+  </ul><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/10.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title d-none d-lg-block"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Statistical models for spatial data</span></h1>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">
+<span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Statistical models for spatial data</span>
+</h1>
 </div>
 
 
@@ -284,245 +260,238 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </div>
   
 
-</header>
-
-<section id="exercise-10.1" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="exercise-10.1">Exercise 10.1</h2>
+</header><section id="exercise-10.1" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-10.1">Exercise 10.1</h2>
 <p>following the <code>lm</code> example of Section 10.2 use a random forest model to predict <code>SID</code> values (e.g.&nbsp;using package <strong>randomForest</strong>), and plot the random forest predictions against observations, along with the <span class="math inline">\(x=y\)</span> line.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Attaching packages ─────────────────────────── tidyverse 1.3.2 ──</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ✔ ggplot2 3.4.0      ✔ purrr   0.3.5 </span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ✔ tibble  3.1.8      ✔ dplyr   1.0.10</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ✔ tidyr   1.2.1      ✔ stringr 1.5.0 </span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ✔ readr   2.1.3      ✔ forcats 0.5.2 </span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ── Conflicts ────────────────────────────── tidyverse_conflicts() ──</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># ✖ dplyr::filter() masks stats::filter()</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># ✖ dplyr::lag()    masks stats::lag()</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Linking to GEOS 3.10.2, GDAL 3.4.3, PROJ 8.2.1; sf_use_s2() is TRUE</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">system.file</span>(<span class="st">"gpkg/nc.gpkg"</span>, <span class="at">package=</span><span class="st">"sf"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">read_sf</span>() <span class="ot">-&gt;</span> nc</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>nc <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">SID =</span> SID74<span class="sc">/</span>BIR74, <span class="at">NWB =</span> NWBIR74<span class="sc">/</span>BIR74) <span class="ot">-&gt;</span> nc1</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(randomForest) <span class="sc">|&gt;</span> <span class="fu">suppressPackageStartupMessages</span>()</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>r <span class="ot">=</span> <span class="fu">randomForest</span>(SID <span class="sc">~</span> NWB, nc1)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>nc1<span class="sc">$</span>rf <span class="ot">=</span> <span class="fu">predict</span>(r)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rf<span class="sc">~</span>SID, nc1)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<span><span class="co"># ── Attaching core tidyverse packages ──────────── tidyverse 2.0.0 ──</span></span>
+<span><span class="co"># ✔ dplyr     1.1.2     ✔ readr     2.1.4</span></span>
+<span><span class="co"># ✔ forcats   1.0.0     ✔ stringr   1.5.0</span></span>
+<span><span class="co"># ✔ ggplot2   3.4.2     ✔ tibble    3.2.1</span></span>
+<span><span class="co"># ✔ lubridate 1.9.2     ✔ tidyr     1.3.0</span></span>
+<span><span class="co"># ✔ purrr     1.0.1     </span></span>
+<span><span class="co"># ── Conflicts ────────────────────────────── tidyverse_conflicts() ──</span></span>
+<span><span class="co"># ✖ dplyr::filter() masks stats::filter()</span></span>
+<span><span class="co"># ✖ dplyr::lag()    masks stats::lag()</span></span>
+<span><span class="co"># ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
+<span><span class="co"># Linking to GEOS 3.11.1, GDAL 3.6.2, PROJ 9.1.1; sf_use_s2() is TRUE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"gpkg/nc.gpkg"</span>, package<span class="op">=</span><span class="st">"sf"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">nc</span></span>
+<span><span class="va">nc</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>SID <span class="op">=</span> <span class="va">SID74</span><span class="op">/</span><span class="va">BIR74</span>, NWB <span class="op">=</span> <span class="va">NWBIR74</span><span class="op">/</span><span class="va">BIR74</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">nc1</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://www.stat.berkeley.edu/~breiman/RandomForests/">randomForest</a></span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">r</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/randomForest/man/randomForest.html">randomForest</a></span><span class="op">(</span><span class="va">SID</span> <span class="op">~</span> <span class="va">NWB</span>, <span class="va">nc1</span><span class="op">)</span></span>
+<span><span class="va">nc1</span><span class="op">$</span><span class="va">rf</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">rf</span><span class="op">~</span><span class="va">SID</span>, <span class="va">nc1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="10_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="exercise-10.2" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="exercise-10.2">Exercise 10.2</h2>
+</section><section id="exercise-10.2" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-10.2">Exercise 10.2</h2>
 <p>Create a new dataset by randomly sampling 1000 points from the <code>nc</code> dataset, and rerun the linear regression model of section 10.2 on this dataset. What has changed?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pts <span class="ot">=</span> <span class="fu">st_sample</span>(nc, <span class="dv">1000</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>nc2 <span class="ot">=</span> <span class="fu">st_intersection</span>(nc1, pts)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Warning: attribute variables are assumed to be spatially constant</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># throughout all geometries</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(SID <span class="sc">~</span> NWB, nc1) <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Call:</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># lm(formula = SID ~ NWB, data = nc1)</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Residuals:</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># -0.0033253 -0.0007411 -0.0000691  0.0005479  0.0062218 </span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Coefficients:</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># (Intercept) 0.0006773  0.0002327   2.910  0.00447 ** </span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># NWB         0.0043785  0.0006204   7.058 2.44e-10 ***</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># ---</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Residual standard error: 0.001288 on 98 degrees of freedom</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple R-squared:  0.337,   Adjusted R-squared:  0.3302 </span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co"># F-statistic: 49.82 on 1 and 98 DF,  p-value: 2.438e-10</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(SID <span class="sc">~</span> NWB, nc2) <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Call:</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co"># lm(formula = SID ~ NWB, data = nc2)</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Residuals:</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="co"># -0.0034286 -0.0008150 -0.0001173  0.0006890  0.0061183 </span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Coefficients:</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co"># (Intercept) 6.718e-04  7.822e-05    8.59   &lt;2e-16 ***</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co"># NWB         4.558e-03  2.015e-04   22.62   &lt;2e-16 ***</span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="co"># ---</span></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Residual standard error: 0.001309 on 998 degrees of freedom</span></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple R-squared:  0.3389,  Adjusted R-squared:  0.3382 </span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="co"># F-statistic: 511.5 on 1 and 998 DF,  p-value: &lt; 2.2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pts</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_sample.html">st_sample</a></span><span class="op">(</span><span class="va">nc</span>, <span class="fl">1000</span><span class="op">)</span></span>
+<span><span class="va">nc2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html">st_intersection</a></span><span class="op">(</span><span class="va">nc1</span>, <span class="va">pts</span><span class="op">)</span></span>
+<span><span class="co"># Warning: attribute variables are assumed to be spatially constant</span></span>
+<span><span class="co"># throughout all geometries</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">SID</span> <span class="op">~</span> <span class="va">NWB</span>, <span class="va">nc1</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Call:</span></span>
+<span><span class="co"># lm(formula = SID ~ NWB, data = nc1)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Residuals:</span></span>
+<span><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
+<span><span class="co"># -0.0033253 -0.0007411 -0.0000691  0.0005479  0.0062218 </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Coefficients:</span></span>
+<span><span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co"># (Intercept) 0.0006773  0.0002327   2.910  0.00447 ** </span></span>
+<span><span class="co"># NWB         0.0043785  0.0006204   7.058 2.44e-10 ***</span></span>
+<span><span class="co"># ---</span></span>
+<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Residual standard error: 0.001288 on 98 degrees of freedom</span></span>
+<span><span class="co"># Multiple R-squared:  0.337,   Adjusted R-squared:  0.3302 </span></span>
+<span><span class="co"># F-statistic: 49.82 on 1 and 98 DF,  p-value: 2.438e-10</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">SID</span> <span class="op">~</span> <span class="va">NWB</span>, <span class="va">nc2</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Call:</span></span>
+<span><span class="co"># lm(formula = SID ~ NWB, data = nc2)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Residuals:</span></span>
+<span><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
+<span><span class="co"># -0.0033078 -0.0008297  0.0000220  0.0005134  0.0062396 </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Coefficients:</span></span>
+<span><span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co"># (Intercept) 7.825e-04  7.172e-05   10.91   &lt;2e-16 ***</span></span>
+<span><span class="co"># NWB         4.176e-03  1.842e-04   22.67   &lt;2e-16 ***</span></span>
+<span><span class="co"># ---</span></span>
+<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Residual standard error: 0.001208 on 998 degrees of freedom</span></span>
+<span><span class="co"># Multiple R-squared:   0.34,   Adjusted R-squared:  0.3393 </span></span>
+<span><span class="co"># F-statistic:   514 on 1 and 998 DF,  p-value: &lt; 2.2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>we see that the standard error has decreased with a factor 3 (sqrt(10)).</p>
 <p>For prediction interval widths:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(SID <span class="sc">~</span> NWB, nc1) <span class="sc">|&gt;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(nc1, <span class="at">interval =</span> <span class="st">"prediction"</span>) <span class="ot">-&gt;</span> pr1</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(SID <span class="sc">~</span> NWB, nc2) <span class="sc">|&gt;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(nc1, <span class="at">interval =</span> <span class="st">"prediction"</span>) <span class="ot">-&gt;</span> pr2</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(pr1[,<span class="st">"upr"</span>] <span class="sc">-</span> pr1[,<span class="st">"lwr"</span>])</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># [1] 0.005161177</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(pr2[,<span class="st">"upr"</span>] <span class="sc">-</span> pr2[,<span class="st">"lwr"</span>])</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># [1] 0.005141833</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">SID</span> <span class="op">~</span> <span class="va">NWB</span>, <span class="va">nc1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">nc1</span>, interval <span class="op">=</span> <span class="st">"prediction"</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">pr1</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">SID</span> <span class="op">~</span> <span class="va">NWB</span>, <span class="va">nc2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">nc1</span>, interval <span class="op">=</span> <span class="st">"prediction"</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">pr2</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr1</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr1</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co"># [1] 0.005161177</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr2</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr2</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co"># [1] 0.004746444</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>no change, as this dominated by the residual variance;</p>
 <p>Confidence intervals for the predicted means:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(SID <span class="sc">~</span> NWB, nc1) <span class="sc">|&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(nc1, <span class="at">interval =</span> <span class="st">"confidence"</span>) <span class="ot">-&gt;</span> pr1</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(SID <span class="sc">~</span> NWB, nc2) <span class="sc">|&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">predict</span>(nc1, <span class="at">interval =</span> <span class="st">"confidence"</span>) <span class="ot">-&gt;</span> pr2</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(pr1[,<span class="st">"upr"</span>] <span class="sc">-</span> pr1[,<span class="st">"lwr"</span>])</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># [1] 0.0007025904</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(pr2[,<span class="st">"upr"</span>] <span class="sc">-</span> pr2[,<span class="st">"lwr"</span>])</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># [1] 0.0002247793</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">SID</span> <span class="op">~</span> <span class="va">NWB</span>, <span class="va">nc1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">nc1</span>, interval <span class="op">=</span> <span class="st">"confidence"</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">pr1</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">SID</span> <span class="op">~</span> <span class="va">NWB</span>, <span class="va">nc2</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">nc1</span>, interval <span class="op">=</span> <span class="st">"confidence"</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">pr2</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr1</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr1</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co"># [1] 0.0007025904</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr2</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr2</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co"># [1] 0.0002065701</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>drops for larger dataset, as this is dominated by the standard errors of estimated coefficients.</p>
-</section>
-<section id="exercise-10.3" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="exercise-10.3">Exercise 10.3</h2>
-<p>Redo the water-land classification of section 7.4 using <code>class::knn</code> instead of <code>lda</code>.</p>
+</section><section id="exercise-10.3" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-10.3">Exercise 10.3</h2>
+<p>Redo the water-land classification of section 7.4 using <code><a href="https://rdrr.io/pkg/class/man/knn.html">class::knn</a></code> instead of <code>lda</code>.</p>
 <p>Preparing the dataset:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tif <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"tif/L7_ETMs.tif"</span>, <span class="at">package =</span> <span class="st">"stars"</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stars)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Loading required package: abind</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>(r <span class="ot">&lt;-</span> <span class="fu">read_stars</span>(tif))</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># stars object with 3 dimensions and 1 attribute</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># attribute(s):</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#              Min. 1st Qu. Median     Mean 3rd Qu. Max.</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># L7_ETMs.tif     1      54     69 68.91242      86  255</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># dimension(s):</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#      from  to  offset delta            refsys point x/y</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># x       1 349  288776  28.5 SIRGAS 2000 / ... FALSE [x]</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># y       1 352 9120761 -28.5 SIRGAS 2000 / ... FALSE [y]</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># band    1   6      NA    NA                NA    NA</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">115517</span>)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>pts <span class="ot">&lt;-</span> <span class="fu">st_bbox</span>(r) <span class="sc">|&gt;</span> <span class="fu">st_as_sfc</span>() <span class="sc">|&gt;</span> <span class="fu">st_sample</span>(<span class="dv">20</span>)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>(e <span class="ot">&lt;-</span> <span class="fu">st_extract</span>(r, pts))</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># stars object with 2 dimensions and 1 attribute</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co"># attribute(s):</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#              Min. 1st Qu. Median     Mean 3rd Qu. Max.</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co"># L7_ETMs.tif    12   41.75     63 60.95833    80.5  145</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co"># dimension(s):</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co">#          from to            refsys point</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="co"># geometry    1 20 SIRGAS 2000 / ...  TRUE</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co"># band        1  6                NA    NA</span></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co">#                                           values</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co"># geometry POINT (293002....,...,POINT (290941....</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co"># band                                        NULL</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(r[,,,<span class="dv">1</span>], <span class="at">reset =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>col <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">"yellow"</span>, <span class="dv">20</span>)</span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>col[<span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">14</span>, <span class="dv">15</span>, <span class="dv">18</span>, <span class="dv">19</span>)] <span class="ot">=</span> <span class="st">"red"</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="fu">st_as_sf</span>(e) <span class="sc">|&gt;</span> <span class="fu">st_coordinates</span>() <span class="sc">|&gt;</span> <span class="fu">text</span>(<span class="at">labels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>, <span class="at">col =</span> col)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">tif</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"tif/L7_ETMs.tif"</span>, package <span class="op">=</span> <span class="st">"stars"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/stars/">stars</a></span><span class="op">)</span></span>
+<span><span class="co"># Loading required package: abind</span></span>
+<span><span class="op">(</span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/stars/reference/read_stars.html">read_stars</a></span><span class="op">(</span><span class="va">tif</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># stars object with 3 dimensions and 1 attribute</span></span>
+<span><span class="co"># attribute(s):</span></span>
+<span><span class="co">#              Min. 1st Qu. Median     Mean 3rd Qu. Max.</span></span>
+<span><span class="co"># L7_ETMs.tif     1      54     69 68.91242      86  255</span></span>
+<span><span class="co"># dimension(s):</span></span>
+<span><span class="co">#      from  to  offset delta            refsys point x/y</span></span>
+<span><span class="co"># x       1 349  288776  28.5 SIRGAS 2000 / ... FALSE [x]</span></span>
+<span><span class="co"># y       1 352 9120761 -28.5 SIRGAS 2000 / ... FALSE [y]</span></span>
+<span><span class="co"># band    1   6      NA    NA                NA    NA</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">115517</span><span class="op">)</span></span>
+<span><span class="va">pts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html">st_bbox</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html">st_as_sfc</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_sample.html">st_sample</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">e</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/stars/reference/st_extract.html">st_extract</a></span><span class="op">(</span><span class="va">r</span>, <span class="va">pts</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># stars object with 2 dimensions and 1 attribute</span></span>
+<span><span class="co"># attribute(s):</span></span>
+<span><span class="co">#              Min. 1st Qu. Median     Mean 3rd Qu. Max.</span></span>
+<span><span class="co"># L7_ETMs.tif    12   41.75     63 60.95833    80.5  145</span></span>
+<span><span class="co"># dimension(s):</span></span>
+<span><span class="co">#          from to            refsys point</span></span>
+<span><span class="co"># geometry    1 20 SIRGAS 2000 / ...  TRUE</span></span>
+<span><span class="co"># band        1  6                NA    NA</span></span>
+<span><span class="co">#                                           values</span></span>
+<span><span class="co"># geometry POINT (293002....,...,POINT (290941....</span></span>
+<span><span class="co"># band                                        NULL</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">r</span><span class="op">[</span>,,,<span class="fl">1</span><span class="op">]</span>, reset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"yellow"</span>, <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="va">col</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">14</span>, <span class="fl">15</span>, <span class="fl">18</span>, <span class="fl">19</span><span class="op">)</span><span class="op">]</span> <span class="op">=</span> <span class="st">"red"</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/graphics/text.html">text</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, col <span class="op">=</span> <span class="va">col</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="10_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>rs <span class="ot">&lt;-</span> <span class="fu">split</span>(r)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>trn <span class="ot">&lt;-</span> <span class="fu">st_extract</span>(rs, pts)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>trn<span class="sc">$</span>cls <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="st">"land"</span>, <span class="dv">20</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>trn<span class="sc">$</span>cls[<span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">14</span>, <span class="dv">15</span>, <span class="dv">18</span>, <span class="dv">19</span>)] <span class="ot">&lt;-</span> <span class="st">"water"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">rs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html">split</a></span><span class="op">(</span><span class="va">r</span><span class="op">)</span></span>
+<span><span class="va">trn</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/stars/reference/st_extract.html">st_extract</a></span><span class="op">(</span><span class="va">rs</span>, <span class="va">pts</span><span class="op">)</span></span>
+<span><span class="va">trn</span><span class="op">$</span><span class="va">cls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"land"</span>, <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="va">trn</span><span class="op">$</span><span class="va">cls</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">14</span>, <span class="fl">15</span>, <span class="fl">18</span>, <span class="fl">19</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"water"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>estimation and prediction happen in one command:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(class)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(trn) <span class="sc">|&gt;</span> <span class="fu">select</span>(X1, X2, X3, X4, X5, X6) <span class="ot">-&gt;</span> tr </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(rs) <span class="sc">|&gt;</span> <span class="fu">select</span>(X1, X2, X3, X4, X5, X6) <span class="ot">-&gt;</span> test</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>rs<span class="sc">$</span>cls <span class="ot">=</span> <span class="fu">knn</span>(tr, test, trn<span class="sc">$</span>cl, <span class="at">k =</span> <span class="dv">5</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rs[<span class="st">"cls"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.stats.ox.ac.uk/pub/MASS4/">class</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">X1</span>, <span class="va">X2</span>, <span class="va">X3</span>, <span class="va">X4</span>, <span class="va">X5</span>, <span class="va">X6</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">tr</span> </span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">rs</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">X1</span>, <span class="va">X2</span>, <span class="va">X3</span>, <span class="va">X4</span>, <span class="va">X5</span>, <span class="va">X6</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">test</span></span>
+<span><span class="va">rs</span><span class="op">$</span><span class="va">cls</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/class/man/knn.html">knn</a></span><span class="op">(</span><span class="va">tr</span>, <span class="va">test</span>, <span class="va">trn</span><span class="op">$</span><span class="va">cl</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">rs</span><span class="op">[</span><span class="st">"cls"</span><span class="op">]</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="10_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="exercise-10.4" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="exercise-10.4">Exercise 10.4</h2>
+</section><section id="exercise-10.4" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-10.4">Exercise 10.4</h2>
 <p>For the <code>nc</code> data: estimation</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_centroid</span>(nc1) <span class="sc">|&gt;</span> <span class="fu">st_coordinates</span>() <span class="ot">-&gt;</span> cc</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Warning in st_centroid.sf(nc1): st_centroid assumes attributes are</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># constant over geometries of x</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_cols</span>(nc1, cc) <span class="sc">|&gt;</span> <span class="fu">transmute</span>(<span class="at">X=</span>X, <span class="at">Y=</span>Y, <span class="at">SID=</span>SID, <span class="at">NWB=</span>NWB) <span class="ot">-&gt;</span> nc2</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>(lm0 <span class="ot">&lt;-</span> <span class="fu">lm</span>(SID <span class="sc">~</span> NWB, nc1)) <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Call:</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># lm(formula = SID ~ NWB, data = nc1)</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Residuals:</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co"># -0.0033253 -0.0007411 -0.0000691  0.0005479  0.0062218 </span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Coefficients:</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># (Intercept) 0.0006773  0.0002327   2.910  0.00447 ** </span></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co"># NWB         0.0043785  0.0006204   7.058 2.44e-10 ***</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="co"># ---</span></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Residual standard error: 0.001288 on 98 degrees of freedom</span></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple R-squared:  0.337,   Adjusted R-squared:  0.3302 </span></span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co"># F-statistic: 49.82 on 1 and 98 DF,  p-value: 2.438e-10</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>(lm1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(SID <span class="sc">~</span> NWB<span class="sc">+</span>X<span class="sc">+</span>Y, nc2)) <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Call:</span></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co"># lm(formula = SID ~ NWB + X + Y, data = nc2)</span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Residuals:</span></span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a><span class="co"># -0.0027669 -0.0007998 -0.0001568  0.0006015  0.0053235 </span></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Coefficients:</span></span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="co">#               Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co"># (Intercept) -1.248e-03  1.050e-02  -0.119  0.90564    </span></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co"># NWB          5.950e-03  7.983e-04   7.454 3.99e-11 ***</span></span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="co"># X           -2.266e-04  7.794e-05  -2.907  0.00453 ** </span></span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Y           -4.655e-04  2.167e-04  -2.148  0.03424 *  </span></span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a><span class="co"># ---</span></span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Residual standard error: 0.001213 on 96 degrees of freedom</span></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple R-squared:  0.424,   Adjusted R-squared:  0.406 </span></span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="co"># F-statistic: 23.56 on 3 and 96 DF,  p-value: 1.645e-11</span></span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a>(lm2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(SID <span class="sc">~</span> NWB<span class="sc">+</span>X<span class="sc">+</span>Y<span class="sc">+</span><span class="fu">I</span>(X<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span><span class="fu">I</span>(Y<span class="sc">^</span><span class="dv">2</span>)<span class="sc">+</span>X<span class="sc">*</span>Y, nc2)) <span class="sc">|&gt;</span> <span class="fu">summary</span>()</span>
-<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a><span class="co"># Call:</span></span>
-<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a><span class="co"># lm(formula = SID ~ NWB + X + Y + I(X^2) + I(Y^2) + X * Y, data = nc2)</span></span>
-<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Residuals:</span></span>
-<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
-<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a><span class="co"># -0.0027759 -0.0007526 -0.0001441  0.0006399  0.0053102 </span></span>
-<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a><span class="co"># Coefficients:</span></span>
-<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a><span class="co">#               Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a><span class="co"># (Intercept)  4.703e-01  7.119e-01   0.661    0.511    </span></span>
-<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a><span class="co"># NWB          5.978e-03  9.463e-04   6.317 9.08e-09 ***</span></span>
-<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a><span class="co"># X           -2.632e-04  1.016e-02  -0.026    0.979    </span></span>
-<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a><span class="co"># Y           -2.719e-02  2.576e-02  -1.055    0.294    </span></span>
-<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a><span class="co"># I(X^2)      -1.064e-05  3.387e-05  -0.314    0.754    </span></span>
-<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a><span class="co"># I(Y^2)       3.240e-04  3.445e-04   0.941    0.349    </span></span>
-<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a><span class="co"># X:Y         -4.714e-05  1.688e-04  -0.279    0.781    </span></span>
-<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a><span class="co"># ---</span></span>
-<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
-<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
-<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a><span class="co"># Residual standard error: 0.001221 on 93 degrees of freedom</span></span>
-<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple R-squared:  0.4339,  Adjusted R-squared:  0.3974 </span></span>
-<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a><span class="co"># F-statistic: 11.88 on 6 and 93 DF,  p-value: 7.383e-10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_centroid</a></span><span class="op">(</span><span class="va">nc1</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">cc</span></span>
+<span><span class="co"># Warning: st_centroid assumes attributes are constant over</span></span>
+<span><span class="co"># geometries</span></span>
+<span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_cols.html">bind_cols</a></span><span class="op">(</span><span class="va">nc1</span>, <span class="va">cc</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span>X<span class="op">=</span><span class="va">X</span>, Y<span class="op">=</span><span class="va">Y</span>, SID<span class="op">=</span><span class="va">SID</span>, NWB<span class="op">=</span><span class="va">NWB</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">nc2</span></span>
+<span><span class="op">(</span><span class="va">lm0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">SID</span> <span class="op">~</span> <span class="va">NWB</span>, <span class="va">nc1</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Call:</span></span>
+<span><span class="co"># lm(formula = SID ~ NWB, data = nc1)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Residuals:</span></span>
+<span><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
+<span><span class="co"># -0.0033253 -0.0007411 -0.0000691  0.0005479  0.0062218 </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Coefficients:</span></span>
+<span><span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co"># (Intercept) 0.0006773  0.0002327   2.910  0.00447 ** </span></span>
+<span><span class="co"># NWB         0.0043785  0.0006204   7.058 2.44e-10 ***</span></span>
+<span><span class="co"># ---</span></span>
+<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Residual standard error: 0.001288 on 98 degrees of freedom</span></span>
+<span><span class="co"># Multiple R-squared:  0.337,   Adjusted R-squared:  0.3302 </span></span>
+<span><span class="co"># F-statistic: 49.82 on 1 and 98 DF,  p-value: 2.438e-10</span></span>
+<span><span class="op">(</span><span class="va">lm1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">SID</span> <span class="op">~</span> <span class="va">NWB</span><span class="op">+</span><span class="va">X</span><span class="op">+</span><span class="va">Y</span>, <span class="va">nc2</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Call:</span></span>
+<span><span class="co"># lm(formula = SID ~ NWB + X + Y, data = nc2)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Residuals:</span></span>
+<span><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
+<span><span class="co"># -0.0027669 -0.0007998 -0.0001568  0.0006015  0.0053235 </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Coefficients:</span></span>
+<span><span class="co">#               Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co"># (Intercept) -1.248e-03  1.050e-02  -0.119  0.90564    </span></span>
+<span><span class="co"># NWB          5.950e-03  7.983e-04   7.454 3.99e-11 ***</span></span>
+<span><span class="co"># X           -2.266e-04  7.794e-05  -2.907  0.00453 ** </span></span>
+<span><span class="co"># Y           -4.655e-04  2.167e-04  -2.148  0.03424 *  </span></span>
+<span><span class="co"># ---</span></span>
+<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Residual standard error: 0.001213 on 96 degrees of freedom</span></span>
+<span><span class="co"># Multiple R-squared:  0.424,   Adjusted R-squared:  0.406 </span></span>
+<span><span class="co"># F-statistic: 23.56 on 3 and 96 DF,  p-value: 1.645e-11</span></span>
+<span><span class="op">(</span><span class="va">lm2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">SID</span> <span class="op">~</span> <span class="va">NWB</span><span class="op">+</span><span class="va">X</span><span class="op">+</span><span class="va">Y</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">X</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">Y</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">+</span><span class="va">X</span><span class="op">*</span><span class="va">Y</span>, <span class="va">nc2</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Call:</span></span>
+<span><span class="co"># lm(formula = SID ~ NWB + X + Y + I(X^2) + I(Y^2) + X * Y, data = nc2)</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Residuals:</span></span>
+<span><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
+<span><span class="co"># -0.0027759 -0.0007526 -0.0001441  0.0006399  0.0053102 </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Coefficients:</span></span>
+<span><span class="co">#               Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
+<span><span class="co"># (Intercept)  4.703e-01  7.119e-01   0.661    0.511    </span></span>
+<span><span class="co"># NWB          5.978e-03  9.463e-04   6.317 9.08e-09 ***</span></span>
+<span><span class="co"># X           -2.632e-04  1.016e-02  -0.026    0.979    </span></span>
+<span><span class="co"># Y           -2.719e-02  2.576e-02  -1.055    0.294    </span></span>
+<span><span class="co"># I(X^2)      -1.064e-05  3.387e-05  -0.314    0.754    </span></span>
+<span><span class="co"># I(Y^2)       3.240e-04  3.445e-04   0.941    0.349    </span></span>
+<span><span class="co"># X:Y         -4.714e-05  1.688e-04  -0.279    0.781    </span></span>
+<span><span class="co"># ---</span></span>
+<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># Residual standard error: 0.001221 on 93 degrees of freedom</span></span>
+<span><span class="co"># Multiple R-squared:  0.4339,  Adjusted R-squared:  0.3974 </span></span>
+<span><span class="co"># F-statistic: 11.88 on 6 and 93 DF,  p-value: 7.383e-10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The first order model seems to have significant coordinate effects, for the second order model none of the coordinate effects are significant.</p>
 <p>Prediction:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>nc1<span class="sc">$</span>pr0 <span class="ot">&lt;-</span> lm0 <span class="sc">|&gt;</span> <span class="fu">predict</span>(nc2)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>nc1<span class="sc">$</span>pr1 <span class="ot">&lt;-</span> lm1 <span class="sc">|&gt;</span> <span class="fu">predict</span>(nc2)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>nc1<span class="sc">$</span>pr2 <span class="ot">&lt;-</span> lm2 <span class="sc">|&gt;</span> <span class="fu">predict</span>(nc2)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>nc1[<span class="fu">c</span>(<span class="st">"pr0"</span>, <span class="st">"pr1"</span>, <span class="st">"pr2"</span>)] <span class="sc">|&gt;</span> <span class="fu">st_as_stars</span>() <span class="sc">|&gt;</span> <span class="fu">merge</span>() <span class="sc">|&gt;</span> <span class="fu">plot</span>(<span class="at">breaks =</span> <span class="st">"equal"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">nc1</span><span class="op">$</span><span class="va">pr0</span> <span class="op">&lt;-</span> <span class="va">lm0</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">nc2</span><span class="op">)</span></span>
+<span><span class="va">nc1</span><span class="op">$</span><span class="va">pr1</span> <span class="op">&lt;-</span> <span class="va">lm1</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">nc2</span><span class="op">)</span></span>
+<span><span class="va">nc1</span><span class="op">$</span><span class="va">pr2</span> <span class="op">&lt;-</span> <span class="va">lm2</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">nc2</span><span class="op">)</span></span>
+<span><span class="va">nc1</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"pr0"</span>, <span class="st">"pr1"</span>, <span class="st">"pr2"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://r-spatial.github.io/stars/reference/st_as_stars.html">st_as_stars</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html">merge</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="st">"equal"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="10_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -530,16 +499,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Largely the same pattern is shown in the predictions, some extremes get more extreme.</p>
 <p>For the <code>knn</code> on the remote sensing data:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="fu">as.data.frame</span>(trn), <span class="fu">st_coordinates</span>(trn)) <span class="sc">|&gt;</span> </span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(X, Y, X1, X2, X3, X4, X5, X6) <span class="ot">-&gt;</span> tr1</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(rs) <span class="sc">|&gt;</span> <span class="fu">transmute</span>(<span class="at">X=</span>x, <span class="at">Y=</span>y, X1, X2, X3, X4, X5, X6) <span class="ot">-&gt;</span> test1</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>rs<span class="sc">$</span>cls1 <span class="ot">=</span> <span class="fu">knn</span>(tr1, test1, trn<span class="sc">$</span>cl, <span class="at">k =</span> <span class="dv">5</span>)</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cbind</span>(<span class="fu">as.data.frame</span>(trn), <span class="fu">st_coordinates</span>(trn)) <span class="sc">|&gt;</span> </span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(X, Y, <span class="at">X2=</span>X<span class="sc">^</span><span class="dv">2</span>, <span class="at">Y2=</span>Y<span class="sc">^</span><span class="dv">2</span>, <span class="at">XY=</span>X<span class="sc">*</span>Y, X1, X2, X3, X4, X5, X6) <span class="ot">-&gt;</span> tr2</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(rs) <span class="sc">|&gt;</span> </span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">transmute</span>(<span class="at">X=</span>x, <span class="at">Y=</span>y, <span class="at">X2=</span>X<span class="sc">^</span><span class="dv">2</span>, <span class="at">Y2=</span>Y<span class="sc">^</span><span class="dv">2</span>, <span class="at">XY=</span>X<span class="sc">*</span>Y, X1, X2, X3, X4, X5, X6) <span class="ot">-&gt;</span> test2</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>rs<span class="sc">$</span>cls2 <span class="ot">=</span> <span class="fu">knn</span>(tr2, test2, trn<span class="sc">$</span>cl, <span class="at">k =</span> <span class="dv">5</span>)</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>rs[<span class="fu">c</span>(<span class="st">"cls"</span>, <span class="st">"cls1"</span>, <span class="st">"cls2"</span>)] <span class="sc">|&gt;</span> <span class="fu">merge</span>() <span class="sc">|&gt;</span> <span class="fu">plot</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span>, <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">X</span>, <span class="va">Y</span>, <span class="va">X1</span>, <span class="va">X2</span>, <span class="va">X3</span>, <span class="va">X4</span>, <span class="va">X5</span>, <span class="va">X6</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">tr1</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">rs</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span>X<span class="op">=</span><span class="va">x</span>, Y<span class="op">=</span><span class="va">y</span>, <span class="va">X1</span>, <span class="va">X2</span>, <span class="va">X3</span>, <span class="va">X4</span>, <span class="va">X5</span>, <span class="va">X6</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">test1</span></span>
+<span><span class="va">rs</span><span class="op">$</span><span class="va">cls1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/class/man/knn.html">knn</a></span><span class="op">(</span><span class="va">tr1</span>, <span class="va">test1</span>, <span class="va">trn</span><span class="op">$</span><span class="va">cl</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span>, <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">trn</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span><span class="va">X</span>, <span class="va">Y</span>, X2<span class="op">=</span><span class="va">X</span><span class="op">^</span><span class="fl">2</span>, Y2<span class="op">=</span><span class="va">Y</span><span class="op">^</span><span class="fl">2</span>, XY<span class="op">=</span><span class="va">X</span><span class="op">*</span><span class="va">Y</span>, <span class="va">X1</span>, <span class="va">X2</span>, <span class="va">X3</span>, <span class="va">X4</span>, <span class="va">X5</span>, <span class="va">X6</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">tr2</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">rs</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span>X<span class="op">=</span><span class="va">x</span>, Y<span class="op">=</span><span class="va">y</span>, X2<span class="op">=</span><span class="va">X</span><span class="op">^</span><span class="fl">2</span>, Y2<span class="op">=</span><span class="va">Y</span><span class="op">^</span><span class="fl">2</span>, XY<span class="op">=</span><span class="va">X</span><span class="op">*</span><span class="va">Y</span>, <span class="va">X1</span>, <span class="va">X2</span>, <span class="va">X3</span>, <span class="va">X4</span>, <span class="va">X5</span>, <span class="va">X6</span><span class="op">)</span> <span class="op">-&gt;</span> <span class="va">test2</span></span>
+<span><span class="va">rs</span><span class="op">$</span><span class="va">cls2</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/class/man/knn.html">knn</a></span><span class="op">(</span><span class="va">tr2</span>, <span class="va">test2</span>, <span class="va">trn</span><span class="op">$</span><span class="va">cl</span>, k <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">rs</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cls"</span>, <span class="st">"cls1"</span>, <span class="st">"cls2"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html">merge</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="10_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
 </div>
@@ -547,10 +516,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Both models involving coordinates show much worse results!</p>
 
 
-</section>
-
-</main> <!-- /main -->
-<script id="quarto-html-after-body" type="application/javascript">
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -577,9 +543,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -644,6 +624,92 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
@@ -682,9 +748,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script>
-<nav class="page-navigation">
-  <div class="nav-page nav-page-previous">
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
       <a href="./09.html" class="pagination-link">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Large datasets</span></span>
       </a>          
