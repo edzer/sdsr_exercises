@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.361">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Spatial Data Science - 7&nbsp; sf, stars</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./08.html" rel="next">
+<link href="./06.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+</head>
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./07.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">sf, stars</span></a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Spatial Data Science</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/edzer/sdsr_exercises/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Spatial Data Science, with applications in R</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Intro</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Coordinates</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Geometries</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Spherical geometry</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./05.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Attributes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./06.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Cubes</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./07.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">sf, stars</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./08.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Plotting</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./09.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Large datasets</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./10.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Statistical models for spatial data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./11.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Spatial Point Patterns</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./12.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Spatial Interpolation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./13.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Multivariate and Spatiotemporal Geostatistics</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./14.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Proximity and Areal Data</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./15.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Measures of spatial autocorrelation</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./16.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Spatial Regression</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./17.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Spatial econometrics models</span></span></a>
+  </div>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#exercise-7.1" id="toc-exercise-7.1" class="nav-link active" data-scroll-target="#exercise-7.1">Exercise 7.1</a></li>
+  <li><a href="#exercise-7.2" id="toc-exercise-7.2" class="nav-link" data-scroll-target="#exercise-7.2">Exercise 7.2</a></li>
+  <li><a href="#exercise-7.3" id="toc-exercise-7.3" class="nav-link" data-scroll-target="#exercise-7.3">Exercise 7.3</a></li>
+  <li><a href="#exercise-7.4" id="toc-exercise-7.4" class="nav-link" data-scroll-target="#exercise-7.4">Exercise 7.4</a></li>
+  <li><a href="#exercise-7.5" id="toc-exercise-7.5" class="nav-link" data-scroll-target="#exercise-7.5">Exercise 7.5</a></li>
+  <li><a href="#exercise-7.6" id="toc-exercise-7.6" class="nav-link" data-scroll-target="#exercise-7.6">Exercise 7.6</a></li>
+  <li><a href="#exercise-7.7" id="toc-exercise-7.7" class="nav-link" data-scroll-target="#exercise-7.7">Exercise 7.7</a></li>
+  <li><a href="#exercise-7.8" id="toc-exercise-7.8" class="nav-link" data-scroll-target="#exercise-7.8">Exercise 7.8</a></li>
+  </ul><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/edzer/sdsr_exercises/edit/main/07.qmd" class="toc-action">Edit this page</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<h1 class="title">
+<span class="chapter-number">7</span>&nbsp; <span class="chapter-title">sf, stars</span>
+</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header><section id="exercise-7.1" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-7.1">Exercise 7.1</h2>
+<p>Find the names of the <code>nc</code> counties that intersect <code>LINESTRING(-84 35,-78 35)</code>; use <code>[</code> for this, and use <code><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join()</a></code> for this.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
+<span><span class="co"># Linking to GEOS 3.10.2, GDAL 3.4.1, PROJ 8.2.1; sf_use_s2() is TRUE</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/stars/">stars</a></span><span class="op">)</span></span>
+<span><span class="co"># Loading required package: abind</span></span>
+<span><span class="op">(</span><span class="va">file</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"gpkg/nc.gpkg"</span>, package<span class="op">=</span><span class="st">"sf"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># [1] "/home/runner/work/_temp/Library/sf/gpkg/nc.gpkg"</span></span>
+<span><span class="va">nc</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span>
+<span><span class="co"># Reading layer `nc.gpkg' from data source </span></span>
+<span><span class="co">#   `/home/runner/work/_temp/Library/sf/gpkg/nc.gpkg' </span></span>
+<span><span class="co">#   using driver `GPKG'</span></span>
+<span><span class="co"># Simple feature collection with 100 features and 14 fields</span></span>
+<span><span class="co"># Geometry type: MULTIPOLYGON</span></span>
+<span><span class="co"># Dimension:     XY</span></span>
+<span><span class="co"># Bounding box:  xmin: -84.32385 ymin: 33.88199 xmax: -75.45698 ymax: 36.58965</span></span>
+<span><span class="co"># Geodetic CRS:  NAD27</span></span>
+<span><span class="va">line</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html">st_as_sfc</a></span><span class="op">(</span><span class="st">"LINESTRING(-84 35,-78 35)"</span>, crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">nc</span><span class="op">[</span><span class="va">line</span>,<span class="op">]</span><span class="op">$</span><span class="va">NAME</span></span>
+<span><span class="co">#  [1] "Jackson"     "Mecklenburg" "Macon"       "Sampson"    </span></span>
+<span><span class="co">#  [5] "Cherokee"    "Cumberland"  "Union"       "Anson"      </span></span>
+<span><span class="co">#  [9] "Hoke"        "Duplin"      "Richmond"    "Clay"       </span></span>
+<span><span class="co"># [13] "Scotland"</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html">st_sf</a></span><span class="op">(</span><span class="va">line</span><span class="op">)</span>, <span class="va">nc</span><span class="op">)</span><span class="op">$</span><span class="va">NAME</span> <span class="co"># left join: `line` should be first argument</span></span>
+<span><span class="co">#  [1] "Jackson"     "Mecklenburg" "Macon"       "Sampson"    </span></span>
+<span><span class="co">#  [5] "Cherokee"    "Cumberland"  "Union"       "Anson"      </span></span>
+<span><span class="co">#  [9] "Hoke"        "Duplin"      "Richmond"    "Clay"       </span></span>
+<span><span class="co"># [13] "Scotland"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="exercise-7.2" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-7.2">Exercise 7.2</h2>
+<p>Repeat this after setting <code>sf_use_s2(FALSE)</code>, and <em>compute</em> the difference (hint: use <code><a href="https://rdrr.io/r/base/sets.html">setdiff()</a></code>), and color the counties of the difference using color ‘#00880088’.</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># save names first:</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/s2.html">sf_use_s2</a></span><span class="op">(</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">names_with_s2</span> <span class="op">=</span> <span class="va">nc</span><span class="op">[</span><span class="va">line</span>,<span class="op">]</span><span class="op">$</span><span class="va">NAME</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/s2.html">sf_use_s2</a></span><span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co"># Spherical geometry (s2) switched off</span></span>
+<span><span class="va">nc</span><span class="op">[</span><span class="va">line</span>,<span class="op">]</span><span class="op">$</span><span class="va">NAME</span></span>
+<span><span class="co"># although coordinates are longitude/latitude, st_intersects assumes</span></span>
+<span><span class="co"># that they are planar</span></span>
+<span><span class="co">#  [1] "Macon"      "Sampson"    "Cherokee"   "Cumberland"</span></span>
+<span><span class="co">#  [5] "Union"      "Anson"      "Hoke"       "Duplin"    </span></span>
+<span><span class="co">#  [9] "Richmond"   "Clay"       "Scotland"</span></span>
+<span><span class="op">(</span><span class="va">diff</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html">setdiff</a></span><span class="op">(</span><span class="va">names_with_s2</span>, <span class="va">nc</span><span class="op">[</span><span class="va">line</span>,<span class="op">]</span><span class="op">$</span><span class="va">NAME</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># although coordinates are longitude/latitude, st_intersects assumes</span></span>
+<span><span class="co"># that they are planar</span></span>
+<span><span class="co"># [1] "Jackson"     "Mecklenburg"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span><span class="op">[</span><span class="va">nc</span><span class="op">$</span><span class="va">NAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">diff</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"#00880088"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section><section id="exercise-7.3" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-7.3">Exercise 7.3</h2>
+<p>Plot the two different lines in a single plot; note that R will plot a straight line always straight in the projection currently used; <code>st_segmentize</code> can be used to add points on straight line, or on a great circle for ellipsoidal coordinates.</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span><span class="op">[</span><span class="va">nc</span><span class="op">$</span><span class="va">NAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">diff</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"#00880088"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">line</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_segmentize</a></span><span class="op">(</span><span class="va">line</span>, <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/units.html">set_units</a></span><span class="op">(</span><span class="fl">10</span>, <span class="va">km</span><span class="op">)</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>To show that the red line is curved, but only curved in plate carree, and not e.g.&nbsp;in an orthographic projection centered at this region, we can also plot it in an orthographic projection:</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">l.gc</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_segmentize</a></span><span class="op">(</span><span class="va">line</span>, <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/units.html">set_units</a></span><span class="op">(</span><span class="fl">10</span>, <span class="va">km</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">l.pc</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_segmentize</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_set_crs</a></span><span class="op">(</span><span class="va">line</span>, <span class="cn">NA</span><span class="op">)</span>, <span class="fl">0.1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_set_crs</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">l.gc</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">o</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="st">"+proj=ortho +lon_0=-80 +lat_0=35"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span>, <span class="va">o</span><span class="op">)</span>, axes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span>, <span class="va">o</span><span class="op">)</span><span class="op">[</span><span class="va">nc</span><span class="op">$</span><span class="va">NAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">diff</span><span class="op">]</span>,</span>
+<span>     col <span class="op">=</span> <span class="st">"#00880088"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">l.gc</span>, <span class="va">o</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">'red'</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">l.pc</span>, <span class="va">o</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">'black'</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">line</span>, <span class="va">o</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">'green'</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The fact that the <em>unsegmented</em> line <code>line</code> is straight (R plotted it as straight, it contains only the two endpoints) and that it covers the red line supports that in this plot, the great circle line (red) <em>is</em> plotted straight, and the “straight in plate carree” line is not.</p>
+</section><section id="exercise-7.4" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-7.4">Exercise 7.4</h2>
+<p>NDVI, normalized differenced vegetation index, is computed as <code>(NIR-R)/(NIR+R)</code>, with NIR the near infrared and R the red band. Read the <code>L7_ETMs.tif</code> file into object <code>x</code>, and distribute the band dimensions over attributes by <code>split(x, "band")</code>. Then, add attribute NDVI to this object by using an expression that uses the NIR (band 4) and R (band 3) attributes directly.</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/stars/">stars</a></span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/stars/reference/read_stars.html">read_stars</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"tif/L7_ETMs.tif"</span>, package <span class="op">=</span> <span class="st">"stars"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># stars object with 3 dimensions and 1 attribute</span></span>
+<span><span class="co"># attribute(s):</span></span>
+<span><span class="co">#              Min. 1st Qu. Median     Mean 3rd Qu. Max.</span></span>
+<span><span class="co"># L7_ETMs.tif     1      54     69 68.91242      86  255</span></span>
+<span><span class="co"># dimension(s):</span></span>
+<span><span class="co">#      from  to  offset delta            refsys point x/y</span></span>
+<span><span class="co"># x       1 349  288776  28.5 SIRGAS 2000 / ... FALSE [x]</span></span>
+<span><span class="co"># y       1 352 9120761 -28.5 SIRGAS 2000 / ... FALSE [y]</span></span>
+<span><span class="co"># band    1   6      NA    NA                NA    NA</span></span>
+<span><span class="op">(</span><span class="va">x.spl</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html">split</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># stars object with 2 dimensions and 6 attributes</span></span>
+<span><span class="co"># attribute(s):</span></span>
+<span><span class="co">#     Min. 1st Qu. Median     Mean 3rd Qu. Max.</span></span>
+<span><span class="co"># X1    47      67     78 79.14772      89  255</span></span>
+<span><span class="co"># X2    32      55     66 67.57465      79  255</span></span>
+<span><span class="co"># X3    21      49     63 64.35886      77  255</span></span>
+<span><span class="co"># X4     9      52     63 59.23541      75  255</span></span>
+<span><span class="co"># X5     1      63     89 83.18266     112  255</span></span>
+<span><span class="co"># X6     1      32     60 59.97521      88  255</span></span>
+<span><span class="co"># dimension(s):</span></span>
+<span><span class="co">#   from  to  offset delta            refsys point x/y</span></span>
+<span><span class="co"># x    1 349  288776  28.5 SIRGAS 2000 / ... FALSE [x]</span></span>
+<span><span class="co"># y    1 352 9120761 -28.5 SIRGAS 2000 / ... FALSE [y]</span></span>
+<span><span class="va">x.spl</span><span class="op">$</span><span class="va">NDVI</span> <span class="op">=</span> <span class="op">(</span><span class="va">x.spl</span><span class="op">$</span><span class="va">X4</span> <span class="op">-</span> <span class="va">x.spl</span><span class="op">$</span><span class="va">X3</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">x.spl</span><span class="op">$</span><span class="va">X4</span> <span class="op">+</span> <span class="va">x.spl</span><span class="op">$</span><span class="va">X3</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x.spl</span><span class="op">[</span><span class="st">"NDVI"</span><span class="op">]</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section><section id="exercise-7.5" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-7.5">Exercise 7.5</h2>
+<p>Compute NDVI for the <code>L7_ETMs.tif</code> image by reducing the band dimension, using <code>st_apply</code> and an a function <code>ndvi = function(x) { (x[4]-x[3])/(x[4]+x[3]) }</code>. Plot the result, and write the result to a GeoTIFF.</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ndvi_fn</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">-</span><span class="va">x</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span><span class="op">+</span><span class="va">x</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span> <span class="op">}</span></span>
+<span><span class="va">ndvi</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/stars/reference/st_apply.html">st_apply</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="va">ndvi_fn</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">ndvi</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/stars/reference/write_stars.html">write_stars</a></span><span class="op">(</span><span class="va">ndvi</span>, <span class="st">"ndvi.tif"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>an alternative function is</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ndvi_fn</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x1</span>,<span class="va">x2</span>,<span class="va">x3</span>,<span class="va">x4</span>,<span class="va">x5</span>,<span class="va">x6</span><span class="op">)</span> <span class="op">{</span> <span class="op">(</span><span class="va">x4</span><span class="op">-</span><span class="va">x3</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="va">x4</span><span class="op">+</span><span class="va">x3</span><span class="op">)</span> <span class="op">}</span></span>
+<span><span class="va">ndvi2</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/stars/reference/st_apply.html">st_apply</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>, <span class="va">ndvi_fn</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="va">ndvi</span>, <span class="va">ndvi2</span><span class="op">)</span></span>
+<span><span class="co"># [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This latter function can be much faster, as it is called for chunks of data rather than for individual pixels.</p>
+</section><section id="exercise-7.6" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-7.6">Exercise 7.6</h2>
+<p>Use <code>st_transform</code> to transform the <code>stars</code> object read from <code>L7_ETMs.tif</code> to <code>EPSG:4326</code>. Print the object. Is this a regular grid? Plot the first band using arguments <code>axes=TRUE</code> and explain why this takes such a long time.</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="op">(</span><span class="va">x_t</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">'EPSG:4326'</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x_t</span><span class="op">[</span>,,,<span class="fl">1</span><span class="op">]</span>, axes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>the printed summary shows that this is a curvilinear grid. Plotting takes so long because for curvilinear grids, each cell is converted to a small polygon and then plotted.</p>
+</section><section id="exercise-7.7" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-7.7">Exercise 7.7</h2>
+<p>Use <code>st_warp</code> to warp the <code>L7_ETMs.tif</code> object to <code>EPSG:4326</code>, and plot the resulting object with <code>axes=TRUE</code>. Why is the plot created much faster than after <code>st_transform</code>?</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x_w</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/stars/reference/st_warp.html">st_warp</a></span><span class="op">(</span><span class="va">x</span>, crs <span class="op">=</span> <span class="st">'EPSG:4326'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x_w</span><span class="op">[</span>,,,<span class="fl">1</span><span class="op">]</span>, reset <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html">st_as_sfc</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html">st_bbox</a></span><span class="op">(</span><span class="va">x_w</span><span class="op">)</span><span class="op">)</span>, col <span class="op">=</span> <span class="cn">NA</span>, border <span class="op">=</span> <span class="st">'red'</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Plotting is faster now because we created a new regular grid. Note that the grid border does not align perfectly with the square formed by the bounding box (using straight lines in an equidistant rectangular projection): white grid cells indicate the misalignment due to warping/transforming.</p>
+</section><section id="exercise-7.8" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-7.8">Exercise 7.8</h2>
+<p>Using a vector representation of the raster <code>L7_ETMs</code>, plot the intersection with a circular area around <code>POINT(293716 9113692)</code> with radius 75 m, and compute the area-weighted mean pixel values for this circle. Compare the area-weighted values with those obtained by <code>aggregate</code> using the vector data, and by <code>aggregate</code> using the raster data, using <code>exact=FALSE</code> (default) and <code>exact=TRUE</code>. Explain the differences.</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">l7</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_agr.html">st_agr</a></span><span class="op">(</span><span class="va">l7</span><span class="op">)</span> <span class="op">=</span> <span class="st">"constant"</span></span>
+<span><span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sfc.html">st_as_sfc</a></span><span class="op">(</span><span class="st">"POINT(293716 9113692)"</span>, crs <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_crs.html">st_crs</a></span><span class="op">(</span><span class="va">l7</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_buffer</a></span><span class="op">(</span><span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/units.html">set_units</a></span><span class="op">(</span><span class="fl">74</span>, <span class="va">m</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html">st_intersection</a></span><span class="op">(</span><span class="va">l7</span>, <span class="va">a</span><span class="op">)</span>, key.pos <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="op">(</span><span class="va">aw</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/interpolate_aw.html">st_interpolate_aw</a></span><span class="op">(</span><span class="va">l7</span>, <span class="va">a</span>, <span class="va">mean</span>, extensive <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Simple feature collection with 1 feature and 6 fields</span></span>
+<span><span class="co"># Attribute-geometry relationships: aggregate (6)</span></span>
+<span><span class="co"># Geometry type: POLYGON</span></span>
+<span><span class="co"># Dimension:     XY</span></span>
+<span><span class="co"># Bounding box:  xmin: 293642 ymin: 9113618 xmax: 293790 ymax: 9113766</span></span>
+<span><span class="co"># Projected CRS: SIRGAS 2000 / UTM zone 25S</span></span>
+<span><span class="co">#   L7_ETMs.tif.V1 L7_ETMs.tif.V2 L7_ETMs.tif.V3 L7_ETMs.tif.V4</span></span>
+<span><span class="co"># 1       88.54362       73.50115       80.69708       49.98497</span></span>
+<span><span class="co">#   L7_ETMs.tif.V5 L7_ETMs.tif.V6                       geometry</span></span>
+<span><span class="co"># 1       111.8357       97.56707 POLYGON ((293790 9113692, 2...</span></span>
+<span><span class="op">(</span><span class="va">ag_vector</span>  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">l7</span>, <span class="va">a</span>, <span class="va">mean</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Simple feature collection with 1 feature and 6 fields</span></span>
+<span><span class="co"># Geometry type: POLYGON</span></span>
+<span><span class="co"># Dimension:     XY</span></span>
+<span><span class="co"># Bounding box:  xmin: 293642 ymin: 9113618 xmax: 293790 ymax: 9113766</span></span>
+<span><span class="co"># Projected CRS: SIRGAS 2000 / UTM zone 25S</span></span>
+<span><span class="co">#   L7_ETMs.tif.V1 L7_ETMs.tif.V2 L7_ETMs.tif.V3 L7_ETMs.tif.V4</span></span>
+<span><span class="co"># 1        88.0303       72.84848       79.30303       50.33333</span></span>
+<span><span class="co">#   L7_ETMs.tif.V5 L7_ETMs.tif.V6                       geometry</span></span>
+<span><span class="co"># 1       111.9697       96.72727 POLYGON ((293790 9113692, 2...</span></span>
+<span><span class="op">(</span><span class="va">ag_rasterF</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">a</span>, <span class="va">mean</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Simple feature collection with 1 feature and 6 fields</span></span>
+<span><span class="co"># Geometry type: POLYGON</span></span>
+<span><span class="co"># Dimension:     XY</span></span>
+<span><span class="co"># Bounding box:  xmin: 293642 ymin: 9113618 xmax: 293790 ymax: 9113766</span></span>
+<span><span class="co"># Projected CRS: SIRGAS 2000 / UTM zone 25S</span></span>
+<span><span class="co">#   L7_ETMs.tif.V1 L7_ETMs.tif.V2 L7_ETMs.tif.V3 L7_ETMs.tif.V4</span></span>
+<span><span class="co"># 1           88.6          73.55           81.1          49.55</span></span>
+<span><span class="co">#   L7_ETMs.tif.V5 L7_ETMs.tif.V6                       geometry</span></span>
+<span><span class="co"># 1          112.1           98.4 POLYGON ((293790 9113692, 2...</span></span>
+<span><span class="op">(</span><span class="va">ag_rasterT</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">a</span>, <span class="va">mean</span>, exact <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># The legacy packages maptools, rgdal, and rgeos, underpinning this package</span></span>
+<span><span class="co"># will retire shortly. Please refer to R-spatial evolution reports on</span></span>
+<span><span class="co"># https://r-spatial.org/r/2023/05/15/evolution4.html for details.</span></span>
+<span><span class="co"># This package is now running under evolution status 0</span></span>
+<span><span class="co"># Simple feature collection with 1 feature and 6 fields</span></span>
+<span><span class="co"># Geometry type: POLYGON</span></span>
+<span><span class="co"># Dimension:     XY</span></span>
+<span><span class="co"># Bounding box:  xmin: 293642 ymin: 9113618 xmax: 293790 ymax: 9113766</span></span>
+<span><span class="co"># Projected CRS: SIRGAS 2000 / UTM zone 25S</span></span>
+<span><span class="co">#   L7_ETMs.tif.V1 L7_ETMs.tif.V2 L7_ETMs.tif.V3 L7_ETMs.tif.V4</span></span>
+<span><span class="co"># 1       88.54362       73.50115       80.69708       49.98497</span></span>
+<span><span class="co">#   L7_ETMs.tif.V5 L7_ETMs.tif.V6                       geometry</span></span>
+<span><span class="co"># 1       111.8357       97.56707 POLYGON ((293790 9113692, 2...</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">aw</span><span class="op">)</span>,</span>
+<span>      <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">ag_vector</span><span class="op">)</span>, </span>
+<span>      <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">ag_rasterF</span><span class="op">)</span>, </span>
+<span>      <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">ag_rasterT</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#    L7_ETMs.tif.V1 L7_ETMs.tif.V2 L7_ETMs.tif.V3 L7_ETMs.tif.V4</span></span>
+<span><span class="co"># 1        88.54362       73.50115       80.69708       49.98497</span></span>
+<span><span class="co"># 11       88.03030       72.84848       79.30303       50.33333</span></span>
+<span><span class="co"># 12       88.60000       73.55000       81.10000       49.55000</span></span>
+<span><span class="co"># 13       88.54362       73.50115       80.69708       49.98497</span></span>
+<span><span class="co">#    L7_ETMs.tif.V5 L7_ETMs.tif.V6</span></span>
+<span><span class="co"># 1        111.8357       97.56707</span></span>
+<span><span class="co"># 11       111.9697       96.72727</span></span>
+<span><span class="co"># 12       112.1000       98.40000</span></span>
+<span><span class="co"># 13       111.8357       97.56707</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Area-weighted interpolation computes the area-weighted mean of the areas shown in the plot; <code>aggregate</code> on the vector values computes the <em>unweighted</em> mean over all polygonized pixels that intersect with the circle (black lines); <code>aggregate</code> on the raster values only averages (unweighted) the cells with pixel <em>centers</em> intersecting with the circle (light red):</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">l7</span><span class="op">)</span><span class="op">[</span><span class="va">a</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">a</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="cn">NA</span>, border <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">L7_ETMs</span><span class="op">[</span><span class="va">a</span><span class="op">]</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="st">'#ff000066'</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">L7_ETMs</span><span class="op">[</span><span class="va">a</span><span class="op">]</span>, as_points <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, pch <span class="op">=</span> <span class="fl">3</span>, col <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="07_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="./06.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Data Cubes</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./08.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Plotting</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
