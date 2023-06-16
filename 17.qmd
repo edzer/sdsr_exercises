@@ -1,7 +1,7 @@
 # Spatial econometrics models
 
 ```{r}
-load("ch16.RData")
+load("data/ch16.RData")
 library(spdep)
 ```
 

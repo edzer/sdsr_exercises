@@ -5,7 +5,7 @@
 Which fraction of the stations is removed in section \@ref(preparing) when the criterion applied that a station must be 75% complete?
 
 ```{r}
-load("ch13.RData")
+load("data/ch13.RData")
 sel = apply(aq, 2, function(x) mean(is.na(x)) < 0.25)
 1 - mean(sel)
 ```
@@ -39,8 +39,8 @@ StAni = estiStAni(v.d, c(0,20000))
 plot(v.d, fitProdSumModel, wireframe = FALSE, all = TRUE, scales = list(arrows=FALSE), zlim = c(0,50))
 ```
 ```{r}
-if (file.exists("new_int2.RData")) {
-	load("new_int2.RData")
+if (file.exists("data/new_int2.RData")) {
+	load("data/new_int2.RData")
 }
 ```{r eval=!exists("new_int2")}
 new_int2 <- krigeST(NO2~1, data = no2.d["NO2"], newdata = grd.st,

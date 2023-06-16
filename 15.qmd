@@ -1,7 +1,7 @@
 # Measures of spatial autocorrelation
 
 ```{r}
-load("ch14.RData")
+load("data/ch14.RData")
 library(sf)
 library(spdep)
 ```

@@ -8,7 +8,7 @@ load the .Rmd of this chapter in rstudio, and run it all the way up to the chunk
 (note that this requires that the population density csv file is present).
 
 ```{r}
-load("ch12.RData")
+load("data/ch12.RData")
 ```
 
 The chunk preceding the one that creates the plot can be modified

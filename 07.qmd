@@ -139,7 +139,7 @@ l7 = st_as_sf(x)
 st_agr(l7) = "constant"
 a = st_as_sfc("POINT(293716 9113692)", crs = st_crs(l7)) %>%
 	st_buffer(units::set_units(74, m))
-plot(st_intersection(l7, a))
+plot(st_intersection(l7, a), key.pos = 4)
 (aw = st_interpolate_aw(l7, a, mean, extensive = FALSE))
 (ag_vector  = aggregate(l7, a, mean))
 (ag_rasterF = st_as_sf(aggregate(x, a, mean)))

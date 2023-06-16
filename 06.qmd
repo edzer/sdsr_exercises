@@ -76,7 +76,7 @@ This gives a one-dimensional data cube, with dimension "station"
 An example for NO2, 2017, using threshold 25, is given below:
 ```{r}
 #| code-fold: true
-load("ch13.RData")
+load("data/ch13.RData")
 library(stars)
 a = aggregate(no2.st, "days", mean, na.rm=TRUE) # daily means
 b = a > 25 # threshold
