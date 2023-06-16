@@ -144,6 +144,5 @@ anova(pr_base_mrf, pr_base_iid, test="Chisq")
 
 
 ```{r}
-save(list = ls(), file = "ch16.RData")
+save(list = ls(), file = "data/ch16.RData")
 ```
-

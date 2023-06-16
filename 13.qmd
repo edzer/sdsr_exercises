@@ -49,7 +49,7 @@ new_int2 <- krigeST(NO2~1, data = no2.d["NO2"], newdata = grd.st,
 names(new_int2)[2] = "NO2"
 ```
 ```{r}
-save(list = "new_int2", file = "new_int2.RData")
+save(list = "new_int2", file = "data/new_int2.RData")
 ```
 ```{r}
 library(viridis)

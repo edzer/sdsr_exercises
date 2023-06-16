@@ -99,6 +99,6 @@ table(unlist(nb2listw(queen, style="W")$weights))
 ```
 
 ```{r}
-save(list = ls(), file = "ch14.RData")
+save(list = ls(), file = "data/ch14.RData")
 ```
 
