@@ -313,6 +313,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co"># although coordinates are longitude/latitude, st_intersects assumes</span></span>
 <span><span class="co"># that they are planar</span></span>
 <span><span class="co"># [1] "Jackson"     "Mecklenburg"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">.1</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span><span class="op">[</span><span class="va">nc</span><span class="op">$</span><span class="va">NAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">diff</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"#00880088"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -322,7 +323,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section><section id="exercise-7.3" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-7.3">Exercise 7.3</h2>
 <p>Plot the two different lines in a single plot; note that R will plot a straight line always straight in the projection currently used; <code>st_segmentize</code> can be used to add points on straight line, or on a great circle for ellipsoidal coordinates.</p>
 <div class="cell">
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">.1</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span><span class="op">[</span><span class="va">nc</span><span class="op">$</span><span class="va">NAME</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">diff</span><span class="op">]</span>, col <span class="op">=</span> <span class="st">"#00880088"</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">line</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_segmentize</a></span><span class="op">(</span><span class="va">line</span>, <span class="fu">units</span><span class="fu">::</span><span class="fu"><a href="https://r-quantities.github.io/units/reference/units.html">set_units</a></span><span class="op">(</span><span class="fl">10</span>, <span class="va">km</span><span class="op">)</span><span class="op">)</span>, add <span class="op">=</span> <span class="cn">TRUE</span>, col <span class="op">=</span> <span class="st">'red'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -360,7 +362,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co"># x       1 349  288776  28.5 SIRGAS 2000 / ... FALSE [x]</span></span>
 <span><span class="co"># y       1 352 9120761 -28.5 SIRGAS 2000 / ... FALSE [y]</span></span>
 <span><span class="co"># band    1   6      NA    NA                NA    NA</span></span>
-<span><span class="op">(</span><span class="va">x.spl</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html">split</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">(</span><span class="va">x.spl</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/split.html">split</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="co"># note the names of the attributes</span></span>
 <span><span class="co"># stars object with 2 dimensions and 6 attributes</span></span>
 <span><span class="co"># attribute(s):</span></span>
 <span><span class="co">#     Min. 1st Qu. Median     Mean 3rd Qu. Max.</span></span>
@@ -473,20 +475,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co"># 1       88.54362       73.50115       80.69708       49.98497</span></span>
 <span><span class="co">#   L7_ETMs.tif.V5 L7_ETMs.tif.V6                       geometry</span></span>
 <span><span class="co"># 1       111.8357       97.56707 POLYGON ((293790 9113692, 2...</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">aw</span><span class="op">)</span>,</span>
-<span>      <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">ag_vector</span><span class="op">)</span>, </span>
-<span>      <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">ag_rasterF</span><span class="op">)</span>, </span>
-<span>      <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">ag_rasterT</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#    L7_ETMs.tif.V1 L7_ETMs.tif.V2 L7_ETMs.tif.V3 L7_ETMs.tif.V4</span></span>
-<span><span class="co"># 1        88.54362       73.50115       80.69708       49.98497</span></span>
-<span><span class="co"># 11       88.03030       72.84848       79.30303       50.33333</span></span>
-<span><span class="co"># 12       88.60000       73.55000       81.10000       49.55000</span></span>
-<span><span class="co"># 13       88.54362       73.50115       80.69708       49.98497</span></span>
-<span><span class="co">#    L7_ETMs.tif.V5 L7_ETMs.tif.V6</span></span>
-<span><span class="co"># 1        111.8357       97.56707</span></span>
-<span><span class="co"># 11       111.9697       96.72727</span></span>
-<span><span class="co"># 12       112.1000       98.40000</span></span>
-<span><span class="co"># 13       111.8357       97.56707</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span>area_w <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">aw</span><span class="op">)</span>,</span>
+<span>      agg_vec <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">ag_vector</span><span class="op">)</span>, </span>
+<span>      agg_rasF <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">ag_rasterF</span><span class="op">)</span>, </span>
+<span>      agg_rasT <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">ag_rasterT</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#          L7_ETMs.tif.V1 L7_ETMs.tif.V2 L7_ETMs.tif.V3</span></span>
+<span><span class="co"># area_w         88.54362       73.50115       80.69708</span></span>
+<span><span class="co"># agg_vec        88.03030       72.84848       79.30303</span></span>
+<span><span class="co"># agg_rasF       88.60000       73.55000       81.10000</span></span>
+<span><span class="co"># agg_rasT       88.54362       73.50115       80.69708</span></span>
+<span><span class="co">#          L7_ETMs.tif.V4 L7_ETMs.tif.V5 L7_ETMs.tif.V6</span></span>
+<span><span class="co"># area_w         49.98497       111.8357       97.56707</span></span>
+<span><span class="co"># agg_vec        50.33333       111.9697       96.72727</span></span>
+<span><span class="co"># agg_rasF       49.55000       112.1000       98.40000</span></span>
+<span><span class="co"># agg_rasT       49.98497       111.8357       97.56707</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">aw</span><span class="op">)</span>, <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">ag_rasterT</span><span class="op">)</span>,</span>
+<span>    check.attributes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co"># [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Area-weighted interpolation computes the area-weighted mean of the areas shown in the plot; <code>aggregate</code> on the vector values computes the <em>unweighted</em> mean over all polygonized pixels that intersect with the circle (black lines); <code>aggregate</code> on the raster values only averages (unweighted) the cells with pixel <em>centers</em> intersecting with the circle (light red):</p>
 <div class="cell">
