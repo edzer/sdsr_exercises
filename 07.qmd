@@ -132,7 +132,7 @@ with radius 75 m,  and compute the area-weighted mean pixel values
 for this circle.  Compare the area-weighted values with those
 obtained by `aggregate` using the vector data, and by `aggregate`
 using the raster data, using `exact=FALSE` (default) and
-`exact=FALSE`.  Explain the differences.
+`exact=TRUE`.  Explain the differences.
 
 ```{r}
 l7 = st_as_sf(x)
