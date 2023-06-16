@@ -1,0 +1,38 @@
+on:
+  workflow_dispatch:
+  push:
+    branches: main
+  pull_request:
+    branches: main
+  schedule:
+    - cron: "0 4 * * *"
+
+name: SDS
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Install R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.3.0'
+          use-public-rspm: true
+      - run: /usr/bin/sudo apt install libudunits2-dev libgdal-dev libgeos-dev libproj-dev libglpk-dev
+      - run: R -q -e 'install.packages(c("dbscan", "downlit", "cubelyr", "gstat", "hglm", "igraph", "lme4", "lmtest", "maps", "mapview", "matrixStats", "mgcv", "R2BayesX", "rgeoda", "rnaturalearth", "rnaturalearthdata", "sf", "spatstat", "spatialreg", "spdep", "spData", "stars", "tidyverse", "tmap", "xml2"))'
+      - run: R -q -e 'options(timeout = 3600); install.packages("starsdata", repos = "http://cran.uni-muenster.de/pebesma", type = "source")'
+
+      - name: Render and Publish
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
