@@ -25,6 +25,7 @@ names_with_s2 = nc[line,]$NAME
 sf_use_s2(FALSE)
 nc[line,]$NAME
 (diff = setdiff(names_with_s2, nc[line,]$NAME))
+par(mar = rep(.1, 4))
 plot(st_geometry(nc))
 plot(st_geometry(nc)[nc$NAME %in% diff], col = "#00880088", add = TRUE)
 ```
@@ -34,6 +35,7 @@ plot(st_geometry(nc)[nc$NAME %in% diff], col = "#00880088", add = TRUE)
 Plot the two different lines in a single plot; note that R will plot a straight line always straight in the projection currently used; `st_segmentize` can be used to add points on straight line, or on a great circle for ellipsoidal coordinates.
 
 ```{r}
+par(mar = rep(.1, 4))
 plot(st_geometry(nc))
 plot(st_geometry(nc)[nc$NAME %in% diff], col = "#00880088", add = TRUE)
 plot(line, add = TRUE)
@@ -70,7 +72,7 @@ NDVI, normalized differenced vegetation index, is computed as `(NIR-R)/(NIR+R)`,
 ```{r}
 library(stars)
 (x = read_stars(system.file("tif/L7_ETMs.tif", package = "stars")))
-(x.spl = split(x))
+(x.spl = split(x)) # note the names of the attributes
 x.spl$NDVI = (x.spl$X4 - x.spl$X3)/(x.spl$X4 + x.spl$X3)
 plot(x.spl["NDVI"])
 ```
@@ -144,10 +146,12 @@ plot(st_intersection(l7, a), key.pos = 4)
 (ag_vector  = aggregate(l7, a, mean))
 (ag_rasterF = st_as_sf(aggregate(x, a, mean)))
 (ag_rasterT = st_as_sf(aggregate(x, a, mean, exact = TRUE)))
-rbind(st_drop_geometry(aw),
-	  st_drop_geometry(ag_vector), 
-	  st_drop_geometry(ag_rasterF), 
-	  st_drop_geometry(ag_rasterT))
+rbind(area_w = st_drop_geometry(aw),
+	  agg_vec = st_drop_geometry(ag_vector), 
+	  agg_rasF = st_drop_geometry(ag_rasterF), 
+	  agg_rasT = st_drop_geometry(ag_rasterT))
+all.equal(st_drop_geometry(aw), st_drop_geometry(ag_rasterT),
+	check.attributes = FALSE)
 ```
 
 Area-weighted interpolation computes the area-weighted mean of the

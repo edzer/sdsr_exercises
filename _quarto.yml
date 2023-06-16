@@ -5,7 +5,7 @@ book:
   title: "Spatial Data Science"
   subtitle: "answers to exercises"
   author: "Edzer Pebesma, Roger Bivand"
-  date: "6/09/2023"
+  date: today
   site-url: https://edzer.github.io/sdsr_exercises/
   repo-url: https://github.com/edzer/sdsr_exercises/
   repo-branch: main
