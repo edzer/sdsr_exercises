@@ -352,10 +352,14 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <p>For polygon support, we prefer contiguous neighbours:</p>
 <div class="cell">
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="op">(</span><span class="va">mun_nb</span> <span class="op">&lt;-</span> <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/poly2nb.html">poly2nb</a></span><span class="op">(</span><span class="va">depmunic</span>, row.names<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">depmunic</span><span class="op">$</span><span class="va">num_dep</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co"># The legacy packages maptools, rgdal, and rgeos, underpinning this package</span></span>
-<span><span class="co"># will retire shortly. Please refer to R-spatial evolution reports on</span></span>
-<span><span class="co"># https://r-spatial.org/r/2023/05/15/evolution4.html for details.</span></span>
-<span><span class="co"># This package is now running under evolution status 0</span></span>
+<span><span class="co"># The legacy packages maptools, rgdal, and rgeos, underpinning the sp package,</span></span>
+<span><span class="co"># which was just loaded, will retire in October 2023.</span></span>
+<span><span class="co"># Please refer to R-spatial evolution reports for details, especially</span></span>
+<span><span class="co"># https://r-spatial.org/r/2023/05/15/evolution4.html.</span></span>
+<span><span class="co"># It may be desirable to make the sf package available;</span></span>
+<span><span class="co"># package maintainers should consider adding sf to Suggests:.</span></span>
+<span><span class="co"># The sp package is now running under evolution status 2</span></span>
+<span><span class="co">#      (status 2 uses the sf package in place of rgdal)</span></span>
 <span><span class="co"># Neighbour list object:</span></span>
 <span><span class="co"># Number of regions: 7 </span></span>
 <span><span class="co"># Number of nonzero links: 20 </span></span>

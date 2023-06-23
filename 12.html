@@ -286,10 +286,14 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <span><span class="co"># Loading required package: sf</span></span>
 <span><span class="co"># Linking to GEOS 3.10.2, GDAL 3.4.1, PROJ 8.2.1; sf_use_s2() is TRUE</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/gstat/">gstat</a></span><span class="op">)</span></span>
-<span><span class="co"># The legacy packages maptools, rgdal, and rgeos, underpinning this package</span></span>
-<span><span class="co"># will retire shortly. Please refer to R-spatial evolution reports on</span></span>
-<span><span class="co"># https://r-spatial.org/r/2023/05/15/evolution4.html for details.</span></span>
-<span><span class="co"># This package is now running under evolution status 0</span></span>
+<span><span class="co"># The legacy packages maptools, rgdal, and rgeos, underpinning the sp package,</span></span>
+<span><span class="co"># which was just loaded, will retire in October 2023.</span></span>
+<span><span class="co"># Please refer to R-spatial evolution reports for details, especially</span></span>
+<span><span class="co"># https://r-spatial.org/r/2023/05/15/evolution4.html.</span></span>
+<span><span class="co"># It may be desirable to make the sf package available;</span></span>
+<span><span class="co"># package maintainers should consider adding sf to Suggests:.</span></span>
+<span><span class="co"># The sp package is now running under evolution status 2</span></span>
+<span><span class="co">#      (status 2 uses the sf package in place of rgdal)</span></span>
 <span><span class="va">kr</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/gstat/man/krige.html">krige</a></span><span class="op">(</span><span class="va">NO2</span><span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">pop_dens</span><span class="op">)</span>, <span class="va">no2.sf</span>, <span class="va">grd</span><span class="op">[</span><span class="st">"pop_dens"</span><span class="op">]</span>, <span class="va">vr.m</span><span class="op">)</span></span>
 <span><span class="co"># [using universal kriging]</span></span>
 <span><span class="va">k</span><span class="op">$</span><span class="va">kr1</span> <span class="op">=</span> <span class="va">k</span><span class="op">$</span><span class="va">var1.pred</span></span>
