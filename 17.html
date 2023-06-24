@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.361">
+<meta name="generator" content="quarto-1.3.427">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Spatial Data Science - 17&nbsp; Spatial econometrics models</title>
 <style>
@@ -121,7 +121,7 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Spatial Data Science</a> 
         <div class="sidebar-tools-main">
-    <a href="https://github.com/edzer/sdsr_exercises/" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="https://github.com/edzer/sdsr_exercises/" rel="" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
@@ -1107,36 +1107,36 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <span><span class="co"># ========================================================</span></span>
 <span><span class="co"># Simulated standard errors</span></span>
 <span><span class="co">#                Direct    Indirect       Total</span></span>
-<span><span class="co"># size        0.3606023   2.6396686   2.7704423</span></span>
-<span><span class="co"># age         1.0619870   6.3617886   6.7394343</span></span>
-<span><span class="co"># dist_metro  0.2139476   0.3030469   0.1959499</span></span>
-<span><span class="co"># foreigners 11.5889731  47.8524029  59.3950642</span></span>
-<span><span class="co"># prgreensp   8.2630289  34.1492970  42.3753235</span></span>
-<span><span class="co"># popdens    54.0595715 223.3398511 277.2067081</span></span>
-<span><span class="co"># museums    10.9291475  45.0891173  55.9767491</span></span>
-<span><span class="co"># airbnb      0.1694987   0.6993921   0.8681390</span></span>
+<span><span class="co"># size        0.3790764   2.6510213   2.8004540</span></span>
+<span><span class="co"># age         1.0534177   6.3839308   6.7508370</span></span>
+<span><span class="co"># dist_metro  0.2189123   0.3147969   0.2040751</span></span>
+<span><span class="co"># foreigners 11.6181744  47.9271966  59.4927663</span></span>
+<span><span class="co"># prgreensp   8.2654739  34.1537295  42.3777769</span></span>
+<span><span class="co"># popdens    53.9268621 223.0292705 276.7377491</span></span>
+<span><span class="co"># museums    11.0829499  45.5782056  56.6157219</span></span>
+<span><span class="co"># airbnb      0.1710589   0.7029511   0.8732072</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated z-values:</span></span>
 <span><span class="co">#                 Direct   Indirect      Total</span></span>
-<span><span class="co"># size         8.9924657  2.7653017  3.8052352</span></span>
-<span><span class="co"># age        -21.6668488  1.7691779 -1.7441784</span></span>
-<span><span class="co"># dist_metro   1.2209539 -1.5270203 -1.0285211</span></span>
-<span><span class="co"># foreigners  -0.5172146 -0.5083463 -0.5104731</span></span>
-<span><span class="co"># prgreensp    0.6785279  0.6645401  0.6678480</span></span>
-<span><span class="co"># popdens     -0.3664251 -0.3584806 -0.3602791</span></span>
-<span><span class="co"># museums     -0.3909113 -0.3822940 -0.3842600</span></span>
-<span><span class="co"># airbnb       0.5780834  0.5668202  0.5695102</span></span>
+<span><span class="co"># size         8.5889126  2.7570514  3.7725510</span></span>
+<span><span class="co"># age        -21.8613345  1.7295008 -1.7757950</span></span>
+<span><span class="co"># dist_metro   1.2233880 -1.4625668 -0.9437545</span></span>
+<span><span class="co"># foreigners  -0.5214093 -0.5126051 -0.5147777</span></span>
+<span><span class="co"># prgreensp    0.6602228  0.6507352  0.6532218</span></span>
+<span><span class="co"># popdens     -0.3651637 -0.3596802 -0.3610326</span></span>
+<span><span class="co"># museums     -0.3876136 -0.3802823 -0.3820226</span></span>
+<span><span class="co"># airbnb       0.5791543  0.5699048  0.5722406</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated p-values:</span></span>
-<span><span class="co">#            Direct  Indirect Total     </span></span>
-<span><span class="co"># size       &lt; 2e-16 0.005687 0.00014167</span></span>
-<span><span class="co"># age        &lt; 2e-16 0.076864 0.08112799</span></span>
-<span><span class="co"># dist_metro 0.22210 0.126756 0.30370476</span></span>
-<span><span class="co"># foreigners 0.60501 0.611210 0.60972009</span></span>
-<span><span class="co"># prgreensp  0.49744 0.506345 0.50423064</span></span>
-<span><span class="co"># popdens    0.71405 0.719984 0.71863840</span></span>
-<span><span class="co"># museums    0.69586 0.702243 0.70078574</span></span>
-<span><span class="co"># airbnb     0.56321 0.570836 0.56900998</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#            Direct  Indirect  Total     </span></span>
+<span><span class="co"># size       &lt; 2e-16 0.0058325 0.00016159</span></span>
+<span><span class="co"># age        &lt; 2e-16 0.0837195 0.07576671</span></span>
+<span><span class="co"># dist_metro 0.22118 0.1435859 0.34529510</span></span>
+<span><span class="co"># foreigners 0.60208 0.6082276 0.60670835</span></span>
+<span><span class="co"># prgreensp  0.50911 0.5152174 0.51361330</span></span>
+<span><span class="co"># popdens    0.71499 0.7190863 0.71807509</span></span>
+<span><span class="co"># museums    0.69830 0.7037359 0.70244459</span></span>
+<span><span class="co"># airbnb     0.56249 0.5687423 0.56715896</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The values and standard errors of the spatial coefficients suggest numerical problems in finding an optimum where the two coefficients are equally strong but with opposing signs:</p>
 <div class="cell">
@@ -1158,21 +1158,21 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <span><span class="co"># ========================================================</span></span>
 <span><span class="co"># Simulated standard errors</span></span>
 <span><span class="co">#               Direct  Indirect     Total</span></span>
-<span><span class="co"># size       0.3725386 2.8575629 2.9991105</span></span>
-<span><span class="co"># age        1.0718517 6.5620731 6.9403947</span></span>
-<span><span class="co"># dist_metro 0.2199061 0.3173787 0.2055167</span></span>
+<span><span class="co"># size       0.3777559 2.8559699 3.0072857</span></span>
+<span><span class="co"># age        1.0477807 6.5991721 6.9219193</span></span>
+<span><span class="co"># dist_metro 0.2182024 0.3084764 0.1971327</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated z-values:</span></span>
 <span><span class="co">#                Direct  Indirect      Total</span></span>
-<span><span class="co"># size         9.039322  3.231673  4.2019805</span></span>
-<span><span class="co"># age        -21.228827  2.580240 -0.8389191</span></span>
-<span><span class="co"># dist_metro   1.351660 -2.071275 -1.7523642</span></span>
+<span><span class="co"># size         8.924886  3.214412  4.1737615</span></span>
+<span><span class="co"># age        -21.711234  2.562570 -0.8433746</span></span>
+<span><span class="co"># dist_metro   1.326299 -2.089932 -1.8023031</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated p-values:</span></span>
 <span><span class="co">#            Direct  Indirect  Total     </span></span>
-<span><span class="co"># size       &lt; 2e-16 0.0012307 2.6459e-05</span></span>
-<span><span class="co"># age        &lt; 2e-16 0.0098732 0.401515  </span></span>
-<span><span class="co"># dist_metro 0.17648 0.0383331 0.079711</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># size       &lt; 2e-16 0.0013071 2.9961e-05</span></span>
+<span><span class="co"># age        &lt; 2e-16 0.0103901 0.399019  </span></span>
+<span><span class="co"># dist_metro 0.18474 0.0366239 0.071498</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The same problem occurs without the municipality department level variables; the impacts are being driven by the large spatial coefficient on the lagged response:</p>
 <div class="cell">
