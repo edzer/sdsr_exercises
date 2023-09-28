@@ -323,7 +323,7 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/stars/reference/write_stars.html">write_stars</a></span><span class="op">(</span><span class="va">ndvi</span>, <span class="st">"ndvi.tif"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># ====================================================================</span></span>
 <span><span class="co">#    user  system elapsed </span></span>
-<span><span class="co"># 146.445  11.342  96.284</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># 129.034   8.059  81.715</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The runtime difference is caused by the fact that <code>plot</code> downsamples, so computes a very small fraction of the available pixels, where <code>write_stars</code> computes all pixels, and then writes them.</p>
 </section><section id="exercise-9.3" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-9.3">Exercise 9.3</h2>
@@ -343,14 +343,14 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <span><span class="op">(</span><span class="va">p5</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/stars/reference/st_extract.html">st_extract</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">pts</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co"># stars object with 2 dimensions and 1 attribute</span></span>
 <span><span class="co"># attribute(s):</span></span>
-<span><span class="co">#             Min. 1st Qu. Median   Mean 3rd Qu. Max.</span></span>
-<span><span class="co"># EPSG_32632   531    1352 2183.5 2086.9    2713 3437</span></span>
+<span><span class="co">#             Min. 1st Qu. Median    Mean 3rd Qu. Max.</span></span>
+<span><span class="co"># EPSG_32632     0     522 1429.5 1813.65    2905 4759</span></span>
 <span><span class="co"># dimension(s):</span></span>
 <span><span class="co">#          from to            refsys point</span></span>
 <span><span class="co"># geometry    1  5 WGS 84 / UTM z...  TRUE</span></span>
 <span><span class="co"># band        1  4                NA    NA</span></span>
 <span><span class="co">#                                           values</span></span>
-<span><span class="co"># geometry POINT (365836....,...,POINT (345271....</span></span>
+<span><span class="co"># geometry POINT (320396....,...,POINT (405639....</span></span>
 <span><span class="co"># band                                   B4,...,B8</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/class.html">class</a></span><span class="op">(</span><span class="va">p5</span><span class="op">)</span></span>
 <span><span class="co"># [1] "stars"</span></span>
@@ -358,14 +358,14 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <span><span class="co"># Simple feature collection with 5 features and 4 fields</span></span>
 <span><span class="co"># Geometry type: POINT</span></span>
 <span><span class="co"># Dimension:     XY</span></span>
-<span><span class="co"># Bounding box:  xmin: 331107.7 ymin: 5893800 xmax: 405860.5 ymax: 5961767</span></span>
+<span><span class="co"># Bounding box:  xmin: 320396.9 ymin: 5908765 xmax: 405639.6 ymax: 5997898</span></span>
 <span><span class="co"># Projected CRS: WGS 84 / UTM zone 32N</span></span>
 <span><span class="co">#     B4   B3   B2   B8                 geometry</span></span>
-<span><span class="co"># 1 3284 3103 3437 3177 POINT (365836.4 5915141)</span></span>
-<span><span class="co"># 2 2156 2209 2597 3061 POINT (331107.7 5893800)</span></span>
-<span><span class="co"># 3 1072 1362 1657  531 POINT (405860.5 5961767)</span></span>
-<span><span class="co"># 4 2184 2183 2481 2593 POINT (374755.9 5937197)</span></span>
-<span><span class="co"># 5  871 1045 1322 1413 POINT (345271.5 5897144)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># 1 1123 1581 2034  978 POINT (320396.9 5935792)</span></span>
+<span><span class="co"># 2 3931 3766 3944 4759 POINT (325456.9 5908765)</span></span>
+<span><span class="co"># 3  572  848 1278  372   POINT (391964 5997898)</span></span>
+<span><span class="co"># 4 2989 2724 2877 2497 POINT (368405.9 5959615)</span></span>
+<span><span class="co"># 5    0    0    0    0 POINT (405639.6 5918186)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section><section id="exercise-9.5" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-9.5">Exercise 9.5</h2>
 <p>For the 10 km radius circle around <code>POINT(390000  5940000)</code>, compute the mean pixel values of the S2 image when downsampling the images with factor 30, and on the original resolution. Compute the relative difference between the results.</p>
@@ -385,7 +385,7 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <div class="cell">
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="va">a2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">p</span>, <span class="va">b</span>, <span class="va">mean</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#    user  system elapsed </span></span>
-<span><span class="co">#  67.637   1.862  66.342</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#  56.851   1.433  55.200</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Relative differences: we will work on the array of the stars objects:</p>
 <div class="cell">
