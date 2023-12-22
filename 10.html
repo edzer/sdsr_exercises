@@ -333,18 +333,18 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <span><span class="co"># </span></span>
 <span><span class="co"># Residuals:</span></span>
 <span><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
-<span><span class="co"># -0.0034200 -0.0008125 -0.0000900  0.0004499  0.0061270 </span></span>
+<span><span class="co"># -0.0034607 -0.0008361 -0.0000866  0.0005509  0.0060861 </span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Coefficients:</span></span>
 <span><span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co"># (Intercept) 7.390e-04  7.634e-05    9.68   &lt;2e-16 ***</span></span>
-<span><span class="co"># NWB         4.433e-03  1.995e-04   22.22   &lt;2e-16 ***</span></span>
+<span><span class="co"># (Intercept) 7.242e-04  7.939e-05   9.122   &lt;2e-16 ***</span></span>
+<span><span class="co"># NWB         4.525e-03  2.034e-04  22.244   &lt;2e-16 ***</span></span>
 <span><span class="co"># ---</span></span>
 <span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># Residual standard error: 0.00128 on 998 degrees of freedom</span></span>
-<span><span class="co"># Multiple R-squared:  0.331,   Adjusted R-squared:  0.3304 </span></span>
-<span><span class="co"># F-statistic: 493.9 on 1 and 998 DF,  p-value: &lt; 2.2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Residual standard error: 0.001313 on 998 degrees of freedom</span></span>
+<span><span class="co"># Multiple R-squared:  0.3315,  Adjusted R-squared:  0.3308 </span></span>
+<span><span class="co"># F-statistic: 494.8 on 1 and 998 DF,  p-value: &lt; 2.2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>we see that the standard error has decreased with a factor 3 (sqrt(10)).</p>
 <p>For prediction interval widths:</p>
@@ -356,7 +356,7 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr1</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr1</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co"># [1] 0.005161177</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr2</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr2</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co"># [1] 0.005029186</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># [1] 0.005156935</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>no change, as this dominated by the residual variance;</p>
 <p>Confidence intervals for the predicted means:</p>
@@ -368,7 +368,7 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr1</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr1</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co"># [1] 0.0007025904</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr2</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr2</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co"># [1] 0.0002208659</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># [1] 0.0002262336</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>drops for larger dataset, as this is dominated by the standard errors of estimated coefficients.</p>
 </section><section id="exercise-10.3" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-10.3">Exercise 10.3</h2>
