@@ -26,10 +26,14 @@ However, there is strong residual autocorrelation:
 library(spdep)
 lm.morantest(LM_pr, lw)
 ```
-Robust Lagrange multiplier tests suggest that the fitted model should include a spatial autoregressive process in the residuals, but not in the response:
+Robust (adjusted) Lagrange multiplier tests (Rao's score tests) suggest that the fitted model should include a spatial autoregressive process in the residuals, but not in the response:
 
 ```{r}
-spdep::lm.LMtests(LM_pr, lw, test=c("RLMerr", "RLMlag"))
+if (packageVersion("spdep") < "1.3.3") {
+  spdep::lm.LMtests(LM_pr, lw, test=c("RLMerr", "RLMlag"))
+} else {
+  spdep::lm.RStests(LM_pr, lw, test=c("adjRSerr", "adjRSlag"))
+}
 ```
 Adding in the copied out municipality department level variables, we see that they do not seem to be worth retaining (unless there are good reasons for doing so); they do however improve model fit:
 
@@ -45,7 +49,11 @@ lm.morantest(LM_pr_md, lw)
 and the LM tests continue to indicate an omitted spatial process in the residual rather than the response:
 
 ```{r}
-lm.LMtests(LM_pr_md, lw, test=c("RLMerr", "RLMlag"))
+if (packageVersion("spdep") < "1.3.3") {
+  spdep::lm.LMtests(LM_pr_md, lw, test=c("RLMerr", "RLMlag"))
+} else {
+  spdep::lm.RStests(LM_pr_md, lw, test=c("adjRSerr", "adjRSlag"))
+}
 ```
 
 ## Exercise 17.2 {-}
@@ -61,7 +69,11 @@ The pre-test output is similar to that for the models considered above:
 spdep::lm.morantest(LM_pr_fx, lw)
 ```
 ```{r}
-spdep::lm.LMtests(LM_pr_fx, lw, test=c("RLMerr", "RLMlag"))
+if (packageVersion("spdep") < "1.3.3") {
+  spdep::lm.LMtests(LM_pr_fx, lw, test=c("RLMerr", "RLMlag"))
+} else {
+  spdep::lm.RStests(LM_pr_fx, lw, test=c("adjRSerr", "adjRSlag"))
+}
 ```
 We may fit a regimes model, where separate regression coefficients are calculated for interactions between the municipality department dummies and the included variables; `size` and `dist_metro` only retian influence for municipality departments 1 and 2:
 
@@ -75,7 +87,11 @@ spdep::lm.morantest(LM_pr_reg, lw)
 ```
 
 ```{r}
-spdep::lm.LMtests(LM_pr_reg, lw, test=c("RLMerr", "RLMlag"))
+if (packageVersion("spdep") < "1.3.3") {
+  spdep::lm.LMtests(LM_pr_reg, lw, test=c("RLMerr", "RLMlag"))
+} else {
+  spdep::lm.RStests(LM_pr_reg, lw, test=c("adjRSerr", "adjRSlag"))
+}
 ```
 
 ## Exercise 17.3 {-}
@@ -160,7 +176,7 @@ summary(impacts(SDEM_pr_md), short=TRUE, zstats=TRUE)
 ```{r}
 Hausman.test(SDEM_pr_md)
 ```
-Reaching out the SLX models does not help, because although - as with the SDEM models - the indirect impacts (coefficients on lagged $X$ variables) are large, so including lagged $X$ variables especially at the properties level seems sensible, there is serious residual autocorrelation, and now the pre-test strategy points to a missing spatial process in the response:
+Reaching out to the SLX models does not help, because although - as with the SDEM models - the indirect impacts (coefficients on lagged $X$ variables) are large, so including lagged $X$ variables especially at the properties level seems sensible, there is serious residual autocorrelation, and now the pre-test strategy points to a missing spatial process in the response:
 
 ```{r}
 SLX_pr <- lmSLX(f_pr, data=properties_in_dd, listw=lw, Durbin=TRUE)
@@ -172,7 +188,11 @@ spdep::lm.morantest(SLX_pr, lw)
 ```
 
 ```{r}
-spdep::lm.LMtests(SLX_pr, lw, test=c("RLMerr", "RLMlag"))
+if (packageVersion("spdep") < "1.3.3") {
+  spdep::lm.LMtests(SLX_pr, lw, test=c("RLMerr", "RLMlag"))
+} else {
+  spdep::lm.RStests(SLX_pr, lw, test=c("adjRSerr", "adjRSlag"))
+}
 ```
 
 ```{r}
@@ -186,7 +206,11 @@ spdep::lm.morantest(SLX_pr_md, lw)
 
 
 ```{r}
-spdep::lm.LMtests(SLX_pr_md, lw, test=c("RLMerr", "RLMlag"))
+if (packageVersion("spdep") < "1.3.3") {
+  spdep::lm.LMtests(SLX_pr_md, lw, test=c("RLMerr", "RLMlag"))
+} else {
+  spdep::lm.RStests(SLX_pr_md, lw, test=c("adjRSerr", "adjRSlag"))
+}
 ```
 
 So on balance, the pre-test strategy has not worked out too well; it is unclear what is missing in the model.
