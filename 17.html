@@ -378,26 +378,32 @@ window.Quarto = {
 <span><span class="co"># Observed Moran I      Expectation         Variance </span></span>
 <span><span class="co">#     0.4872794374    -0.0023026155     0.0003535235</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Robust Lagrange multiplier tests suggest that the fitted model should include a spatial autoregressive process in the residuals, but not in the response:</p>
+<p>Robust (adjusted) Lagrange multiplier tests (Rao’s score tests) suggest that the fitted model should include a spatial autoregressive process in the residuals, but not in the response:</p>
 <div class="cell">
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.LMtests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">LM_pr</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">LM_pr</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.RStests</a></span><span class="op">(</span><span class="va">LM_pr</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adjRSerr"</span>, <span class="st">"adjRSlag"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co">#   Lagrange multiplier diagnostics for spatial dependence</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># data:  </span></span>
-<span><span class="co"># model: lm(formula = f_pr, data = properties_in_dd)</span></span>
-<span><span class="co"># weights: lw</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># RLMerr = 150.88, df = 1, p-value &lt; 2.2e-16</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#   Lagrange multiplier diagnostics for spatial dependence</span></span>
+<span><span class="co">#   Rao's score (a.k.a Lagrange multiplier) diagnostics for</span></span>
+<span><span class="co">#   spatial dependence</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># data:  </span></span>
 <span><span class="co"># model: lm(formula = f_pr, data = properties_in_dd)</span></span>
-<span><span class="co"># weights: lw</span></span>
+<span><span class="co"># test weights: lw</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># RLMlag = 1.2688, df = 1, p-value = 0.26</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># adjRSerr = 150.88, df = 1, p-value &lt; 2.2e-16</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co">#   Rao's score (a.k.a Lagrange multiplier) diagnostics for</span></span>
+<span><span class="co">#   spatial dependence</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># data:  </span></span>
+<span><span class="co"># model: lm(formula = f_pr, data = properties_in_dd)</span></span>
+<span><span class="co"># test weights: lw</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># adjRSlag = 1.2688, df = 1, p-value = 0.26</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Adding in the copied out municipality department level variables, we see that they do not seem to be worth retaining (unless there are good reasons for doing so); they do however improve model fit:</p>
 <div class="cell">
@@ -448,24 +454,30 @@ window.Quarto = {
 </div>
 <p>and the LM tests continue to indicate an omitted spatial process in the residual rather than the response:</p>
 <div class="cell">
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.LMtests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">LM_pr_md</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">LM_pr_md</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.RStests</a></span><span class="op">(</span><span class="va">LM_pr_md</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adjRSerr"</span>, <span class="st">"adjRSlag"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co">#   Lagrange multiplier diagnostics for spatial dependence</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># data:  </span></span>
-<span><span class="co"># model: lm(formula = f_pr_md, data = properties_in_dd)</span></span>
-<span><span class="co"># weights: lw</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># RLMerr = 116.67, df = 1, p-value &lt; 2.2e-16</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#   Lagrange multiplier diagnostics for spatial dependence</span></span>
+<span><span class="co">#   Rao's score (a.k.a Lagrange multiplier) diagnostics for</span></span>
+<span><span class="co">#   spatial dependence</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># data:  </span></span>
 <span><span class="co"># model: lm(formula = f_pr_md, data = properties_in_dd)</span></span>
-<span><span class="co"># weights: lw</span></span>
+<span><span class="co"># test weights: lw</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># RLMlag = 0.0035207, df = 1, p-value = 0.9527</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># adjRSerr = 116.67, df = 1, p-value &lt; 2.2e-16</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co">#   Rao's score (a.k.a Lagrange multiplier) diagnostics for</span></span>
+<span><span class="co">#   spatial dependence</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># data:  </span></span>
+<span><span class="co"># model: lm(formula = f_pr_md, data = properties_in_dd)</span></span>
+<span><span class="co"># test weights: lw</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># adjRSlag = 0.0035207, df = 1, p-value = 0.9527</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section><section id="exercise-17.2" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-17.2">Exercise 17.2</h2>
 <p>We may update the formula for the properties-only model to include municipality department “fixed effects”, dummy variables:</p>
@@ -518,26 +530,32 @@ window.Quarto = {
 <span><span class="co">#     0.4268054149    -0.0079765936     0.0003390813</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.LMtests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">LM_pr_fx</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">LM_pr_fx</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.RStests</a></span><span class="op">(</span><span class="va">LM_pr_fx</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adjRSerr"</span>, <span class="st">"adjRSlag"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co">#   Lagrange multiplier diagnostics for spatial dependence</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># data:  </span></span>
-<span><span class="co"># model: lm(formula = update(f_pr, . ~ . + num_dep), data =</span></span>
-<span><span class="co"># properties_in_dd)</span></span>
-<span><span class="co"># weights: lw</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># RLMerr = 117.99, df = 1, p-value &lt; 2.2e-16</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#   Lagrange multiplier diagnostics for spatial dependence</span></span>
+<span><span class="co">#   Rao's score (a.k.a Lagrange multiplier) diagnostics for</span></span>
+<span><span class="co">#   spatial dependence</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># data:  </span></span>
 <span><span class="co"># model: lm(formula = update(f_pr, . ~ . + num_dep), data =</span></span>
 <span><span class="co"># properties_in_dd)</span></span>
-<span><span class="co"># weights: lw</span></span>
+<span><span class="co"># test weights: lw</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># RLMlag = 0.030669, df = 1, p-value = 0.861</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># adjRSerr = 117.99, df = 1, p-value &lt; 2.2e-16</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co">#   Rao's score (a.k.a Lagrange multiplier) diagnostics for</span></span>
+<span><span class="co">#   spatial dependence</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># data:  </span></span>
+<span><span class="co"># model: lm(formula = update(f_pr, . ~ . + num_dep), data =</span></span>
+<span><span class="co"># properties_in_dd)</span></span>
+<span><span class="co"># test weights: lw</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># adjRSlag = 0.030669, df = 1, p-value = 0.861</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We may fit a regimes model, where separate regression coefficients are calculated for interactions between the municipality department dummies and the included variables; <code>size</code> and <code>dist_metro</code> only retian influence for municipality departments 1 and 2:</p>
 <div class="cell">
@@ -607,26 +625,32 @@ window.Quarto = {
 <span><span class="co">#     0.3198250101    -0.0139390950     0.0003247394</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.LMtests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">LM_pr_reg</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">LM_pr_reg</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.RStests</a></span><span class="op">(</span><span class="va">LM_pr_reg</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adjRSerr"</span>, <span class="st">"adjRSlag"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co">#   Lagrange multiplier diagnostics for spatial dependence</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># data:  </span></span>
-<span><span class="co"># model: lm(formula = update(f_pr, . ~ num_dep/(0 + .)), data</span></span>
-<span><span class="co"># = properties_in_dd)</span></span>
-<span><span class="co"># weights: lw</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># RLMerr = 40.873, df = 1, p-value = 1.625e-10</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#   Lagrange multiplier diagnostics for spatial dependence</span></span>
+<span><span class="co">#   Rao's score (a.k.a Lagrange multiplier) diagnostics for</span></span>
+<span><span class="co">#   spatial dependence</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># data:  </span></span>
 <span><span class="co"># model: lm(formula = update(f_pr, . ~ num_dep/(0 + .)), data</span></span>
 <span><span class="co"># = properties_in_dd)</span></span>
-<span><span class="co"># weights: lw</span></span>
+<span><span class="co"># test weights: lw</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># RLMlag = 19.055, df = 1, p-value = 1.27e-05</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># adjRSerr = 40.873, df = 1, p-value = 1.625e-10</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co">#   Rao's score (a.k.a Lagrange multiplier) diagnostics for</span></span>
+<span><span class="co">#   spatial dependence</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># data:  </span></span>
+<span><span class="co"># model: lm(formula = update(f_pr, . ~ num_dep/(0 + .)), data</span></span>
+<span><span class="co"># = properties_in_dd)</span></span>
+<span><span class="co"># test weights: lw</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># adjRSlag = 19.055, df = 1, p-value = 1.27e-05</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section><section id="exercise-17.3" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-17.3">Exercise 17.3</h2>
 <p>Fitting models initially by maximum likelihood (GMM may also be used), we pre-compute the eigenvalues:</p>
@@ -850,7 +874,7 @@ window.Quarto = {
 <span><span class="co"># data:  NULL</span></span>
 <span><span class="co"># Hausman test = 229.24, df = 17, p-value &lt; 2.2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Reaching out the SLX models does not help, because although - as with the SDEM models - the indirect impacts (coefficients on lagged <span class="math inline">\(X\)</span> variables) are large, so including lagged <span class="math inline">\(X\)</span> variables especially at the properties level seems sensible, there is serious residual autocorrelation, and now the pre-test strategy points to a missing spatial process in the response:</p>
+<p>Reaching out to the SLX models does not help, because although - as with the SDEM models - the indirect impacts (coefficients on lagged <span class="math inline">\(X\)</span> variables) are large, so including lagged <span class="math inline">\(X\)</span> variables especially at the properties level seems sensible, there is serious residual autocorrelation, and now the pre-test strategy points to a missing spatial process in the response:</p>
 <div class="cell">
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SLX_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/SLX.html">lmSLX</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">SLX_pr</span><span class="op">)</span>, short<span class="op">=</span><span class="cn">TRUE</span>, zstats<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
@@ -897,28 +921,34 @@ window.Quarto = {
 <span><span class="co">#     0.4505572652    -0.0029076149     0.0003489564</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.LMtests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">SLX_pr</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">SLX_pr</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.RStests</a></span><span class="op">(</span><span class="va">SLX_pr</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adjRSerr"</span>, <span class="st">"adjRSlag"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co">#   Lagrange multiplier diagnostics for spatial dependence</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># data:  </span></span>
-<span><span class="co"># model: lm(formula = formula(paste("y ~ ",</span></span>
-<span><span class="co"># paste(colnames(x)[-1], collapse = "+"))), data =</span></span>
-<span><span class="co"># as.data.frame(x), weights = weights)</span></span>
-<span><span class="co"># weights: lw</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># RLMerr = 3.9929, df = 1, p-value = 0.04569</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#   Lagrange multiplier diagnostics for spatial dependence</span></span>
+<span><span class="co">#   Rao's score (a.k.a Lagrange multiplier) diagnostics for</span></span>
+<span><span class="co">#   spatial dependence</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># data:  </span></span>
-<span><span class="co"># model: lm(formula = formula(paste("y ~ ",</span></span>
-<span><span class="co"># paste(colnames(x)[-1], collapse = "+"))), data =</span></span>
-<span><span class="co"># as.data.frame(x), weights = weights)</span></span>
-<span><span class="co"># weights: lw</span></span>
+<span><span class="co"># model: lm(prpsqm ~ size + age + dist_metro + lag.size +</span></span>
+<span><span class="co"># lag.age + lag.dist_metro, data = properties_in_dd, listw =</span></span>
+<span><span class="co"># lw)</span></span>
+<span><span class="co"># test weights: lw</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># RLMlag = 54.185, df = 1, p-value = 1.825e-13</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># adjRSerr = 3.9929, df = 1, p-value = 0.04569</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co">#   Rao's score (a.k.a Lagrange multiplier) diagnostics for</span></span>
+<span><span class="co">#   spatial dependence</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># data:  </span></span>
+<span><span class="co"># model: lm(prpsqm ~ size + age + dist_metro + lag.size +</span></span>
+<span><span class="co"># lag.age + lag.dist_metro, data = properties_in_dd, listw =</span></span>
+<span><span class="co"># lw)</span></span>
+<span><span class="co"># test weights: lw</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># adjRSlag = 54.185, df = 1, p-value = 1.825e-13</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SLX_pr_md</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/SLX.html">lmSLX</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
@@ -986,28 +1016,38 @@ window.Quarto = {
 <span><span class="co">#     0.3978202243    -0.0070160067     0.0003371825</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.LMtests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">SLX_pr_md</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">SLX_pr_md</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.RStests</a></span><span class="op">(</span><span class="va">SLX_pr_md</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adjRSerr"</span>, <span class="st">"adjRSlag"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co">#   Lagrange multiplier diagnostics for spatial dependence</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># data:  </span></span>
-<span><span class="co"># model: lm(formula = formula(paste("y ~ ",</span></span>
-<span><span class="co"># paste(colnames(x)[-1], collapse = "+"))), data =</span></span>
-<span><span class="co"># as.data.frame(x), weights = weights)</span></span>
-<span><span class="co"># weights: lw</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># RLMerr = 15.011, df = 1, p-value = 0.0001069</span></span>
-<span><span class="co"># </span></span>
-<span><span class="co"># </span></span>
-<span><span class="co">#   Lagrange multiplier diagnostics for spatial dependence</span></span>
+<span><span class="co">#   Rao's score (a.k.a Lagrange multiplier) diagnostics for</span></span>
+<span><span class="co">#   spatial dependence</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># data:  </span></span>
-<span><span class="co"># model: lm(formula = formula(paste("y ~ ",</span></span>
-<span><span class="co"># paste(colnames(x)[-1], collapse = "+"))), data =</span></span>
-<span><span class="co"># as.data.frame(x), weights = weights)</span></span>
-<span><span class="co"># weights: lw</span></span>
+<span><span class="co"># model: lm(prpsqm ~ size + age + dist_metro + foreigners +</span></span>
+<span><span class="co"># prgreensp + popdens + museums + airbnb + lag.size + lag.age</span></span>
+<span><span class="co"># + lag.dist_metro + lag.foreigners + lag.prgreensp +</span></span>
+<span><span class="co"># lag.popdens + lag.museums + lag.airbnb, data =</span></span>
+<span><span class="co"># properties_in_dd, listw = lw)</span></span>
+<span><span class="co"># test weights: lw</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># RLMlag = 56.758, df = 1, p-value = 4.929e-14</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># adjRSerr = 15.011, df = 1, p-value = 0.0001069</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># </span></span>
+<span><span class="co">#   Rao's score (a.k.a Lagrange multiplier) diagnostics for</span></span>
+<span><span class="co">#   spatial dependence</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># data:  </span></span>
+<span><span class="co"># model: lm(prpsqm ~ size + age + dist_metro + foreigners +</span></span>
+<span><span class="co"># prgreensp + popdens + museums + airbnb + lag.size + lag.age</span></span>
+<span><span class="co"># + lag.dist_metro + lag.foreigners + lag.prgreensp +</span></span>
+<span><span class="co"># lag.popdens + lag.museums + lag.airbnb, data =</span></span>
+<span><span class="co"># properties_in_dd, listw = lw)</span></span>
+<span><span class="co"># test weights: lw</span></span>
+<span><span class="co"># </span></span>
+<span><span class="co"># adjRSlag = 56.758, df = 1, p-value = 4.929e-14</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>So on balance, the pre-test strategy has not worked out too well; it is unclear what is missing in the model.</p>
 </section><section id="exercise-17.4" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-17.4">Exercise 17.4</h2>
@@ -1135,36 +1175,36 @@ window.Quarto = {
 <span><span class="co"># ========================================================</span></span>
 <span><span class="co"># Simulated standard errors</span></span>
 <span><span class="co">#                Direct    Indirect       Total</span></span>
-<span><span class="co"># size        0.3710232   2.6622968   2.8021051</span></span>
-<span><span class="co"># age         1.0656539   6.3934258   6.8032035</span></span>
-<span><span class="co"># dist_metro  0.2252562   0.3206586   0.2014971</span></span>
-<span><span class="co"># foreigners 11.6518225  48.0065569  59.6119692</span></span>
-<span><span class="co"># prgreensp   8.3961717  34.5942869  42.9486865</span></span>
-<span><span class="co"># popdens    53.7068631 221.6823201 275.1693693</span></span>
-<span><span class="co"># museums    11.2835540  46.5051961  57.7478309</span></span>
-<span><span class="co"># airbnb      0.1735630   0.7151952   0.8880677</span></span>
+<span><span class="co"># size        0.3629672   2.6298189   2.7543821</span></span>
+<span><span class="co"># age         1.0301220   6.2060378   6.5821570</span></span>
+<span><span class="co"># dist_metro  0.2196075   0.3146513   0.2006894</span></span>
+<span><span class="co"># foreigners 11.6348590  47.9592683  59.5467270</span></span>
+<span><span class="co"># prgreensp   8.3729966  34.5013733  42.8353989</span></span>
+<span><span class="co"># popdens    54.2819922 223.9979248 278.0750032</span></span>
+<span><span class="co"># museums    10.9673114  45.1877483  56.1139566</span></span>
+<span><span class="co"># airbnb      0.1704164   0.7020695   0.8717528</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated z-values:</span></span>
 <span><span class="co">#                 Direct   Indirect      Total</span></span>
-<span><span class="co"># size         8.7075336  2.7396796  3.7559393</span></span>
-<span><span class="co"># age        -21.6267649  1.7713783 -1.7229340</span></span>
-<span><span class="co"># dist_metro   1.1600979 -1.4271039 -0.9741773</span></span>
-<span><span class="co"># foreigners  -0.4815667 -0.4733817 -0.4753501</span></span>
-<span><span class="co"># prgreensp    0.6864255  0.6749909  0.6778828</span></span>
-<span><span class="co"># popdens     -0.4193816 -0.4123435 -0.4140465</span></span>
-<span><span class="co"># museums     -0.3484754 -0.3463294 -0.3469941</span></span>
-<span><span class="co"># airbnb       0.5274250  0.5205342  0.5222857</span></span>
+<span><span class="co"># size         8.9252625  2.7533527  3.8049902</span></span>
+<span><span class="co"># age        -22.3534666  1.7623126 -1.8367564</span></span>
+<span><span class="co"># dist_metro   1.2067555 -1.4551181 -0.9608986</span></span>
+<span><span class="co"># foreigners  -0.4978703 -0.4898416 -0.4918003</span></span>
+<span><span class="co"># prgreensp    0.6503818  0.6397962  0.6424475</span></span>
+<span><span class="co"># popdens     -0.3758504 -0.3693055 -0.3708552</span></span>
+<span><span class="co"># museums     -0.3669879 -0.3623590 -0.3635291</span></span>
+<span><span class="co"># airbnb       0.5635685  0.5553311  0.5574084</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated p-values:</span></span>
 <span><span class="co">#            Direct  Indirect  Total     </span></span>
-<span><span class="co"># size       &lt; 2e-16 0.0061499 0.00017269</span></span>
-<span><span class="co"># age        &lt; 2e-16 0.0764978 0.08490047</span></span>
-<span><span class="co"># dist_metro 0.24601 0.1535500 0.32996852</span></span>
-<span><span class="co"># foreigners 0.63011 0.6359409 0.63453744</span></span>
-<span><span class="co"># prgreensp  0.49244 0.4996816 0.49784602</span></span>
-<span><span class="co"># popdens    0.67494 0.6800877 0.67884002</span></span>
-<span><span class="co"># museums    0.72748 0.7290952 0.72859575</span></span>
-<span><span class="co"># airbnb     0.59790 0.6026913 0.60147143</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># size       &lt; 2e-16 0.0058988 0.00014181</span></span>
+<span><span class="co"># age        &lt; 2e-16 0.0780165 0.06624587</span></span>
+<span><span class="co"># dist_metro 0.22753 0.1456366 0.33660316</span></span>
+<span><span class="co"># foreigners 0.61858 0.6242460 0.62286053</span></span>
+<span><span class="co"># prgreensp  0.51545 0.5223051 0.52058269</span></span>
+<span><span class="co"># popdens    0.70703 0.7119001 0.71074538</span></span>
+<span><span class="co"># museums    0.71363 0.7170838 0.71620968</span></span>
+<span><span class="co"># airbnb     0.57305 0.5786682 0.57724840</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The values and standard errors of the spatial coefficients suggest numerical problems in finding an optimum where the two coefficients are equally strong but with opposing signs:</p>
 <div class="cell">
@@ -1186,21 +1226,21 @@ window.Quarto = {
 <span><span class="co"># ========================================================</span></span>
 <span><span class="co"># Simulated standard errors</span></span>
 <span><span class="co">#               Direct  Indirect     Total</span></span>
-<span><span class="co"># size       0.3723598 2.8787651 3.0306878</span></span>
-<span><span class="co"># age        1.0336897 6.3396749 6.7046680</span></span>
-<span><span class="co"># dist_metro 0.2151679 0.3047003 0.1969144</span></span>
+<span><span class="co"># size       0.3659406 2.8668001 3.0088429</span></span>
+<span><span class="co"># age        1.0564794 6.6487121 7.0560479</span></span>
+<span><span class="co"># dist_metro 0.2209384 0.3139464 0.2030145</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated z-values:</span></span>
 <span><span class="co">#                Direct  Indirect      Total</span></span>
-<span><span class="co"># size         9.052689  3.219581  4.1704313</span></span>
-<span><span class="co"># age        -21.996049  2.644189 -0.8909896</span></span>
-<span><span class="co"># dist_metro   1.390615 -2.156590 -1.8175299</span></span>
+<span><span class="co"># size         9.169978  3.226613  4.1895577</span></span>
+<span><span class="co"># age        -21.530744  2.543775 -0.8268029</span></span>
+<span><span class="co"># dist_metro   1.341942 -2.094249 -1.7781751</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated p-values:</span></span>
-<span><span class="co">#            Direct  Indirect  Total     </span></span>
-<span><span class="co"># size       &lt; 2e-16 0.0012838 3.0402e-05</span></span>
-<span><span class="co"># age        &lt; 2e-16 0.0081887 0.372935  </span></span>
-<span><span class="co"># dist_metro 0.16434 0.0310376 0.069136</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#            Direct  Indirect  Total    </span></span>
+<span><span class="co"># size       &lt; 2e-16 0.0012526 2.795e-05</span></span>
+<span><span class="co"># age        &lt; 2e-16 0.0109662 0.408349 </span></span>
+<span><span class="co"># dist_metro 0.17961 0.0362378 0.075375</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The same problem occurs without the municipality department level variables; the impacts are being driven by the large spatial coefficient on the lagged response:</p>
 <div class="cell">
