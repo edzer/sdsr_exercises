@@ -33,6 +33,12 @@ contains the inverse distance "layer":
 
 ```{r}
 library(ggplot2)
+library(viridis)
+g <- ggplot() + coord_equal() +
+	scale_fill_viridis() +
+    theme_void() +
+	scale_x_discrete(expand=c(0,0)) +
+	scale_y_discrete(expand=c(0,0))
 g + geom_stars(data = km, aes(fill = NO2, x = x, y = y)) + 
     geom_sf(data = st_cast(de, "MULTILINESTRING")) + 
     geom_sf(data = no2.sf) + facet_wrap(~what) +
