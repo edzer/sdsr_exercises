@@ -33,17 +33,19 @@ plot(ndvi)
 
 Alternatively, one could use
 ```{r}
-ndvi_fn = function(r, g, b, nir) (nir-r)/(nir+r)
+ndvi_slow = function(x) (x[4]-x[1])/(x[4]+x[1])
 ```
 
-but that is much less efficient. Write to a tiff:
+but that is much less efficient (called for every pixel, rather than chunked). 
+
+Write to a tiff:
 ```{r}
 system.time(write_stars(ndvi, "ndvi.tif"))
 ```
 
 The runtime difference is caused by the fact that `plot` downsamples,
 so computes a very small fraction of the available pixels, where
-`write_stars` computes all pixels, and then writes them.
+`write_stars` computes all pixels, and then writes them, at full (original) resolution.
 
 ## Exercise 9.3 {-}
 
