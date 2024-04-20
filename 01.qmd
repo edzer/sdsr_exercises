@@ -4,7 +4,7 @@
 
 List five differences between raster and vector data.
 
-- raster data have values for pixels, vector data for points, lines of polygons
+- raster data have values for pixels (or cells), vector data for points, lines of polygons
 - spatial locations of raster pixels are constrained to a grid,
   vector data coordinates can have arbitrary locations (only limited
   by floating point representation of coordinates)
@@ -20,7 +20,7 @@ List five differences between raster and vector data.
   (raster algebra) operations that include spatial operations; such 
   simple operations are usually not available for vector data.
 - raster data has trivial topology: it is clear which 4 or 8 pixels
-  are the neighbours of every pixel; for vector data spatial there
+  are the neighbours of every pixel; for vector spatial data there
   are more types of relationships, and these relationships are more
   complicated to detect.
 
