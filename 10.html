@@ -369,18 +369,18 @@ window.Quarto = {
 <span><span class="co"># </span></span>
 <span><span class="co"># Residuals:</span></span>
 <span><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
-<span><span class="co"># -0.0033780 -0.0008254 -0.0000662  0.0006699  0.0061692 </span></span>
+<span><span class="co"># -0.0034605 -0.0008564 -0.0000740  0.0006334  0.0060866 </span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Coefficients:</span></span>
 <span><span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co"># (Intercept) 7.769e-04  7.532e-05   10.31   &lt;2e-16 ***</span></span>
-<span><span class="co"># NWB         4.301e-03  1.954e-04   22.01   &lt;2e-16 ***</span></span>
+<span><span class="co"># (Intercept) 8.214e-04  7.518e-05   10.93   &lt;2e-16 ***</span></span>
+<span><span class="co"># NWB         4.364e-03  1.973e-04   22.12   &lt;2e-16 ***</span></span>
 <span><span class="co"># ---</span></span>
 <span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># Residual standard error: 0.001276 on 998 degrees of freedom</span></span>
-<span><span class="co"># Multiple R-squared:  0.3267,  Adjusted R-squared:  0.3261 </span></span>
-<span><span class="co"># F-statistic: 484.3 on 1 and 998 DF,  p-value: &lt; 2.2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Residual standard error: 0.001291 on 998 degrees of freedom</span></span>
+<span><span class="co"># Multiple R-squared:  0.329,   Adjusted R-squared:  0.3283 </span></span>
+<span><span class="co"># F-statistic: 489.3 on 1 and 998 DF,  p-value: &lt; 2.2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>we see that the standard error has decreased with a factor 3 (sqrt(10)).</p>
 <p>For prediction interval widths:</p>
@@ -392,7 +392,7 @@ window.Quarto = {
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr1</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr1</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co"># [1] 0.005161177</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr2</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr2</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co"># [1] 0.005013414</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># [1] 0.005072361</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>no change, as this dominated by the residual variance;</p>
 <p>Confidence intervals for the predicted means:</p>
@@ -404,7 +404,7 @@ window.Quarto = {
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr1</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr1</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co"># [1] 0.0007025904</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr2</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr2</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co"># [1] 0.0002184928</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># [1] 0.0002206959</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>drops for larger dataset, as this is dominated by the standard errors of estimated coefficients.</p>
 </section><section id="exercise-10.3" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-10.3">Exercise 10.3</h2>
