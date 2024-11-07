@@ -29,9 +29,6 @@ jobs:
       - run: /usr/bin/sudo apt install libudunits2-dev libgdal-dev libgeos-dev libproj-dev libglpk-dev
       - run: R -q -e 'install.packages(c("cubelyr", "dbscan", "downlit", "exactextractr", "giscoR", "gstat", "hglm", "igraph", "lme4", "lmtest", "maps", "mapview", "matrixStats", "mgcv", "randomForest", "R2BayesX", "rgeoda", "rnaturalearth", "rnaturalearthdata", "sf", "spatstat", "spatialreg", "spdep", "spData", "stars", "tidyverse", "tmap", "viridis", "xml2"))'
       - run: R -q -e 'options(timeout = 3600); install.packages("starsdata", repos = "http://cran.uni-muenster.de/pebesma", type = "source")'
-      - run: R -q -e 'install.packages("remotes")'
-      - run: R -q -e 'remotes::install_github("r-spatial/stars")'
-
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:

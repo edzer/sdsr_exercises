@@ -130,7 +130,13 @@ x = c(
 file_list = system.file(paste0("netcdf/", x), package = "starsdata")
 (y = read_stars(file_list, quiet = TRUE) |> adrop() )
 # compute trend:
-lm1 = function(y) { X=cbind(1, 1:9); if (any(is.na(y))) NA else lm.fit(X,y)$coef[2] }
+lm1 = function(y) { 
+    X = cbind(1, 1:9)
+    if (any(is.na(y)))
+        NA_real_ 
+    else
+        lm.fit(X,y)$coefficients[2] 
+}
 tr = st_apply(y[1], c("x","y"), lm1)
 # find .1 and .9 quantile:
 qq = quantile(as.vector(tr[[1]]), c(.1, .9), na.rm = TRUE)
