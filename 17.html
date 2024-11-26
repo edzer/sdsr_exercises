@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.37">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>17&nbsp; Spatial econometrics models – Spatial Data Science</title>
 <style>
@@ -66,10 +66,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-29e2c20b02301cfff04dc8050bf30c7e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-52267d870f217a66dbfd24a6d5e99412.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -1175,36 +1175,36 @@ window.Quarto = {
 <span><span class="co"># ========================================================</span></span>
 <span><span class="co"># Simulated standard errors</span></span>
 <span><span class="co">#                Direct    Indirect       Total</span></span>
-<span><span class="co"># size        0.3661808   2.6252856   2.7687405</span></span>
-<span><span class="co"># age         1.0828809   6.4261222   6.8138413</span></span>
-<span><span class="co"># dist_metro  0.2212462   0.3042481   0.1970223</span></span>
-<span><span class="co"># foreigners 11.9664314  49.4716455  61.3875035</span></span>
-<span><span class="co"># prgreensp   8.4018986  34.7100111  43.0758108</span></span>
-<span><span class="co"># popdens    55.4123418 229.4853243 284.7004037</span></span>
-<span><span class="co"># museums    11.1106330  45.8776440  56.9459714</span></span>
-<span><span class="co"># airbnb      0.1742831   0.7204145   0.8939285</span></span>
+<span><span class="co"># size        0.3669641   2.6984999   2.8331258</span></span>
+<span><span class="co"># age         1.0703829   6.3213320   6.6976295</span></span>
+<span><span class="co"># dist_metro  0.2168855   0.3140016   0.1994299</span></span>
+<span><span class="co"># foreigners 11.7529797  48.4710530  60.1752620</span></span>
+<span><span class="co"># prgreensp   8.4061163  34.8439269  43.2058009</span></span>
+<span><span class="co"># popdens    54.4093254 225.4033840 279.5802384</span></span>
+<span><span class="co"># museums    11.0889717  45.5434689  56.5898832</span></span>
+<span><span class="co"># airbnb      0.1732436   0.7120079   0.8844952</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated z-values:</span></span>
 <span><span class="co">#                 Direct   Indirect      Total</span></span>
-<span><span class="co"># size         8.8724491  2.8070810  3.8350686</span></span>
-<span><span class="co"># age        -21.2314018  1.7235616 -1.7486848</span></span>
-<span><span class="co"># dist_metro   1.1939097 -1.5256504 -1.0152568</span></span>
-<span><span class="co"># foreigners  -0.5063573 -0.4982675 -0.5002550</span></span>
-<span><span class="co"># prgreensp    0.6667910  0.6549610  0.6578174</span></span>
-<span><span class="co"># popdens     -0.3505608 -0.3429084 -0.3446354</span></span>
-<span><span class="co"># museums     -0.3617196 -0.3566601 -0.3579122</span></span>
-<span><span class="co"># airbnb       0.5516781  0.5430114  0.5451682</span></span>
+<span><span class="co"># size         8.8125946  2.6951099  3.7085044</span></span>
+<span><span class="co"># age        -21.5550138  1.7589735 -1.7846706</span></span>
+<span><span class="co"># dist_metro   1.2037482 -1.4406295 -0.9591560</span></span>
+<span><span class="co"># foreigners  -0.4496793 -0.4393150 -0.4416954</span></span>
+<span><span class="co"># prgreensp    0.6973724  0.6821461  0.6858070</span></span>
+<span><span class="co"># popdens     -0.4289222 -0.4224406 -0.4240533</span></span>
+<span><span class="co"># museums     -0.3398709 -0.3318230 -0.3336496</span></span>
+<span><span class="co"># airbnb       0.5080430  0.4971122  0.4996782</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated p-values:</span></span>
 <span><span class="co">#            Direct  Indirect  Total     </span></span>
-<span><span class="co"># size       &lt; 2e-16 0.0049993 0.00012553</span></span>
-<span><span class="co"># age        &lt; 2e-16 0.0847870 0.08034551</span></span>
-<span><span class="co"># dist_metro 0.23251 0.1270969 0.30998342</span></span>
-<span><span class="co"># foreigners 0.61261 0.6182955 0.61689554</span></span>
-<span><span class="co"># prgreensp  0.50491 0.5124928 0.51065550</span></span>
-<span><span class="co"># popdens    0.72592 0.7316674 0.73036848</span></span>
-<span><span class="co"># museums    0.71756 0.7213463 0.72040899</span></span>
-<span><span class="co"># airbnb     0.58117 0.5871220 0.58563781</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># size       &lt; 2e-16 0.0070365 0.00020849</span></span>
+<span><span class="co"># age        &lt; 2e-16 0.0785820 0.07431476</span></span>
+<span><span class="co"># dist_metro 0.22869 0.1496894 0.33748014</span></span>
+<span><span class="co"># foreigners 0.65294 0.6604333 0.65870966</span></span>
+<span><span class="co"># prgreensp  0.48557 0.4951466 0.49283480</span></span>
+<span><span class="co"># popdens    0.66798 0.6727034 0.67152697</span></span>
+<span><span class="co"># museums    0.73395 0.7400229 0.73864399</span></span>
+<span><span class="co"># airbnb     0.61142 0.6191099 0.61730167</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The values and standard errors of the spatial coefficients suggest numerical problems in finding an optimum where the two coefficients are equally strong but with opposing signs:</p>
 <div class="cell">
@@ -1225,22 +1225,22 @@ window.Quarto = {
 <span><span class="co"># Simulation results ( variance matrix):</span></span>
 <span><span class="co"># ========================================================</span></span>
 <span><span class="co"># Simulated standard errors</span></span>
-<span><span class="co">#               Direct Indirect     Total</span></span>
-<span><span class="co"># size       0.3681498 2.924821 3.0754211</span></span>
-<span><span class="co"># age        1.0752956 6.628727 6.9854573</span></span>
-<span><span class="co"># dist_metro 0.2205457 0.309651 0.1968289</span></span>
+<span><span class="co">#               Direct  Indirect     Total</span></span>
+<span><span class="co"># size       0.3759877 2.8319733 2.9931725</span></span>
+<span><span class="co"># age        1.0620497 6.5079281 6.8658232</span></span>
+<span><span class="co"># dist_metro 0.2196071 0.3098509 0.2010647</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated z-values:</span></span>
-<span><span class="co">#                Direct  Indirect      Total</span></span>
-<span><span class="co"># size         9.195193  3.185067  4.1298276</span></span>
-<span><span class="co"># age        -21.177592  2.492351 -0.8948674</span></span>
-<span><span class="co"># dist_metro   1.319636 -2.082113 -1.7969334</span></span>
+<span><span class="co">#                Direct  Indirect     Total</span></span>
+<span><span class="co"># size         8.923975  3.252998  4.198792</span></span>
+<span><span class="co"># age        -21.404497  2.589734 -0.856247</span></span>
+<span><span class="co"># dist_metro   1.350634 -2.125919 -1.800958</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated p-values:</span></span>
 <span><span class="co">#            Direct  Indirect  Total     </span></span>
-<span><span class="co"># size       &lt; 2e-16 0.0014472 3.6304e-05</span></span>
-<span><span class="co"># age        &lt; 2e-16 0.0126901 0.370858  </span></span>
-<span><span class="co"># dist_metro 0.18696 0.0373322 0.072346</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># size       &lt; 2e-16 0.0011419 2.6834e-05</span></span>
+<span><span class="co"># age        &lt; 2e-16 0.0096050 0.39186   </span></span>
+<span><span class="co"># dist_metro 0.17681 0.0335100 0.07171</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The same problem occurs without the municipality department level variables; the impacts are being driven by the large spatial coefficient on the lagged response:</p>
 <div class="cell">
@@ -1334,8 +1334,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -1446,7 +1444,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
