@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.34">
+<meta name="generator" content="quarto-1.8.24">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>17&nbsp; Spatial econometrics models – Spatial Data Science</title>
 <style>
@@ -64,14 +64,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="./16.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-c8ad9e5dbd60b7b70b38521ab19b7da4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-23102fe0f0b5b1a9f09cc09ebcc8fe5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-d58359eb3ecc31d3bec1ed479c2cbb3a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -119,7 +120,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -151,7 +152,9 @@ window.Quarto = {
     </div>
   </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Spatial Data Science</a> 
         <div class="sidebar-tools-main">
@@ -308,7 +311,7 @@ window.Quarto = {
 
 
 </header><div class="cell">
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html">load</a></span><span class="op">(</span><span class="st">"data/ch16.RData"</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html">load</a></span><span class="op">(</span><span class="st">"data/ch16.RData"</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/">spdep</a></span><span class="op">)</span></span>
 <span><span class="co"># Loading required package: spData</span></span>
 <span><span class="co"># To access larger datasets in this package, install the</span></span>
@@ -320,12 +323,12 @@ window.Quarto = {
 <span><span class="co"># </span></span>
 <span><span class="co">#     depmunic</span></span>
 <span><span class="co"># Loading required package: sf</span></span>
-<span><span class="co"># Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="exercise-17.1" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-17.1">Exercise 17.1</h2>
 <p>First create a spatial weights object from the <code>k=4</code> symmetrized neighbour object:</p>
 <div class="cell">
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spatialreg/">spatialreg</a></span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spatialreg/">spatialreg</a></span><span class="op">)</span></span>
 <span><span class="co"># Loading required package: Matrix</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Attaching package: 'spatialreg'</span></span>
@@ -335,11 +338,11 @@ window.Quarto = {
 <span><span class="co">#     get.VerboseOption, get.ZeroPolicyOption,</span></span>
 <span><span class="co">#     set.ClusterOption, set.coresOption, set.mcOption,</span></span>
 <span><span class="co">#     set.VerboseOption, set.ZeroPolicyOption</span></span>
-<span><span class="va">lw</span> <span class="op">&lt;-</span> <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/nb2listw.html">nb2listw</a></span><span class="op">(</span><span class="va">pr_nb_k4s</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="va">lw</span> <span class="op">&lt;-</span> <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/nb2listw.html">nb2listw</a></span><span class="op">(</span><span class="va">pr_nb_k4s</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Fit a linear model to the lower-level data; all the included variables seem worth retaining:</p>
 <div class="cell">
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">LM_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">LM_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">LM_pr</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Call:</span></span>
@@ -360,11 +363,11 @@ window.Quarto = {
 <span><span class="co"># </span></span>
 <span><span class="co"># Residual standard error: 792.2 on 996 degrees of freedom</span></span>
 <span><span class="co"># Multiple R-squared:  0.2368,  Adjusted R-squared:  0.2345 </span></span>
-<span><span class="co"># F-statistic:   103 on 3 and 996 DF,  p-value: &lt; 2.2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># F-statistic:   103 on 3 and 996 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>However, there is strong residual autocorrelation:</p>
 <div class="cell">
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/">spdep</a></span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/">spdep</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">LM_pr</span>, <span class="va">lw</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co">#   Global Moran I for regression residuals</span></span>
@@ -378,11 +381,11 @@ window.Quarto = {
 <span><span class="co"># alternative hypothesis: greater</span></span>
 <span><span class="co"># sample estimates:</span></span>
 <span><span class="co"># Observed Moran I      Expectation         Variance </span></span>
-<span><span class="co">#     0.4872794374    -0.0023026155     0.0003535235</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#     0.4872794374    -0.0023026155     0.0003535235</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Robust (adjusted) Lagrange multiplier tests (Rao’s score tests) suggest that the fitted model should include a spatial autoregressive process in the residuals, but not in the response:</p>
 <div class="cell">
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">LM_pr</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
 <span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.RStests</a></span><span class="op">(</span><span class="va">LM_pr</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adjRSerr"</span>, <span class="st">"adjRSlag"</span><span class="op">)</span><span class="op">)</span></span>
@@ -405,11 +408,11 @@ window.Quarto = {
 <span><span class="co"># model: lm(formula = f_pr, data = properties_in_dd)</span></span>
 <span><span class="co"># test weights: lw</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># adjRSlag = 1.2688, df = 1, p-value = 0.26</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># adjRSlag = 1.2688, df = 1, p-value = 0.26</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Adding in the copied out municipality department level variables, we see that they do not seem to be worth retaining (unless there are good reasons for doing so); they do however improve model fit:</p>
 <div class="cell">
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">LM_pr_md</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">LM_pr_md</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">LM_pr_md</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Call:</span></span>
@@ -435,11 +438,11 @@ window.Quarto = {
 <span><span class="co"># </span></span>
 <span><span class="co"># Residual standard error: 727.6 on 991 degrees of freedom</span></span>
 <span><span class="co"># Multiple R-squared:  0.3596,  Adjusted R-squared:  0.3544 </span></span>
-<span><span class="co"># F-statistic: 69.55 on 8 and 991 DF,  p-value: &lt; 2.2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># F-statistic: 69.55 on 8 and 991 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The pre-test results are similar to those for the properties-only variables:</p>
 <div class="cell">
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">LM_pr_md</span>, <span class="va">lw</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">LM_pr_md</span>, <span class="va">lw</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co">#   Global Moran I for regression residuals</span></span>
 <span><span class="co"># </span></span>
@@ -452,11 +455,11 @@ window.Quarto = {
 <span><span class="co"># alternative hypothesis: greater</span></span>
 <span><span class="co"># sample estimates:</span></span>
 <span><span class="co"># Observed Moran I      Expectation         Variance </span></span>
-<span><span class="co">#     0.4307327715    -0.0070398073     0.0003410046</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#     0.4307327715    -0.0070398073     0.0003410046</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>and the LM tests continue to indicate an omitted spatial process in the residual rather than the response:</p>
 <div class="cell">
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">LM_pr_md</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
 <span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.RStests</a></span><span class="op">(</span><span class="va">LM_pr_md</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adjRSerr"</span>, <span class="st">"adjRSlag"</span><span class="op">)</span><span class="op">)</span></span>
@@ -479,12 +482,12 @@ window.Quarto = {
 <span><span class="co"># model: lm(formula = f_pr_md, data = properties_in_dd)</span></span>
 <span><span class="co"># test weights: lw</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># adjRSlag = 0.0035207, df = 1, p-value = 0.9527</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># adjRSlag = 0.0035207, df = 1, p-value = 0.9527</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="exercise-17.2" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-17.2">Exercise 17.2</h2>
 <p>We may update the formula for the properties-only model to include municipality department “fixed effects”, dummy variables:</p>
 <div class="cell">
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">LM_pr_fx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span><span class="va">f_pr</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="va">num_dep</span><span class="op">)</span>, data<span class="op">=</span><span class="va">properties_in_dd</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">LM_pr_fx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span><span class="va">f_pr</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">.</span> <span class="op">+</span> <span class="va">num_dep</span><span class="op">)</span>, data<span class="op">=</span><span class="va">properties_in_dd</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">LM_pr_fx</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Call:</span></span>
@@ -511,11 +514,11 @@ window.Quarto = {
 <span><span class="co"># </span></span>
 <span><span class="co"># Residual standard error: 726.2 on 990 degrees of freedom</span></span>
 <span><span class="co"># Multiple R-squared:  0.3627,  Adjusted R-squared:  0.3569 </span></span>
-<span><span class="co"># F-statistic:  62.6 on 9 and 990 DF,  p-value: &lt; 2.2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># F-statistic:  62.6 on 9 and 990 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The pre-test output is similar to that for the models considered above:</p>
 <div class="cell">
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">LM_pr_fx</span>, <span class="va">lw</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">LM_pr_fx</span>, <span class="va">lw</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co">#   Global Moran I for regression residuals</span></span>
 <span><span class="co"># </span></span>
@@ -529,10 +532,10 @@ window.Quarto = {
 <span><span class="co"># alternative hypothesis: greater</span></span>
 <span><span class="co"># sample estimates:</span></span>
 <span><span class="co"># Observed Moran I      Expectation         Variance </span></span>
-<span><span class="co">#     0.4268054149    -0.0079765936     0.0003390813</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#     0.4268054149    -0.0079765936     0.0003390813</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">LM_pr_fx</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
 <span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.RStests</a></span><span class="op">(</span><span class="va">LM_pr_fx</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adjRSerr"</span>, <span class="st">"adjRSlag"</span><span class="op">)</span><span class="op">)</span></span>
@@ -557,11 +560,11 @@ window.Quarto = {
 <span><span class="co"># properties_in_dd)</span></span>
 <span><span class="co"># test weights: lw</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># adjRSlag = 0.030669, df = 1, p-value = 0.861</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># adjRSlag = 0.030669, df = 1, p-value = 0.861</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We may fit a regimes model, where separate regression coefficients are calculated for interactions between the municipality department dummies and the included variables; <code>size</code> and <code>dist_metro</code> only retian influence for municipality departments 1 and 2:</p>
 <div class="cell">
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">LM_pr_reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span><span class="va">f_pr</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">num_dep</span><span class="op">/</span><span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">.</span><span class="op">)</span><span class="op">)</span>, data<span class="op">=</span><span class="va">properties_in_dd</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">LM_pr_reg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span><span class="va">f_pr</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">num_dep</span><span class="op">/</span><span class="op">(</span><span class="fl">0</span> <span class="op">+</span> <span class="va">.</span><span class="op">)</span><span class="op">)</span>, data<span class="op">=</span><span class="va">properties_in_dd</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">LM_pr_reg</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Call:</span></span>
@@ -606,11 +609,11 @@ window.Quarto = {
 <span><span class="co"># </span></span>
 <span><span class="co"># Residual standard error: 663.8 on 972 degrees of freedom</span></span>
 <span><span class="co"># Multiple R-squared:  0.8323,  Adjusted R-squared:  0.8274 </span></span>
-<span><span class="co"># F-statistic: 172.2 on 28 and 972 DF,  p-value: &lt; 2.2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># F-statistic: 172.2 on 28 and 972 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The pre-test results are now changed, with possible spatial processes in both residuals and response being indicated:</p>
 <div class="cell">
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">LM_pr_reg</span>, <span class="va">lw</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">LM_pr_reg</span>, <span class="va">lw</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co">#   Global Moran I for regression residuals</span></span>
 <span><span class="co"># </span></span>
@@ -624,10 +627,10 @@ window.Quarto = {
 <span><span class="co"># alternative hypothesis: greater</span></span>
 <span><span class="co"># sample estimates:</span></span>
 <span><span class="co"># Observed Moran I      Expectation         Variance </span></span>
-<span><span class="co">#     0.3198250101    -0.0139390950     0.0003247394</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#     0.3198250101    -0.0139390950     0.0003247394</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">LM_pr_reg</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
 <span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.RStests</a></span><span class="op">(</span><span class="va">LM_pr_reg</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adjRSerr"</span>, <span class="st">"adjRSlag"</span><span class="op">)</span><span class="op">)</span></span>
@@ -652,16 +655,16 @@ window.Quarto = {
 <span><span class="co"># = properties_in_dd)</span></span>
 <span><span class="co"># test weights: lw</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># adjRSlag = 19.055, df = 1, p-value = 1.27e-05</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># adjRSlag = 19.055, df = 1, p-value = 1.27e-05</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="exercise-17.3" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-17.3">Exercise 17.3</h2>
 <p>Fitting models initially by maximum likelihood (GMM may also be used), we pre-compute the eigenvalues:</p>
 <div class="cell">
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">eigs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/eigenw.html">eigenw</a></span><span class="op">(</span><span class="va">lw</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">eigs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/eigenw.html">eigenw</a></span><span class="op">(</span><span class="va">lw</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The strong residual autocorrelation is picked up by the spatial coefficient, but unfortunately the Hausman test shows strong mis-specification:</p>
 <div class="cell">
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SEM_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">errorsarlm</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SEM_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">errorsarlm</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">SEM_pr</span>, Hausman<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
@@ -691,28 +694,28 @@ window.Quarto = {
 <span><span class="co"># Number of observations: 1000 </span></span>
 <span><span class="co"># Number of parameters estimated: 6 </span></span>
 <span><span class="co"># AIC: 15736, (AIC for lm: 16194)</span></span>
-<span><span class="co"># Hausman test: -246.29, df: 4, p-value: &lt; 2.22e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Hausman test: -246.29, df: 4, p-value: &lt; 2.22e-16</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The Hausman test compares the OLS and SEM coefficient estimates and their standard errors, assessing whether their distributions overlap sufficiently to suggest the absence of major mis-specification:</p>
 <div class="cell">
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="op">(</span><span class="va">LM_coefs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">LM_pr</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="op">(</span><span class="va">LM_coefs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">LM_pr</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#                 Estimate  Std. Error    t value     Pr(&gt;|t|)</span></span>
 <span><span class="co"># (Intercept) 1702.6169273 78.59752134  21.662476 1.432984e-85</span></span>
 <span><span class="co"># size           5.1868075  0.46509907  11.152049 2.679763e-27</span></span>
 <span><span class="co"># age          -18.1193826  1.33737467 -13.548472 1.662323e-38</span></span>
-<span><span class="co"># dist_metro    -0.3244594  0.07115232  -4.560068 5.749564e-06</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># dist_metro    -0.3244594  0.07115232  -4.560068 5.749564e-06</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="op">(</span><span class="va">SEM_coefs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">SEM_pr</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="op">(</span><span class="va">SEM_coefs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">SEM_pr</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#                 Estimate  Std. Error    z value   Pr(&gt;|z|)</span></span>
 <span><span class="co"># (Intercept) 1999.0919533 120.7030383  16.562068 0.00000000</span></span>
 <span><span class="co"># size           3.2109209   0.3583989   8.959070 0.00000000</span></span>
 <span><span class="co"># age          -23.6475914   1.0642551 -22.219853 0.00000000</span></span>
-<span><span class="co"># dist_metro    -0.2730235   0.1469362  -1.858109 0.06315359</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># dist_metro    -0.2730235   0.1469362  -1.858109 0.06315359</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The tables are harder to read than the figure, which shows that the coefficient estimates do differ a lot for two variables, somewhat for the intercept, and little for one variable, but where the ML standard error estimate under usual assumptions crosses zero:</p>
 <div class="cell">
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">opar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">opar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fl">1</span>, type<span class="op">=</span><span class="st">"n"</span>, xlim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1400</span>, <span class="fl">2500</span><span class="op">)</span>, ylim<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.006</span><span class="op">)</span>, xlab<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">rownames</a></span><span class="op">(</span><span class="va">LM_coefs</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, ylab<span class="op">=</span><span class="st">""</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html">curve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span><span class="op">(</span><span class="va">x</span>, mean<span class="op">=</span><span class="va">LM_coefs</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span>, sd<span class="op">=</span><span class="va">LM_coefs</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">LM_coefs</span><span class="op">[</span><span class="fl">1</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
@@ -733,18 +736,18 @@ window.Quarto = {
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html">curve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span><span class="op">(</span><span class="va">x</span>, mean<span class="op">=</span><span class="va">LM_coefs</span><span class="op">[</span><span class="fl">4</span>,<span class="fl">1</span><span class="op">]</span>, sd<span class="op">=</span><span class="va">LM_coefs</span><span class="op">[</span><span class="fl">4</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">LM_coefs</span><span class="op">[</span><span class="fl">4</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">SEM_coefs</span><span class="op">[</span><span class="fl">4</span>,<span class="fl">1</span><span class="op">]</span>, lwd<span class="op">=</span><span class="fl">2</span>, col<span class="op">=</span><span class="st">"orange"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html">curve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span><span class="op">(</span><span class="va">x</span>, mean<span class="op">=</span><span class="va">SEM_coefs</span><span class="op">[</span><span class="fl">4</span>,<span class="fl">1</span><span class="op">]</span>, sd<span class="op">=</span><span class="va">SEM_coefs</span><span class="op">[</span><span class="fl">4</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span>, add<span class="op">=</span><span class="cn">TRUE</span>, col<span class="op">=</span><span class="st">"orange"</span>, lwd<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html">curve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span><span class="op">(</span><span class="va">x</span>, mean<span class="op">=</span><span class="va">SEM_coefs</span><span class="op">[</span><span class="fl">4</span>,<span class="fl">1</span><span class="op">]</span>, sd<span class="op">=</span><span class="va">SEM_coefs</span><span class="op">[</span><span class="fl">4</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span>, add<span class="op">=</span><span class="cn">TRUE</span>, col<span class="op">=</span><span class="st">"orange"</span>, lwd<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure"><p><img src="17_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span><span class="va">opar</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span><span class="va">opar</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The Hausman test also suggests mis-specification for the SEM model augmented with the municipality department level variables:</p>
 <div class="cell">
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SEM_pr_md</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">errorsarlm</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">FALSE</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SEM_pr_md</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">errorsarlm</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">FALSE</span>,</span>
 <span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">SEM_pr_md</span>, Hausman<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
@@ -779,11 +782,11 @@ window.Quarto = {
 <span><span class="co"># Number of observations: 1000 </span></span>
 <span><span class="co"># Number of parameters estimated: 11 </span></span>
 <span><span class="co"># AIC: 15694, (AIC for lm: 16028)</span></span>
-<span><span class="co"># Hausman test: -1348.4, df: 9, p-value: &lt; 2.22e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Hausman test: -1348.4, df: 9, p-value: &lt; 2.22e-16</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Extending to the SDEM models, and reporting impacts:</p>
 <div class="cell">
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SDEM_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">errorsarlm</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SDEM_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">errorsarlm</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span>,</span>
 <span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">SDEM_pr</span><span class="op">)</span>, short<span class="op">=</span><span class="cn">TRUE</span>, zstats<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Impact measures (SDEM, glht, n):</span></span>
@@ -808,20 +811,20 @@ window.Quarto = {
 <span><span class="co">#                  Direct  Indirect   Total     </span></span>
 <span><span class="co"># size dy/dx       &lt; 2e-16 0.045296   9.2941e-06</span></span>
 <span><span class="co"># age dy/dx        &lt; 2e-16 1.2784e-05 0.00045284</span></span>
-<span><span class="co"># dist_metro dy/dx 0.46438 0.076799   0.02433930</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># dist_metro dy/dx 0.46438 0.076799   0.02433930</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>we have Hausman test results still indicating strong mis-specification:</p>
 <div class="cell">
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/sarlm_tests.html">Hausman.test</a></span><span class="op">(</span><span class="va">SDEM_pr</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/sarlm_tests.html">Hausman.test</a></span><span class="op">(</span><span class="va">SDEM_pr</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co">#   Spatial Hausman test (asymptotic)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># data:  NULL</span></span>
-<span><span class="co"># Hausman test = 53.765, df = 7, p-value = 2.618e-09</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Hausman test = 53.765, df = 7, p-value = 2.618e-09</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The same applies to the properties variables augmented with the municipality department level variables:</p>
 <div class="cell">
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SDEM_pr_md</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">errorsarlm</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SDEM_pr_md</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">errorsarlm</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span>,</span>
 <span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">SDEM_pr_md</span><span class="op">)</span>, short<span class="op">=</span><span class="cn">TRUE</span>, zstats<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Impact measures (SDEM, glht, n):</span></span>
@@ -866,19 +869,19 @@ window.Quarto = {
 <span><span class="co"># prgreensp dy/dx  0.63436 0.8744280 0.49115   </span></span>
 <span><span class="co"># popdens dy/dx    0.25773 0.3628930 0.78808   </span></span>
 <span><span class="co"># museums dy/dx    0.54422 0.3203801 0.34414   </span></span>
-<span><span class="co"># airbnb dy/dx     0.44960 0.1821018 0.20642</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># airbnb dy/dx     0.44960 0.1821018 0.20642</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/sarlm_tests.html">Hausman.test</a></span><span class="op">(</span><span class="va">SDEM_pr_md</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/sarlm_tests.html">Hausman.test</a></span><span class="op">(</span><span class="va">SDEM_pr_md</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co">#   Spatial Hausman test (asymptotic)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># data:  NULL</span></span>
-<span><span class="co"># Hausman test = 229.24, df = 17, p-value &lt; 2.2e-16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Hausman test = 229.24, df = 17, p-value &lt; 2.2e-16</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Reaching out to the SLX models does not help, because although - as with the SDEM models - the indirect impacts (coefficients on lagged <span class="math inline">\(X\)</span> variables) are large, so including lagged <span class="math inline">\(X\)</span> variables especially at the properties level seems sensible, there is serious residual autocorrelation, and now the pre-test strategy points to a missing spatial process in the response:</p>
 <div class="cell">
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SLX_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/SLX.html">lmSLX</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SLX_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/SLX.html">lmSLX</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">SLX_pr</span><span class="op">)</span>, short<span class="op">=</span><span class="cn">TRUE</span>, zstats<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Impact measures (SlX, glht, n-k):</span></span>
 <span><span class="co">#                       Direct   Indirect     Total</span></span>
@@ -902,10 +905,10 @@ window.Quarto = {
 <span><span class="co">#                  Direct  Indirect   Total     </span></span>
 <span><span class="co"># size dy/dx       &lt; 2e-16 2.9265e-13 &lt; 2.22e-16</span></span>
 <span><span class="co"># age dy/dx        &lt; 2e-16 2.8828e-10 2.7039e-05</span></span>
-<span><span class="co"># dist_metro dy/dx 0.11778 0.020507   1.7750e-05</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># dist_metro dy/dx 0.11778 0.020507   1.7750e-05</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">SLX_pr</span>, <span class="va">lw</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">SLX_pr</span>, <span class="va">lw</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co">#   Global Moran I for regression residuals</span></span>
 <span><span class="co"># </span></span>
@@ -920,10 +923,10 @@ window.Quarto = {
 <span><span class="co"># alternative hypothesis: greater</span></span>
 <span><span class="co"># sample estimates:</span></span>
 <span><span class="co"># Observed Moran I      Expectation         Variance </span></span>
-<span><span class="co">#     0.4505572652    -0.0029076149     0.0003489564</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#     0.4505572652    -0.0029076149     0.0003489564</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">SLX_pr</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
 <span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.RStests</a></span><span class="op">(</span><span class="va">SLX_pr</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adjRSerr"</span>, <span class="st">"adjRSlag"</span><span class="op">)</span><span class="op">)</span></span>
@@ -950,10 +953,10 @@ window.Quarto = {
 <span><span class="co"># lw)</span></span>
 <span><span class="co"># test weights: lw</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># adjRSlag = 54.185, df = 1, p-value = 1.825e-13</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># adjRSlag = 54.185, df = 1, p-value = 1.825e-13</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SLX_pr_md</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/SLX.html">lmSLX</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SLX_pr_md</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/SLX.html">lmSLX</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">SLX_pr_md</span><span class="op">)</span>, short<span class="op">=</span><span class="cn">TRUE</span>, zstats<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Impact measures (SlX, glht, n-k):</span></span>
 <span><span class="co">#                        Direct     Indirect       Total</span></span>
@@ -997,10 +1000,10 @@ window.Quarto = {
 <span><span class="co"># prgreensp dy/dx  0.93552 0.73486404 0.115049  </span></span>
 <span><span class="co"># popdens dy/dx    0.73578 0.88596617 0.345583  </span></span>
 <span><span class="co"># museums dy/dx    0.24977 0.20250631 0.414906  </span></span>
-<span><span class="co"># airbnb dy/dx     0.28585 0.17948677 0.153749</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># airbnb dy/dx     0.28585 0.17948677 0.153749</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">SLX_pr_md</span>, <span class="va">lw</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">SLX_pr_md</span>, <span class="va">lw</span><span class="op">)</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co">#   Global Moran I for regression residuals</span></span>
 <span><span class="co"># </span></span>
@@ -1015,10 +1018,10 @@ window.Quarto = {
 <span><span class="co"># alternative hypothesis: greater</span></span>
 <span><span class="co"># sample estimates:</span></span>
 <span><span class="co"># Observed Moran I      Expectation         Variance </span></span>
-<span><span class="co">#     0.3978202243    -0.0070160067     0.0003371825</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#     0.3978202243    -0.0070160067     0.0003371825</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html">packageVersion</a></span><span class="op">(</span><span class="st">"spdep"</span><span class="op">)</span> <span class="op">&lt;</span> <span class="st">"1.3.3"</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span><span class="va">SLX_pr_md</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"RLMerr"</span>, <span class="st">"RLMlag"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
 <span>  <span class="fu">spdep</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.RStests</a></span><span class="op">(</span><span class="va">SLX_pr_md</span>, <span class="va">lw</span>, test<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"adjRSerr"</span>, <span class="st">"adjRSlag"</span><span class="op">)</span><span class="op">)</span></span>
@@ -1049,21 +1052,21 @@ window.Quarto = {
 <span><span class="co"># properties_in_dd, listw = lw)</span></span>
 <span><span class="co"># test weights: lw</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># adjRSlag = 56.758, df = 1, p-value = 4.929e-14</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># adjRSlag = 56.758, df = 1, p-value = 4.929e-14</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>So on balance, the pre-test strategy has not worked out too well; it is unclear what is missing in the model.</p>
 </section><section id="exercise-17.4" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-17.4">Exercise 17.4</h2>
 <p>Turning to estimating the general nested model first, followed by excluding the Durbin (spatially lagged <span class="math inline">\(X\)</span>) variables, a likelihood ratio test shows that the spatially lagged <span class="math inline">\(X\)</span> variables should be retained in the model:</p>
 <div class="cell">
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">GNM_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">sacsarlm</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig1<span class="op">=</span><span class="va">eigs</span>, pre_eig2<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">GNM_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">sacsarlm</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig1<span class="op">=</span><span class="va">eigs</span>, pre_eig2<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SARAR_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">sacsarlm</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, </span>
-<span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig1<span class="op">=</span><span class="va">eigs</span>, pre_eig2<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SARAR_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">sacsarlm</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, </span>
+<span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig1<span class="op">=</span><span class="va">eigs</span>, pre_eig2<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lrtest</a></span><span class="op">(</span><span class="va">SARAR_pr</span>, <span class="va">GNM_pr</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lrtest</a></span><span class="op">(</span><span class="va">SARAR_pr</span>, <span class="va">GNM_pr</span><span class="op">)</span></span>
 <span><span class="co"># Likelihood ratio test</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Model 1: prpsqm ~ size + age + dist_metro</span></span>
@@ -1072,11 +1075,11 @@ window.Quarto = {
 <span><span class="co"># 1   7 -7814.6                         </span></span>
 <span><span class="co"># 2  10 -7783.9  3 61.303  3.096e-13 ***</span></span>
 <span><span class="co"># ---</span></span>
-<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Again using a likelihood ratio test, the GNM model outperforms the SDEM model:</p>
 <div class="cell">
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lrtest</a></span><span class="op">(</span><span class="va">SDEM_pr</span>, <span class="va">GNM_pr</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lrtest</a></span><span class="op">(</span><span class="va">SDEM_pr</span>, <span class="va">GNM_pr</span><span class="op">)</span></span>
 <span><span class="co"># Likelihood ratio test</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Model 1: prpsqm ~ size + age + dist_metro</span></span>
@@ -1085,15 +1088,15 @@ window.Quarto = {
 <span><span class="co"># 1   9 -7850.3                        </span></span>
 <span><span class="co"># 2  10 -7783.9  1 132.7  &lt; 2.2e-16 ***</span></span>
 <span><span class="co"># ---</span></span>
-<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SDM_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">lagsarlm</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SDM_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">lagsarlm</a></span><span class="op">(</span><span class="va">f_pr</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>as is also the case with the SDM model:</p>
 <div class="cell">
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lrtest</a></span><span class="op">(</span><span class="va">SDM_pr</span>, <span class="va">GNM_pr</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lrtest</a></span><span class="op">(</span><span class="va">SDM_pr</span>, <span class="va">GNM_pr</span><span class="op">)</span></span>
 <span><span class="co"># Likelihood ratio test</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Model 1: prpsqm ~ size + age + dist_metro</span></span>
@@ -1102,11 +1105,11 @@ window.Quarto = {
 <span><span class="co"># 1   9 -7842.4                         </span></span>
 <span><span class="co"># 2  10 -7783.9  1 117.06  &lt; 2.2e-16 ***</span></span>
 <span><span class="co"># ---</span></span>
-<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>and the SLX model:</p>
 <div class="cell">
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lrtest</a></span><span class="op">(</span><span class="va">SLX_pr</span>, <span class="va">GNM_pr</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lrtest</a></span><span class="op">(</span><span class="va">SLX_pr</span>, <span class="va">GNM_pr</span><span class="op">)</span></span>
 <span><span class="co"># Warning in modelUpdate(objects[[i - 1]], objects[[i]]): original</span></span>
 <span><span class="co"># model was of class "SlX", updated model is of class "Sarlm"</span></span>
 <span><span class="co"># Likelihood ratio test</span></span>
@@ -1117,16 +1120,16 @@ window.Quarto = {
 <span><span class="co"># 1   8 -8040.1                         </span></span>
 <span><span class="co"># 2  10 -7783.9  2 512.46  &lt; 2.2e-16 ***</span></span>
 <span><span class="co"># ---</span></span>
-<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Is the inclusion of the municipality department level variables in the GNM model justified?</p>
 <div class="cell">
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">GNM_pr_md</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">sacsarlm</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig1<span class="op">=</span><span class="va">eigs</span>, pre_eig2<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">GNM_pr_md</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">sacsarlm</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, Durbin<span class="op">=</span><span class="cn">TRUE</span>,</span>
+<span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig1<span class="op">=</span><span class="va">eigs</span>, pre_eig2<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>No, not really:</p>
 <div class="cell">
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lrtest</a></span><span class="op">(</span><span class="va">GNM_pr</span>, <span class="va">GNM_pr_md</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lrtest</a></span><span class="op">(</span><span class="va">GNM_pr</span>, <span class="va">GNM_pr_md</span><span class="op">)</span></span>
 <span><span class="co"># Likelihood ratio test</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Model 1: prpsqm ~ size + age + dist_metro</span></span>
@@ -1136,16 +1139,16 @@ window.Quarto = {
 <span><span class="co"># 1  10 -7783.9                       </span></span>
 <span><span class="co"># 2  20 -7773.4 10 20.956     0.0214 *</span></span>
 <span><span class="co"># ---</span></span>
-<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>If we drop the municipality department level variables from the Durbin term, we lose fewer degrees of freedom, so preferring the model including the municipality department level variables:</p>
 <div class="cell">
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">GNM_pr_md1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">sacsarlm</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">GNM_pr_md1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">sacsarlm</a></span><span class="op">(</span><span class="va">f_pr_md</span>, data<span class="op">=</span><span class="va">properties_in_dd</span>, listw<span class="op">=</span><span class="va">lw</span>, </span>
 <span>    Durbin<span class="op">=</span> <span class="op">~</span> <span class="va">size</span> <span class="op">+</span> <span class="va">age</span> <span class="op">+</span> <span class="va">dist_metro</span>,</span>
-<span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig1<span class="op">=</span><span class="va">eigs</span>, pre_eig2<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>    control<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>pre_eig1<span class="op">=</span><span class="va">eigs</span>, pre_eig2<span class="op">=</span><span class="va">eigs</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lrtest</a></span><span class="op">(</span><span class="va">GNM_pr</span>, <span class="va">GNM_pr_md1</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">lmtest</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lmtest/man/lrtest.html">lrtest</a></span><span class="op">(</span><span class="va">GNM_pr</span>, <span class="va">GNM_pr_md1</span><span class="op">)</span></span>
 <span><span class="co"># Likelihood ratio test</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Model 1: prpsqm ~ size + age + dist_metro</span></span>
@@ -1155,11 +1158,11 @@ window.Quarto = {
 <span><span class="co"># 1  10 -7783.9                        </span></span>
 <span><span class="co"># 2  15 -7775.5  5 16.794   0.004908 **</span></span>
 <span><span class="co"># ---</span></span>
-<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Unfortunately, impacts are depressing here:</p>
 <div class="cell">
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">trs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/trW.html">trW</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html">as</a></span><span class="op">(</span><span class="va">lw</span>, <span class="st">"CsparseMatrix"</span><span class="op">)</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">trs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/trW.html">trW</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html">as</a></span><span class="op">(</span><span class="va">lw</span>, <span class="st">"CsparseMatrix"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">i_GNM_pr_md1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">GNM_pr_md1</span>, tr<span class="op">=</span><span class="va">trs</span>, R<span class="op">=</span><span class="fl">2000</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">i_GNM_pr_md1</span>, short<span class="op">=</span><span class="cn">TRUE</span>, zstats<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Impact measures (sacmixed, trace):</span></span>
@@ -1177,46 +1180,46 @@ window.Quarto = {
 <span><span class="co"># ========================================================</span></span>
 <span><span class="co"># Simulated standard errors</span></span>
 <span><span class="co">#                      Direct    Indirect       Total</span></span>
-<span><span class="co"># size dy/dx        0.3693252   2.5931073   2.7367857</span></span>
-<span><span class="co"># age dy/dx         1.0662410   6.2165622   6.5895926</span></span>
-<span><span class="co"># dist_metro dy/dx  0.2282346   0.3271335   0.1989998</span></span>
-<span><span class="co"># foreigners dy/dx 11.6999228  48.2701474  59.9217464</span></span>
-<span><span class="co"># prgreensp dy/dx   8.3298911  34.1525005  42.4430589</span></span>
-<span><span class="co"># popdens dy/dx    54.4348406 224.6849982 278.9053489</span></span>
-<span><span class="co"># museums dy/dx    10.9859961  45.1957908  56.1382384</span></span>
-<span><span class="co"># airbnb dy/dx      0.1705569   0.7017844   0.8715750</span></span>
+<span><span class="co"># size dy/dx        0.3645279   2.6855646   2.8216728</span></span>
+<span><span class="co"># age dy/dx         1.0684091   6.2996731   6.6785263</span></span>
+<span><span class="co"># dist_metro dy/dx  0.2218114   0.3086375   0.1913868</span></span>
+<span><span class="co"># foreigners dy/dx 11.7927135  48.6257161  60.3685475</span></span>
+<span><span class="co"># prgreensp dy/dx   8.4223580  34.6525657  43.0365593</span></span>
+<span><span class="co"># popdens dy/dx    54.6570687 225.3138674 279.7591682</span></span>
+<span><span class="co"># museums dy/dx    10.9546045  45.0795120  55.9899119</span></span>
+<span><span class="co"># airbnb dy/dx      0.1714635   0.7055117   0.8761928</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated z-values:</span></span>
 <span><span class="co">#                       Direct   Indirect      Total</span></span>
-<span><span class="co"># size dy/dx         8.7630573  2.8026195  3.8380464</span></span>
-<span><span class="co"># age dy/dx        -21.5774991  1.7919488 -1.8008781</span></span>
-<span><span class="co"># dist_metro dy/dx   1.1466823 -1.4090530 -1.0011863</span></span>
-<span><span class="co"># foreigners dy/dx  -0.4976274 -0.4886939 -0.4908323</span></span>
-<span><span class="co"># prgreensp dy/dx    0.6566610  0.6445578  0.6475305</span></span>
-<span><span class="co"># popdens dy/dx     -0.3844436 -0.3746340 -0.3768367</span></span>
-<span><span class="co"># museums dy/dx     -0.3981639 -0.3927414 -0.3941072</span></span>
-<span><span class="co"># airbnb dy/dx       0.5805644  0.5713721  0.5736732</span></span>
+<span><span class="co"># size dy/dx         8.8963025  2.7227067  3.7406728</span></span>
+<span><span class="co"># age dy/dx        -21.5312195  1.7739790 -1.7711487</span></span>
+<span><span class="co"># dist_metro dy/dx   1.1810662 -1.4649546 -0.9936208</span></span>
+<span><span class="co"># foreigners dy/dx  -0.4655223 -0.4602486 -0.4616591</span></span>
+<span><span class="co"># prgreensp dy/dx    0.6857011  0.6757714  0.6783171</span></span>
+<span><span class="co"># popdens dy/dx     -0.4085684 -0.4027271 -0.4041732</span></span>
+<span><span class="co"># museums dy/dx     -0.3744134 -0.3707695 -0.3717752</span></span>
+<span><span class="co"># airbnb dy/dx       0.5399072  0.5340444  0.5356685</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated p-values:</span></span>
-<span><span class="co">#                  Direct  Indirect  Total     </span></span>
-<span><span class="co"># size dy/dx       &lt; 2e-16 0.0050689 0.00012402</span></span>
-<span><span class="co"># age dy/dx        &lt; 2e-16 0.0731412 0.07172210</span></span>
-<span><span class="co"># dist_metro dy/dx 0.25151 0.1588195 0.31673677</span></span>
-<span><span class="co"># foreigners dy/dx 0.61875 0.6250584 0.62354504</span></span>
-<span><span class="co"># prgreensp dy/dx  0.51140 0.5192138 0.51728867</span></span>
-<span><span class="co"># popdens dy/dx    0.70065 0.7079327 0.70629497</span></span>
-<span><span class="co"># museums dy/dx    0.69051 0.6945105 0.69350190</span></span>
-<span><span class="co"># airbnb dy/dx     0.56153 0.5677475 0.56618895</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#                  Direct  Indirect Total     </span></span>
+<span><span class="co"># size dy/dx       &lt; 2e-16 0.006475 0.00018353</span></span>
+<span><span class="co"># age dy/dx        &lt; 2e-16 0.076067 0.07653597</span></span>
+<span><span class="co"># dist_metro dy/dx 0.23758 0.142933 0.32040751</span></span>
+<span><span class="co"># foreigners dy/dx 0.64156 0.645338 0.64432583</span></span>
+<span><span class="co"># prgreensp dy/dx  0.49290 0.499186 0.49757066</span></span>
+<span><span class="co"># popdens dy/dx    0.68286 0.687149 0.68608536</span></span>
+<span><span class="co"># museums dy/dx    0.70810 0.710809 0.71006023</span></span>
+<span><span class="co"># airbnb dy/dx     0.58926 0.593311 0.59218765</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The values and standard errors of the spatial coefficients suggest numerical problems in finding an optimum where the two coefficients are equally strong but with opposing signs:</p>
 <div class="cell">
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"response"</span><span class="op">=</span><span class="va">GNM_pr_md1</span><span class="op">$</span><span class="va">rho</span>, <span class="st">"response se"</span><span class="op">=</span><span class="va">GNM_pr_md1</span><span class="op">$</span><span class="va">rho.se</span>, <span class="st">"residual"</span><span class="op">=</span><span class="va">GNM_pr_md1</span><span class="op">$</span><span class="va">lambda</span>, <span class="st">"residual se"</span><span class="op">=</span><span class="va">GNM_pr_md1</span><span class="op">$</span><span class="va">lambda.se</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"response"</span><span class="op">=</span><span class="va">GNM_pr_md1</span><span class="op">$</span><span class="va">rho</span>, <span class="st">"response se"</span><span class="op">=</span><span class="va">GNM_pr_md1</span><span class="op">$</span><span class="va">rho.se</span>, <span class="st">"residual"</span><span class="op">=</span><span class="va">GNM_pr_md1</span><span class="op">$</span><span class="va">lambda</span>, <span class="st">"residual se"</span><span class="op">=</span><span class="va">GNM_pr_md1</span><span class="op">$</span><span class="va">lambda.se</span><span class="op">)</span></span>
 <span><span class="co">#    response.rho     response se residual.lambda     residual se </span></span>
-<span><span class="co">#      0.85971901      0.01547632     -0.86679315      0.04377824</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#      0.85971901      0.01547632     -0.86679315      0.04377824</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>If we fall back on the properties level only GNM, total impacts are only significant in conventional terms for <code>size</code>:</p>
 <div class="cell">
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">i_GNM_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">GNM_pr</span>, tr<span class="op">=</span><span class="va">trs</span>, R<span class="op">=</span><span class="fl">2000</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">i_GNM_pr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">GNM_pr</span>, tr<span class="op">=</span><span class="va">trs</span>, R<span class="op">=</span><span class="fl">2000</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">i_GNM_pr</span>, short<span class="op">=</span><span class="cn">TRUE</span>, zstats<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Impact measures (sacmixed, trace):</span></span>
 <span><span class="co">#                       Direct   Indirect      Total</span></span>
@@ -1228,27 +1231,27 @@ window.Quarto = {
 <span><span class="co"># ========================================================</span></span>
 <span><span class="co"># Simulated standard errors</span></span>
 <span><span class="co">#                     Direct  Indirect     Total</span></span>
-<span><span class="co"># size dy/dx       0.3766053 2.8954397 3.0572158</span></span>
-<span><span class="co"># age dy/dx        1.0646048 6.6820317 7.0374688</span></span>
-<span><span class="co"># dist_metro dy/dx 0.2213958 0.3072345 0.2001492</span></span>
+<span><span class="co"># size dy/dx       0.3652322 2.9314237 3.0718873</span></span>
+<span><span class="co"># age dy/dx        1.0591722 6.4752999 6.8356887</span></span>
+<span><span class="co"># dist_metro dy/dx 0.2167210 0.3083351 0.2037033</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated z-values:</span></span>
 <span><span class="co">#                      Direct  Indirect     Total</span></span>
-<span><span class="co"># size dy/dx         8.912128  3.195205  4.123973</span></span>
-<span><span class="co"># age dy/dx        -21.332528  2.549327 -0.806544</span></span>
-<span><span class="co"># dist_metro dy/dx   1.341299 -2.141529 -1.803622</span></span>
+<span><span class="co"># size dy/dx         9.152125  3.129543  4.074586</span></span>
+<span><span class="co"># age dy/dx        -21.475172  2.634672 -0.831754</span></span>
+<span><span class="co"># dist_metro dy/dx   1.341709 -2.106862 -1.761597</span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Simulated p-values:</span></span>
 <span><span class="co">#                  Direct  Indirect  Total     </span></span>
-<span><span class="co"># size dy/dx       &lt; 2e-16 0.0013973 3.7239e-05</span></span>
-<span><span class="co"># age dy/dx        &lt; 2e-16 0.0107931 0.419929  </span></span>
-<span><span class="co"># dist_metro dy/dx 0.17982 0.0322314 0.071291</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># size dy/dx       &lt; 2e-16 0.0017508 4.6096e-05</span></span>
+<span><span class="co"># age dy/dx        &lt; 2e-16 0.0084219 0.405548  </span></span>
+<span><span class="co"># dist_metro dy/dx 0.17969 0.0351295 0.078137</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>The same problem occurs without the municipality department level variables; the impacts are being driven by the large spatial coefficient on the lagged response:</p>
 <div class="cell">
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"response"</span><span class="op">=</span><span class="va">GNM_pr</span><span class="op">$</span><span class="va">rho</span>, <span class="st">"response se"</span><span class="op">=</span><span class="va">GNM_pr</span><span class="op">$</span><span class="va">rho.se</span>, <span class="st">"residual"</span><span class="op">=</span><span class="va">GNM_pr</span><span class="op">$</span><span class="va">lambda</span>, <span class="st">"residual se"</span><span class="op">=</span><span class="va">GNM_pr</span><span class="op">$</span><span class="va">lambda.se</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"response"</span><span class="op">=</span><span class="va">GNM_pr</span><span class="op">$</span><span class="va">rho</span>, <span class="st">"response se"</span><span class="op">=</span><span class="va">GNM_pr</span><span class="op">$</span><span class="va">rho.se</span>, <span class="st">"residual"</span><span class="op">=</span><span class="va">GNM_pr</span><span class="op">$</span><span class="va">lambda</span>, <span class="st">"residual se"</span><span class="op">=</span><span class="va">GNM_pr</span><span class="op">$</span><span class="va">lambda.se</span><span class="op">)</span></span>
 <span><span class="co">#    response.rho     response se residual.lambda     residual se </span></span>
-<span><span class="co">#      0.88013710      0.01319665     -0.89697824      0.03914311</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co">#      0.88013710      0.01319665     -0.89697824      0.03914311</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="exercise-17.5" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-17.5">Exercise 17.5</h2>
 <p>We cannot say that the spatial econometrics approach has reached a clear conclusion. When including the upper level variables, we introduce a lot of spatial autocorrelation at the lower level. It is arguable that the MRF random effect at the upper level and including only the properties level variables gets at least as far as the most complex spatial econometrics models. It is fairly clear that mapping the actual green space and museums, and measuring distance from each property to the attractions would remove the scale problem for those variables. Disaggregation of the foreigners, airbnb and population density variables would be highly desirable. With improvements to the properties level data set, including more variables describing the properties themselves, much of the mis-specification should be removed.</p>
@@ -1305,13 +1308,14 @@ window.Quarto = {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy

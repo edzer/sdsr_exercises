@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.34">
+<meta name="generator" content="quarto-1.8.24">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>2&nbsp; Coordinates – Spatial Data Science</title>
 <style>
@@ -65,14 +65,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="./01.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-c8ad9e5dbd60b7b70b38521ab19b7da4.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-23102fe0f0b5b1a9f09cc09ebcc8fe5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-d58359eb3ecc31d3bec1ed479c2cbb3a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -127,7 +128,9 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
     </div>
   </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Spatial Data Science</a> 
         <div class="sidebar-tools-main">
@@ -292,7 +295,7 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <p>(thanks to Jonas Hurst)</p>
 <p>Convert the (x, y) point s (10, 2), (-10, -1), (10, -2) and (0, 10) to polar cooridnates</p>
 <div class="cell">
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cart2polar</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cart2polar</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">r</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">x</span><span class="op">*</span><span class="va">x</span> <span class="op">+</span> <span class="va">y</span><span class="op">*</span><span class="va">y</span><span class="op">)</span>  <span class="co"># compute r (distance from origin)</span></span>
 <span>  <span class="va">phi</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">atan2</a></span><span class="op">(</span><span class="va">y</span>, <span class="va">x</span><span class="op">)</span>  <span class="co"># compute phi (angle between point and positive x axis in rad)</span></span>
 <span>  <span class="va">phi_deg</span> <span class="op">=</span> <span class="va">phi</span> <span class="op">*</span> <span class="fl">180</span> <span class="op">/</span> <span class="va">pi</span>  <span class="co">#  compute angle in deg</span></span>
@@ -307,12 +310,12 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <span><span class="fu">cart2polar</span><span class="op">(</span><span class="fl">10</span>, <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co"># [1]  10.19804 -11.30993</span></span>
 <span><span class="fu">cart2polar</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co"># [1] 10 90</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># [1] 10 90</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="exercise-2.3" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-2.3">Exercise 2.3</h2>
 <p>Convert the polar (r, phi) points (10, 45°), (0, 100°) and (5, 259°) to Cartesian coordinates</p>
 <div class="cell">
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">deg2rad</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">angle_degree</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">deg2rad</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">angle_degree</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">angle_degree</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">/</span> <span class="fl">180</span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -329,12 +332,12 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <span><span class="fu">polar2cart</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100</span><span class="op">)</span></span>
 <span><span class="co"># [1] 0 0</span></span>
 <span><span class="fu">polar2cart</span><span class="op">(</span><span class="fl">5</span>, <span class="fl">259</span><span class="op">)</span></span>
-<span><span class="co"># [1] -0.954045 -4.908136</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># [1] -0.954045 -4.908136</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section><section id="exercise-2.4" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-2.4">Exercise 2.4</h2>
 <p>assuming the Earth is a sphere with a radius of 6371 km, compute for (lambda, phi) points the great circle distance between (10, 10) and (11, 10), between (10, 80) &gt;and (11, 80), between (10, 10) and (10, 11) and between (10, 80) and (10, 81).</p>
 <div class="cell">
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">distOnSphere</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">l1</span>, <span class="va">phi1</span>, <span class="va">l2</span>, <span class="va">phi2</span>, <span class="va">radius</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">distOnSphere</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">l1</span>, <span class="va">phi1</span>, <span class="va">l2</span>, <span class="va">phi2</span>, <span class="va">radius</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">l1_rad</span> <span class="op">=</span> <span class="fu">deg2rad</span><span class="op">(</span><span class="va">l1</span><span class="op">)</span></span>
 <span>  <span class="va">l2_rad</span> <span class="op">=</span> <span class="fu">deg2rad</span><span class="op">(</span><span class="va">l2</span><span class="op">)</span></span>
 <span>  <span class="va">phi1_rad</span> <span class="op">=</span> <span class="fu">deg2rad</span><span class="op">(</span><span class="va">phi1</span><span class="op">)</span></span>
@@ -355,7 +358,7 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
 <span><span class="fu">distOnSphere</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">10</span>, <span class="fl">11</span>, <span class="va">radius</span><span class="op">)</span></span>
 <span><span class="co"># [1] 64.07104</span></span>
 <span><span class="fu">distOnSphere</span><span class="op">(</span><span class="fl">10</span>, <span class="fl">80</span>, <span class="fl">10</span>, <span class="fl">81</span>, <span class="va">radius</span><span class="op">)</span></span>
-<span><span class="co"># [1] 64.07104</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="co"># [1] 64.07104</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Unit of all results are kilometers.</p>
 
@@ -411,13 +414,14 @@ gtag('config', 'G-GFR4ZDG7V6', { 'anonymize_ip': true});
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
