@@ -316,10 +316,10 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
 <span><span class="co"># ── Attaching core tidyverse packages ──────────── tidyverse 2.0.0 ──</span></span>
 <span><span class="co"># ✔ dplyr     1.1.4     ✔ readr     2.1.5</span></span>
-<span><span class="co"># ✔ forcats   1.0.1     ✔ stringr   1.5.2</span></span>
+<span><span class="co"># ✔ forcats   1.0.1     ✔ stringr   1.6.0</span></span>
 <span><span class="co"># ✔ ggplot2   4.0.0     ✔ tibble    3.3.0</span></span>
 <span><span class="co"># ✔ lubridate 1.9.4     ✔ tidyr     1.3.1</span></span>
-<span><span class="co"># ✔ purrr     1.1.0     </span></span>
+<span><span class="co"># ✔ purrr     1.2.0     </span></span>
 <span><span class="co"># ── Conflicts ────────────────────────────── tidyverse_conflicts() ──</span></span>
 <span><span class="co"># ✖ dplyr::filter() masks stats::filter()</span></span>
 <span><span class="co"># ✖ dplyr::lag()    masks stats::lag()</span></span>
@@ -374,18 +374,18 @@ window.Quarto = {
 <span><span class="co"># </span></span>
 <span><span class="co"># Residuals:</span></span>
 <span><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
-<span><span class="co"># -0.0034228 -0.0008167 -0.0000389  0.0006942  0.0061242 </span></span>
+<span><span class="co"># -0.0035562 -0.0008834 -0.0000588  0.0006271  0.0059902 </span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Coefficients:</span></span>
 <span><span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co"># (Intercept) 7.284e-04  7.635e-05    9.54   &lt;2e-16 ***</span></span>
-<span><span class="co"># NWB         4.455e-03  1.961e-04   22.72   &lt;2e-16 ***</span></span>
+<span><span class="co"># (Intercept) 6.251e-04  8.634e-05   7.239 8.99e-13 ***</span></span>
+<span><span class="co"># NWB         4.847e-03  2.243e-04  21.608  &lt; 2e-16 ***</span></span>
 <span><span class="co"># ---</span></span>
 <span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># Residual standard error: 0.001236 on 998 degrees of freedom</span></span>
-<span><span class="co"># Multiple R-squared:  0.3409,  Adjusted R-squared:  0.3402 </span></span>
-<span><span class="co"># F-statistic: 516.2 on 1 and 998 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="co"># Residual standard error: 0.001401 on 998 degrees of freedom</span></span>
+<span><span class="co"># Multiple R-squared:  0.3187,  Adjusted R-squared:  0.318 </span></span>
+<span><span class="co"># F-statistic: 466.9 on 1 and 998 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>we see that the standard error has decreased with a factor 3 (sqrt(10)).</p>
 <p>For prediction interval widths:</p>
@@ -397,7 +397,7 @@ window.Quarto = {
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr1</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr1</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co"># [1] 0.005161177</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr2</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr2</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co"># [1] 0.004855622</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="co"># [1] 0.005503056</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>no change, as this dominated by the residual variance;</p>
 <p>Confidence intervals for the predicted means:</p>
@@ -409,7 +409,7 @@ window.Quarto = {
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr1</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr1</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co"># [1] 0.0007025904</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr2</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr2</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co"># [1] 0.0002154</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="co"># [1] 0.0002449564</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>drops for larger dataset, as this is dominated by the standard errors of estimated coefficients.</p>
 </section><section id="exercise-10.3" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-10.3">Exercise 10.3</h2>
