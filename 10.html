@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.25">
+<meta name="generator" content="quarto-1.8.26">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>10&nbsp; Statistical models for spatial data – Spatial Data Science</title>
 <style>
@@ -70,7 +70,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="site_libs/bootstrap/bootstrap-0dd2bd5de344125cf763a379ddc3eb04.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
@@ -153,9 +153,7 @@ window.Quarto = {
     </div>
   </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="./index.html" class="sidebar-logo-link">
-      </a>
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Spatial Data Science</a> 
         <div class="sidebar-tools-main">
@@ -374,18 +372,18 @@ window.Quarto = {
 <span><span class="co"># </span></span>
 <span><span class="co"># Residuals:</span></span>
 <span><span class="co">#        Min         1Q     Median         3Q        Max </span></span>
-<span><span class="co"># -0.0036646 -0.0009410 -0.0001374  0.0006944  0.0058816 </span></span>
+<span><span class="co"># -0.0033431 -0.0007793 -0.0000789  0.0005432  0.0062041 </span></span>
 <span><span class="co"># </span></span>
 <span><span class="co"># Coefficients:</span></span>
 <span><span class="co">#              Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co"># (Intercept) 6.433e-04  8.876e-05   7.248 8.48e-13 ***</span></span>
-<span><span class="co"># NWB         4.996e-03  2.245e-04  22.254  &lt; 2e-16 ***</span></span>
+<span><span class="co"># (Intercept) 7.448e-04  7.367e-05   10.11   &lt;2e-16 ***</span></span>
+<span><span class="co"># NWB         4.296e-03  1.923e-04   22.34   &lt;2e-16 ***</span></span>
 <span><span class="co"># ---</span></span>
 <span><span class="co"># Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co"># </span></span>
-<span><span class="co"># Residual standard error: 0.001427 on 998 degrees of freedom</span></span>
-<span><span class="co"># Multiple R-squared:  0.3317,  Adjusted R-squared:  0.331 </span></span>
-<span><span class="co"># F-statistic: 495.3 on 1 and 998 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="co"># Residual standard error: 0.001199 on 998 degrees of freedom</span></span>
+<span><span class="co"># Multiple R-squared:  0.3334,  Adjusted R-squared:  0.3328 </span></span>
+<span><span class="co"># F-statistic: 499.3 on 1 and 998 DF,  p-value: &lt; 2.2e-16</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>we see that the standard error has decreased with a factor 3 (sqrt(10)).</p>
 <p>For prediction interval widths:</p>
@@ -397,7 +395,7 @@ window.Quarto = {
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr1</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr1</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co"># [1] 0.005161177</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr2</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr2</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co"># [1] 0.005608159</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="co"># [1] 0.004711867</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>no change, as this dominated by the residual variance;</p>
 <p>Confidence intervals for the predicted means:</p>
@@ -409,7 +407,7 @@ window.Quarto = {
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr1</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr1</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co"># [1] 0.0007025904</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pr2</span><span class="op">[</span>,<span class="st">"upr"</span><span class="op">]</span> <span class="op">-</span> <span class="va">pr2</span><span class="op">[</span>,<span class="st">"lwr"</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co"># [1] 0.0002481424</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="co"># [1] 0.0002097788</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>drops for larger dataset, as this is dominated by the standard errors of estimated coefficients.</p>
 </section><section id="exercise-10.3" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="exercise-10.3">Exercise 10.3</h2>
