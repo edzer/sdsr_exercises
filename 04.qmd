@@ -144,7 +144,7 @@ geometry on the sphere? If so, how was this accomplished?
 library(giscoR)
 library(tidyverse) |> suppressPackageStartupMessages()
 library(sf)
-gisco_countries |> filter(NAME_ENGL == "Fiji") -> fiji
+gisco_countries_2024 |> filter(NAME_ENGL == "Fiji") -> fiji
 st_geometry(fiji) |> plot()
 ```
 
