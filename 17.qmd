@@ -303,8 +303,10 @@ The same problem occurs without the municipality department level variables; the
 c("response"=GNM_pr$rho, "response se"=GNM_pr$rho.se, "residual"=GNM_pr$lambda, "residual se"=GNM_pr$lambda.se)
 ```
 
-
-
 ## Exercise 17.5 {-}
 
 We cannot say that the spatial econometrics approach has reached a clear conclusion. When including the upper level variables, we introduce a lot of spatial autocorrelation at the lower level. It is arguable that the MRF random effect at the upper level and including only the properties level variables gets at least as far as the most complex spatial econometrics models. It is fairly clear that mapping the actual green space and museums, and measuring distance from each property to the attractions would remove the scale problem for those variables. Disaggregation of the foreigners, airbnb and population density variables would be highly desirable. With improvements to the properties level data set, including more variables describing the properties themselves, much of the mis-specification should be removed. 
+
+```{r}
+sessionInfo()
+```

@@ -20,7 +20,7 @@ Repeat this after setting `sf_use_s2(FALSE)`, and _compute_ the difference (hint
 
 ```{r}
 # save names first:
-sf_use_s2(TRUE)
+old = sf_use_s2(TRUE)
 names_with_s2 = nc[line,]$NAME
 sf_use_s2(FALSE)
 nc[line,]$NAME
@@ -28,6 +28,7 @@ nc[line,]$NAME
 par(mar = rep(.1, 4))
 plot(st_geometry(nc))
 plot(st_geometry(nc)[nc$NAME %in% diff], col = "#00880088", add = TRUE)
+sf_use_s2(old) # set back
 ```
 
 ## Exercise 7.3 {-}

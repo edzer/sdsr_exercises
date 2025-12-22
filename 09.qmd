@@ -107,6 +107,10 @@ Use `hist` to compute the histogram on the downsampled S2 image.
 Also do this for each of the bands. Use `ggplot2` to compute a
 single plot with all four histograms in facets.
 
+```{r echo=FALSE}
+dev.off() # in case of source'ing raw R script
+```
+
 ```{r}
 hist(p1)
 hist(p1[,,,1])
