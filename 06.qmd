@@ -111,7 +111,7 @@ smallest temporal trends in SST values.
 This gives a two-dimensional data cube (or raster layer: the reclassified trend raster).
 
 An example for SST using only a 9-day time series:
-```{r}
+```{r eval=FALSE}
 #| code-fold: true
 library(stars)
 x = c(
