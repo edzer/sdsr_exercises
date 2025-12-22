@@ -31,7 +31,6 @@ jobs:
       - run: R -q -e 'options(timeout = 3600); install.packages("starsdata", repos = "https://cran.uni-muenster.de/pebesma", type = "source")'
       - run: R -q -e 'sessionInfo(); sf::sf_extSoftVersion()'
       - name: Render and Publish
-      - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
