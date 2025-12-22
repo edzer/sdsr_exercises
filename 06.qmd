@@ -111,7 +111,7 @@ smallest temporal trends in SST values.
 This gives a two-dimensional data cube (or raster layer: the reclassified trend raster).
 
 An example for SST using only a 9-day time series:
-```{r eval=FALSE}
+```{r eval=TRUE}
 #| code-fold: true
 library(stars)
 x = c(
@@ -125,10 +125,13 @@ x = c(
 "avhrr-only-v2.19810908.nc",
 "avhrr-only-v2.19810909.nc"
 )
-# see the second vignette:
-# install.packages("starsdata", repos = "http://pebesma.staff.ifgi.de", type = "source")
+# see the second vignette; install with:
+#   options(timeout = 3600)
+#   install.packages("starsdata", repos = "https://cran.uni-muenster.de/pebesma", type = "source")'
 file_list = system.file(paste0("netcdf/", x), package = "starsdata")
-(y = read_stars(file_list, quiet = TRUE) |> adrop() )
+l = lapply(file_list, read_stars)
+do.call(c, l) |> adrop() -> y
+y
 # compute trend:
 lm1 = function(y) { 
     X = cbind(1, 1:9)
