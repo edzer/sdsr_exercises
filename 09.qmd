@@ -64,7 +64,7 @@ the band values at these points. What is the class of the object returned?
 Convert the object returned to an `sf` object.
 
 ```{r}
-pts =  p %>% st_bbox() %>% st_as_sfc() %>% st_sample(5)
+pts =  p |> st_bbox() |> st_as_sfc() |> st_sample(5)
 (p5 = st_extract(p, pts))
 class(p5)
 st_as_sf(p5)

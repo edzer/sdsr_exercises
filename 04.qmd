@@ -20,8 +20,8 @@ Using this definition of straight, how would LINESTRING(0 85,180 85) look like i
 Like a half circle:
 ```{r}
 library(sf)
-l <- st_as_sfc("LINESTRING(0 85,180 85)") %>%
-	st_segmentize(1) %>%
+l <- st_as_sfc("LINESTRING(0 85,180 85)") |>
+	st_segmentize(1) |>
 	st_set_crs('EPSG:4326')
 plot(st_transform(l, 'EPSG:3995'), col = 'red', lwd = 2,
 	 graticule = TRUE, axes = TRUE, reset = FALSE)
@@ -32,8 +32,8 @@ How could this geometry be modified to have it cross the North Pole?
 One would have to let it pass through (0 90) and (180, 90):
 ```{r}
 library(sf)
-l <- st_as_sfc("LINESTRING(0 85,0 90,180 90,180 85)") %>%
-	st_segmentize(1) %>%
+l <- st_as_sfc("LINESTRING(0 85,0 90,180 90,180 85)") |>
+	st_segmentize(1) |>
 	st_set_crs('EPSG:4326')
 plot(st_transform(l, 'EPSG:3995'), col = 'red', lwd = 2,
 	 graticule = TRUE, axes = TRUE, reset = FALSE)
@@ -87,7 +87,7 @@ $S^2$, and the distance between the two.
 
 Valid on $R^2$:
 ```{r}
-fi = rnaturalearth::ne_countries(country = "Fiji", returnclass="sf") %>%
+fi = rnaturalearth::ne_countries(country = "Fiji", returnclass="sf") |>
 		st_geometry()
 s2 = sf_use_s2(FALSE)
 st_is_valid(fi)
@@ -97,7 +97,7 @@ Valid on orthographic projection:
 
 ```{r}
 ortho = "+proj=ortho +lon_0=178.6 +lat_0=-17.3"
-st_transform(fi, ortho) %>% st_is_valid()
+st_transform(fi, ortho) |> st_is_valid()
 plot(st_transform(fi, ortho), border = 'red')
 ```
 

@@ -24,7 +24,7 @@ k$kr2 = kr$var1.pred
 i = idw(NO2~1, no2.sf, grd["values"])
 k$kr0 = i$var1.pred
 st_redimension(k[c("kr0", "kr1", "kr2")], 
-	along = list(what = c("idw", "kriging", "residual kriging"))) %>%
+	along = list(what = c("idw", "kriging", "residual kriging"))) |>
 	setNames("NO2") -> km
 ```
 
@@ -78,7 +78,7 @@ b10$b50 = b50$var1.pred
 b10$b200 = b200$var1.pred
 st_redimension(b10[c("points", "b10", "b50", "b200")], 
 	along = list(what = c("points", "blocks: 10 km", 
-						  "blocks: 50 km", "blocks: 200 km"))) %>%
+						  "blocks: 50 km", "blocks: 200 km"))) |>
 	setNames("NO2") -> b
 g + geom_stars(data = b, aes(fill = NO2, x = x, y = y)) + 
     geom_sf(data = st_cast(de, "MULTILINESTRING")) + 
@@ -94,7 +94,7 @@ b10$b50se = sqrt(b50$var1.var)
 b10$b200se = sqrt(b200$var1.var)
 st_redimension(b10[c("pointse", "b10se", "b50se", "b200se")], 
 	along = list(what = c("points", "blocks: 10 km", 
-						  "blocks: 50 km", "blocks: 200 km"))) %>%
+						  "blocks: 50 km", "blocks: 200 km"))) |>
 	setNames("NO2_SE") -> b
 g + geom_stars(data = b, aes(fill = NO2_SE, x = x, y = y)) + 
     geom_sf(data = st_cast(de, "MULTILINESTRING")) + 
@@ -114,7 +114,7 @@ and show them in a plot with a single (joint) legend_
 b10$lower = b10$points - 1.96 * b10$pointse
 b10$upper = b10$points + 1.96 * b10$pointse
 st_redimension(b10[c("lower", "upper")], 
-	along = list(what = c("lower boundary C.I.", "upper boundary C.I."))) %>%
+	along = list(what = c("lower boundary C.I.", "upper boundary C.I."))) |>
 	setNames("NO2_95CI") -> b
 g + geom_stars(data = b, aes(fill = NO2_95CI, x = x, y = y)) + 
     geom_sf(data = st_cast(de, "MULTILINESTRING")) + 

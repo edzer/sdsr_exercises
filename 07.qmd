@@ -49,7 +49,7 @@ we can also plot it in an orthographic projection:
 
 ```{r}
 l.gc = st_segmentize(line, units::set_units(10, km))
-l.pc = st_segmentize(st_set_crs(line, NA), 0.1) %>% st_set_crs(st_crs(l.gc))
+l.pc = st_segmentize(st_set_crs(line, NA), 0.1) |> st_set_crs(st_crs(l.gc))
 o = st_crs("+proj=ortho +lon_0=-80 +lat_0=35")
 plot(st_transform(st_geometry(nc), o), axes = TRUE)
 plot(st_transform(st_geometry(nc), o)[nc$NAME %in% diff],
@@ -140,7 +140,7 @@ using the raster data, using `exact=FALSE` (default) and
 ```{r}
 l7 = st_as_sf(x)
 st_agr(l7) = "constant"
-a = st_as_sfc("POINT(293716 9113692)", crs = st_crs(l7)) %>%
+a = st_as_sfc("POINT(293716 9113692)", crs = st_crs(l7)) |>
 	st_buffer(units::set_units(74, m))
 plot(st_intersection(l7, a), key.pos = 4)
 (aw = st_interpolate_aw(l7, a, mean, extensive = FALSE))

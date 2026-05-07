@@ -55,7 +55,7 @@ plot(st_voronoi(mp, envelope = e2), col = NA, border = 'black')
 plot(mp, add = TRUE)
 title("enlarged envelope")
 e3 = st_polygon(list(rbind(c(0,0), c(1, 0), c(1, 1), c(0, 1), c(0, 0))))
-v = st_voronoi(mp) %>% st_collection_extract() # pulls POLYGONs out of GC
+v = st_voronoi(mp) |> st_collection_extract() # pulls POLYGONs out of GC
 plot(st_intersection(v, e3), col = NA, border = 'black', axes=TRUE)
 plot(mp, add = TRUE)
 title("smaller, intersected envelope")
@@ -136,8 +136,8 @@ another county _only_ in a point, which can be found using `st_relate`
 using a `pattern`:
 
 ```{r}
-(pts = nc %>% st_relate(pattern = "****0****"))
-nc %>% st_relate(pattern = "****0****") %>% lengths() %>% sum()
+(pts = nc |> st_relate(pattern = "****0****"))
+nc |> st_relate(pattern = "****0****") |> lengths() |> sum()
 ```
 which is, as expected, four times the number of points shown in the plot above.
 

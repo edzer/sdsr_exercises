@@ -13,7 +13,7 @@ Re-using the objects from exercise 14.3, we have:
 ```{r}
 xy <- data.frame(expand.grid(1:8, 1:8), col=rep(c(rep(c("black", "white"), 4), rep(c("white", "black"), 4)), 4))
 library(stars)
-(xy %>% st_as_stars() %>% st_as_sf() -> grd)
+(xy |> st_as_stars() |> st_as_sf() -> grd)
 (grd$col |> factor() -> COL) |> table()
 library(spdep)
 rook <- poly2nb(grd, queen=FALSE)

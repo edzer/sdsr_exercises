@@ -16,7 +16,7 @@ A chessboard is an $8 \times 8$ grid:
 xy <- data.frame(expand.grid(1:8, 1:8), col=rep(c(rep(c("black", "white"), 4), rep(c("white", "black"), 4)), 4))
 library(stars)
 library(sf)
-(xy %>% st_as_stars() %>% st_as_sf() -> grd)
+(xy |> st_as_stars() |> st_as_sf() -> grd)
 ```
 
 ```{r}
@@ -52,7 +52,7 @@ plot(diffnb(queen, rook), xy, add=TRUE, col="grey")
 We can access cardinalities using `card()`, and tabulate their frequencies for the chessboard rook case:
 
 ```{r}
-((rook %>% card() -> rc) %>% table() -> t)
+((rook |> card() -> rc) |> table() -> t)
 ```
 Taking the counts found, we can construct the weights corresponding to those neighbour counts:
 
@@ -79,7 +79,7 @@ table(unlist(nb2listw(rook, style="W")$weights))
 Repeating for the `queen` case again shows how row-standardization can engender edge effects:
 
 ```{r}
-((queen %>% card() -> rc) %>% table() -> t)
+((queen |> card() -> rc) |> table() -> t)
 ```
 ```{r}
 1/rev(as.numeric(names(t)))
