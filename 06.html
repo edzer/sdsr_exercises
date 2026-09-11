@@ -355,6 +355,9 @@ window.Quarto = {
 <span><span class="co"># Loading required package: abind</span></span>
 <span><span class="co"># Loading required package: sf</span></span>
 <span><span class="co"># Linking to GEOS 3.12.1, GDAL 3.8.4, PROJ 9.4.0; sf_use_s2() is TRUE</span></span>
+<span><span class="co"># Registered S3 method overwritten by 'stars':</span></span>
+<span><span class="co">#   method                  from</span></span>
+<span><span class="co">#   st_interpolate_aw.stars sf</span></span>
 <span><span class="va">a</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">no2.st</span>, <span class="st">"days"</span>, <span class="va">mean</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span> <span class="co"># daily means</span></span>
 <span><span class="va">b</span> <span class="op">=</span> <span class="va">a</span> <span class="op">&gt;</span> <span class="fl">25</span> <span class="co"># threshold</span></span>
 <span><span class="va">by_year</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">b</span>, <span class="st">"year"</span>, <span class="va">sum</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
