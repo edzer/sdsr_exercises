@@ -4,6 +4,9 @@
 
  Find the names of the `nc` counties that intersect `LINESTRING(-84 35,-78 35)`; use `[` for this, and use `st_join()` for this.
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(sf)
 library(stars)
@@ -14,9 +17,34 @@ nc[line,]$NAME
 st_join(st_sf(line), nc)$NAME # left join: `line` should be first argument
 ```
 
+## Python
+
+```{python}
+import geopandas as gpd
+import pandas as pd
+import shapely
+import spherely
+
+nc = gpd.read_file("data/nc/nc.shp")
+line_wkt = "LINESTRING(-84 35,-78 35)"
+
+# spherely uses S2, like sf does by default (sf_use_s2(TRUE))
+nc_s2 = spherely.from_wkt([g.wkt for g in nc.geometry])
+line_s2 = spherely.from_wkt(line_wkt)
+hit_s2 = spherely.intersects(nc_s2, line_s2)
+
+nc[hit_s2].NAME.tolist()
+# left join: all rows of the line, matched with the intersecting counties
+pd.DataFrame({"line": [0]}).merge(nc[hit_s2][["NAME"]], how="cross").NAME.tolist()
+```
+:::
+
 ## Exercise 7.2 {-}
 
 Repeat this after setting `sf_use_s2(FALSE)`, and _compute_ the difference (hint: use `setdiff()`), and color the counties of the difference using color '#00880088'.
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 # save names first:
@@ -31,9 +59,34 @@ plot(st_geometry(nc)[nc$NAME %in% diff], col = "#00880088", add = TRUE)
 sf_use_s2(old) # set back
 ```
 
+## Python
+
+```{python}
+import matplotlib.pyplot as plt
+
+names_with_s2 = nc[hit_s2].NAME.tolist()
+# shapely works on the plane (sf_use_s2(FALSE))
+line = shapely.from_wkt(line_wkt)
+names_planar = nc[nc.intersects(line)].NAME.tolist()
+print(names_planar)
+
+diff = [n for n in names_with_s2 if n not in names_planar]
+print(diff)
+
+fig, ax = plt.subplots()
+nc.plot(ax=ax, facecolor="none", edgecolor="black", linewidth=0.5)
+nc[nc.NAME.isin(diff)].plot(ax=ax, color="#00880088")
+ax.set_axis_off()
+plt.show()
+```
+:::
+
 ## Exercise 7.3 {-}
 
 Plot the two different lines in a single plot; note that R will plot a straight line always straight in the projection currently used; `st_segmentize` can be used to add points on straight line, or on a great circle for ellipsoidal coordinates.
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 par(mar = rep(.1, 4))
@@ -43,9 +96,34 @@ plot(line, add = TRUE)
 plot(st_segmentize(line, units::set_units(10, km)), add = TRUE, col = 'red')
 ```
 
+## Python
+
+```{python}
+from pyproj import Geod
+
+# points on the great circle between the end points, about every 10 km
+geod = Geod(ellps="sphere")
+dist = geod.inv(-84, 35, -78, 35)[2]
+n = int(dist // 10000)
+mid = geod.npts(-84, 35, -78, 35, n)
+l_gc = shapely.LineString([(-84, 35)] + mid + [(-78, 35)])
+
+fig, ax = plt.subplots()
+nc.plot(ax=ax, facecolor="none", edgecolor="black", linewidth=0.5)
+nc[nc.NAME.isin(diff)].plot(ax=ax, color="#00880088")
+ax.plot(*line.xy, color="black")
+ax.plot(*l_gc.xy, color="red")
+ax.set_axis_off()
+plt.show()
+```
+:::
+
 To show that the red line is curved, but only curved in plate carree,
 and not e.g. in an orthographic projection centered at this region,
 we can also plot it in an orthographic projection:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 l.gc = st_segmentize(line, units::set_units(10, km))
@@ -59,6 +137,26 @@ plot(st_transform(l.pc, o), col = 'black', add = TRUE)
 plot(st_transform(line, o), col = 'green', add = TRUE)
 ```
 
+## Python
+
+```{python}
+o = "+proj=ortho +lon_0=-80 +lat_0=35"
+l_pc = shapely.segmentize(line, 0.1)  # points every 0.1 degree, planar
+
+def to_ortho(geom):
+    return gpd.GeoSeries([geom], crs=nc.crs).to_crs(o).iloc[0]
+
+nc_o = nc.to_crs(o)
+fig, ax = plt.subplots()
+nc_o.plot(ax=ax, facecolor="none", edgecolor="black", linewidth=0.5)
+nc_o[nc_o.NAME.isin(diff)].plot(ax=ax, color="#00880088")
+ax.plot(*to_ortho(l_gc).xy, color="red")
+ax.plot(*to_ortho(l_pc).xy, color="black")
+ax.plot(*to_ortho(line).xy, color="green")
+plt.show()
+```
+:::
+
 The fact that the _unsegmented_ line `line` is straight (R plotted
 it as straight, it contains only the two endpoints) and that it
 covers the red line supports that in this plot, the great circle
@@ -70,6 +168,9 @@ line is not.
 NDVI, normalized differenced vegetation index, is computed as `(NIR-R)/(NIR+R)`, with NIR the near infrared and R the red band.  Read the `L7_ETMs.tif` file into object `x`, and distribute the band dimensions over attributes by `split(x, "band")`. Then, add attribute NDVI to this object by using an expression that uses the NIR (band 4) and R (band 3) attributes directly.
 
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(stars)
 (x = read_stars(system.file("tif/L7_ETMs.tif", package = "stars")))
@@ -78,9 +179,29 @@ x.spl$NDVI = (x.spl$X4 - x.spl$X3)/(x.spl$X4 + x.spl$X3)
 plot(x.spl["NDVI"])
 ```
 
+## Python
+
+```{python}
+import rioxarray
+
+# L7_ETMs.tif, copied from the stars R package into data/;
+# convert to float to avoid integer overflow in the differences
+x = rioxarray.open_rasterio("data/L7_ETMs.tif").astype("float64")
+x_spl = x.to_dataset(dim="band")  # bands become variables
+x_spl = x_spl.rename({b: f"X{b}" for b in x_spl.data_vars})
+x_spl
+x_spl["NDVI"] = (x_spl.X4 - x_spl.X3) / (x_spl.X4 + x_spl.X3)
+x_spl["NDVI"].plot()
+plt.show()
+```
+:::
+
 ## Exercise 7.5 {-}
 
 Compute NDVI for the `L7_ETMs.tif` image by reducing the band dimension, using `st_apply` and an a function `ndvi = function(x) { (x[4]-x[3])/(x[4]+x[3]) }`. Plot the result, and write the result to a GeoTIFF. 
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 ndvi_fn = function(x) { (x[4]-x[3])/(x[4]+x[3]) }
@@ -89,13 +210,46 @@ plot(ndvi)
 write_stars(ndvi, "ndvi.tif")
 ```
 
+## Python
+
+```{python}
+import numpy as np
+import xarray as xr
+import tempfile, os
+
+def ndvi_fn(v):  # called for each pixel, v has the 6 band values
+    return (v[3] - v[2]) / (v[3] + v[2])
+
+ndvi = xr.apply_ufunc(ndvi_fn, x, input_core_dims=[["band"]], vectorize=True)
+ndvi.plot()
+plt.show()
+
+# write to a GeoTIFF (in a temporary directory)
+ndvi = ndvi.rio.write_crs(x.rio.crs)
+ndvi.rio.to_raster(os.path.join(tempfile.mkdtemp(), "ndvi.tif"))
+```
+:::
+
 an alternative function is 
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 ndvi_fn = function(x1,x2,x3,x4,x5,x6) { (x4-x3)/(x4+x3) }
 ndvi2 = st_apply(x, 1:2, ndvi_fn)
 all.equal(ndvi, ndvi2)
 ```
+
+## Python
+
+```{python}
+# called once for all pixels, with the band dimension as last axis
+ndvi2 = xr.apply_ufunc(lambda v: (v[..., 3] - v[..., 2]) / (v[..., 3] + v[..., 2]),
+                       x, input_core_dims=[["band"]])
+np.allclose(ndvi, ndvi2, equal_nan=True)
+```
+:::
 
 This latter function can be much faster, as it is called for chunks
 of data rather than for individual pixels.
@@ -104,10 +258,28 @@ of data rather than for individual pixels.
 
 Use `st_transform` to transform the `stars` object read from `L7_ETMs.tif` to `EPSG:4326`. Print the object. Is this a regular grid? Plot the first band using arguments `axes=TRUE` and explain why this takes such a long time.
 
+::: {.panel-tabset}
+## R
+
 ```{r eval=FALSE}
 (x_t = st_transform(x, 'EPSG:4326'))
 plot(x_t[,,,1], axes = TRUE)
 ```
+
+## Python
+
+```{python}
+from pyproj import Transformer
+
+# transforming the cell centres, without resampling, gives 2-D coordinate arrays
+X, Y = np.meshgrid(x.x.values, x.y.values)
+t = Transformer.from_crs(x.rio.crs, "EPSG:4326", always_xy=True)
+lon, lat = t.transform(X, Y)
+# the longitude step between neighbouring cells differs between rows:
+# this is not a regular grid
+np.ptp(np.diff(lon, axis=1), axis=1).max()
+```
+:::
 
 the printed summary shows that this is a curvilinear grid. Plotting takes so long because for curvilinear grids, each cell is converted to a small polygon and then plotted.
 
@@ -115,11 +287,31 @@ the printed summary shows that this is a curvilinear grid. Plotting takes so lon
 
 Use `st_warp` to warp the `L7_ETMs.tif` object to `EPSG:4326`, and plot the resulting object with `axes=TRUE`. Why is the plot created much faster than after `st_transform`?
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 x_w = st_warp(x, crs = 'EPSG:4326')
 plot(x_w[,,,1], reset = FALSE)
 plot(st_as_sfc(st_bbox(x_w)), col = NA, border = 'red', add = TRUE)
 ```
+
+## Python
+
+```{python}
+from matplotlib.patches import Rectangle
+
+x_w = x.rio.reproject("EPSG:4326")  # warp to a new regular grid
+x_w = x_w.where(x_w != x_w.rio.nodata)
+
+fig, ax = plt.subplots()
+x_w.isel(band=0).plot(ax=ax)
+xmin, ymin, xmax, ymax = x_w.rio.bounds()
+ax.add_patch(Rectangle((xmin, ymin), xmax - xmin, ymax - ymin,
+                       fill=False, edgecolor="red"))
+plt.show()
+```
+:::
 
 Plotting is faster now because we created a new regular grid. Note
 that the grid border does not align perfectly with the square
@@ -136,6 +328,9 @@ for this circle.  Compare the area-weighted values with those
 obtained by `aggregate` using the vector data, and by `aggregate`
 using the raster data, using `exact=FALSE` (default) and
 `exact=TRUE`.  Explain the differences.
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 l7 = st_as_sf(x)
@@ -155,6 +350,45 @@ all.equal(st_drop_geometry(aw), st_drop_geometry(ag_rasterT),
 	check.attributes = FALSE)
 ```
 
+## Python
+
+```{python}
+# vector representation of the raster: one square polygon per pixel
+xs, ys = x.x.values, x.y.values
+dx, dy = (abs(r) / 2 for r in x.rio.resolution())
+X, Y = np.meshgrid(xs, ys)
+cols = [f"V{i}" for i in range(1, 7)]
+l7 = gpd.GeoDataFrame(
+    x.values.reshape(6, -1).T, columns=cols,
+    geometry=shapely.box(X.ravel() - dx, Y.ravel() - dy,
+                         X.ravel() + dx, Y.ravel() + dy),
+    crs=x.rio.crs)
+
+a = shapely.Point(293716, 9113692).buffer(74, quad_segs=30)
+sub = l7.iloc[l7.sindex.query(a, predicate="intersects")]
+inter = sub.geometry.intersection(a)
+
+fig, ax = plt.subplots()
+gpd.GeoDataFrame(sub[["V1"]], geometry=inter).plot(ax=ax, column="V1", legend=True)
+plt.show()
+
+# area-weighted mean, over the intersections
+w = inter.area.values
+aw = (sub[cols].values * w[:, None]).sum(axis=0) / w.sum()
+# aggregate on vector data: unweighted mean of all intersecting pixels
+ag_vector = sub[cols].mean().values
+# aggregate on raster data: only pixels with centre in the circle
+ag_rasterF = sub[sub.geometry.centroid.within(a)][cols].mean().values
+# exact = TRUE: area-weighted, as aw
+ag_rasterT = aw
+
+res = pd.DataFrame([aw, ag_vector, ag_rasterF, ag_rasterT], columns=cols,
+                   index=["area_w", "agg_vec", "agg_rasF", "agg_rasT"])
+res
+np.allclose(res.loc["area_w"], res.loc["agg_rasT"])
+```
+:::
+
 Area-weighted interpolation computes the area-weighted mean of the
 areas shown in the plot; `aggregate` on the vector values computes
 the _unweighted_ mean over all polygonized pixels that intersect
@@ -162,10 +396,26 @@ with the circle (black lines); `aggregate` on the raster values only
 averages (unweighted) the cells with pixel _centers_ intersecting
 with the circle (light red):
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 plot(st_geometry(l7)[a])
 plot(a, add = TRUE, col = NA, border = 'red')
 plot(st_as_sf(L7_ETMs[a])[1], add = TRUE, col = '#ff000066')
 plot(st_as_sf(L7_ETMs[a], as_points = TRUE)[1], add = TRUE, pch = 3, col = 1)
 ```
+
+## Python
+
+```{python}
+fig, ax = plt.subplots()
+sub.plot(ax=ax, facecolor="none", edgecolor="black", linewidth=0.5)
+ax.plot(*a.exterior.xy, color="red")
+in_circle = sub[sub.geometry.centroid.within(a)]
+in_circle.plot(ax=ax, color="#ff000066")
+ax.plot(in_circle.geometry.centroid.x, in_circle.geometry.centroid.y, "k+")
+plt.show()
+```
+:::
 

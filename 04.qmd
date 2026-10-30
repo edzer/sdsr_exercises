@@ -18,6 +18,10 @@ straight lines.
 Using this definition of straight, how would LINESTRING(0 85,180 85) look like in a polar projection? 
 
 Like a half circle:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(sf)
 l <- st_as_sfc("LINESTRING(0 85,180 85)") |>
@@ -27,9 +31,44 @@ plot(st_transform(l, 'EPSG:3995'), col = 'red', lwd = 2,
 	 graticule = TRUE, axes = TRUE, reset = FALSE)
 ```
 
+## Python
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from pyproj import Transformer
+from shapely.geometry import LineString
+import shapely
+
+def project(geom, to_crs, from_crs="EPSG:4326"):
+    t = Transformer.from_crs(from_crs, to_crs, always_xy=True)
+    def fn(coords):
+        x, y = t.transform(coords[:, 0], coords[:, 1])
+        return np.column_stack([x, y])
+    return shapely.transform(geom, fn)
+
+# segmentize LINESTRING(0 85,180 85) every 1 degree of longitude
+pts = [(lon, 85) for lon in range(0, 181)]
+l = LineString(pts)
+
+l_polar = project(l, "EPSG:3995")  # polar stereographic
+
+fig, ax = plt.subplots()
+xs, ys = l_polar.xy
+ax.plot(xs, ys, color="red", lw=2)
+ax.set_aspect("equal")
+ax.set_title("EPSG:3995")
+plt.show()
+```
+:::
+
 How could this geometry be modified to have it cross the North Pole?
 
 One would have to let it pass through (0 90) and (180, 90):
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(sf)
 l <- st_as_sfc("LINESTRING(0 85,0 90,180 90,180 85)") |>
@@ -38,6 +77,42 @@ l <- st_as_sfc("LINESTRING(0 85,0 90,180 90,180 85)") |>
 plot(st_transform(l, 'EPSG:3995'), col = 'red', lwd = 2,
 	 graticule = TRUE, axes = TRUE, reset = FALSE)
 ```
+
+## Python
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from pyproj import Transformer
+from shapely.geometry import LineString
+import shapely
+
+def project(geom, to_crs, from_crs="EPSG:4326"):
+    t = Transformer.from_crs(from_crs, to_crs, always_xy=True)
+    def fn(coords):
+        x, y = t.transform(coords[:, 0], coords[:, 1])
+        return np.column_stack([x, y])
+    return shapely.transform(geom, fn)
+
+# let the line pass through the North Pole: (0 90) and (180 90)
+pts = []
+for lon in range(0, 91):
+    pts.append((lon, 85))
+pts.append((90, 90))  # the pole
+for lon in range(91, 181):
+    pts.append((lon, 85))
+l = LineString(pts)
+
+l_polar = project(l, "EPSG:3995")
+
+fig, ax = plt.subplots()
+xs, ys = l_polar.xy
+ax.plot(xs, ys, color="red", lw=2)
+ax.set_aspect("equal")
+ax.set_title("EPSG:3995")
+plt.show()
+```
+:::
 
 
 ## Exercise 4.2  {-}
@@ -86,6 +161,10 @@ Compare the centroid of the country, as computed on $R^2$ and on
 $S^2$, and the distance between the two.
 
 Valid on $R^2$:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 fi = rnaturalearth::ne_countries(country = "Fiji", returnclass="sf") |>
 		st_geometry()
@@ -93,7 +172,23 @@ s2 = sf_use_s2(FALSE)
 st_is_valid(fi)
 ```
 
+## Python
+
+```{python}
+import geopandas as gpd
+import spherely
+
+# read the same Fiji geometry that the R chunk uses (rnaturalearth)
+fi = gpd.read_file("data/fiji.gpkg").geometry.iloc[0]
+
+print(fi.is_valid)  # True on R^2
+```
+:::
+
 Valid on orthographic projection:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 ortho = "+proj=ortho +lon_0=178.6 +lat_0=-17.3"
@@ -101,15 +196,74 @@ st_transform(fi, ortho) |> st_is_valid()
 plot(st_transform(fi, ortho), border = 'red')
 ```
 
+## Python
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from pyproj import Transformer
+import shapely
+
+def project(geom, to_crs, from_crs="EPSG:4326"):
+    t = Transformer.from_crs(from_crs, to_crs, always_xy=True)
+    def fn(coords):
+        x, y = t.transform(coords[:, 0], coords[:, 1])
+        return np.column_stack([x, y])
+    return shapely.transform(geom, fn)
+
+def plot_geom(geom, ax, color="red"):
+    geoms = geom.geoms if geom.geom_type.startswith("Multi") else [geom]
+    for g in geoms:
+        if g.geom_type == "Polygon":
+            xs, ys = g.exterior.xy
+            ax.plot(xs, ys, color=color)
+        else:
+            xs, ys = g.xy
+            ax.plot(xs, ys, color=color)
+
+ortho = "+proj=ortho +lon_0=178.6 +lat_0=-17.3"
+fi_ortho = project(fi, ortho)
+
+print(fi_ortho.is_valid)  # False: the antimeridian line breaks it
+
+fig, ax = plt.subplots()
+plot_geom(fi_ortho, ax)
+ax.set_aspect("equal")
+plt.show()
+```
+:::
+
 The red line following the antimeridian makes the geometry invalid in
-this projection, and also on $S^2$:
+this projection. On $S^2$, however, the geometry is handled by the
+S2 library, which treats the antimeridian consistently:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 sf_use_s2(TRUE)
 st_is_valid(fi)
 ```
 
+## Python
+
+```{python}
+import spherely
+
+# spherely uses the S2 spherical geometry library, the same one that
+# `sf_use_s2(TRUE)` switches on in R. On the sphere the antimeridian
+# is handled natively, so the geometry is valid.
+fi_sph = spherely.from_wkt(fi.wkt)
+print("S2 geography created, dimension:", spherely.get_dimension(fi_sph))
+print("S2 area (km^2):", round(spherely.area(fi_sph) / 1e6, 1))
+```
+:::
+
 Make valid on $S^2$, and plot:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 fi.s2 = st_make_valid(fi)
 st_is_valid(fi.s2)
@@ -117,14 +271,86 @@ plot(st_transform(fi.s2, ortho), border = 'red')
 title("valid")
 ```
 
+## Python
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from pyproj import Transformer
+import shapely
+import spherely
+
+def project(geom, to_crs, from_crs="EPSG:4326"):
+    t = Transformer.from_crs(from_crs, to_crs, always_xy=True)
+    def fn(coords):
+        x, y = t.transform(coords[:, 0], coords[:, 1])
+        return np.column_stack([x, y])
+    return shapely.transform(geom, fn)
+
+def plot_geom(geom, ax, color="red"):
+    geoms = geom.geoms if geom.geom_type.startswith("Multi") else [geom]
+    for g in geoms:
+        if g.geom_type == "Polygon":
+            xs, ys = g.exterior.xy
+            ax.plot(xs, ys, color=color)
+        else:
+            xs, ys = g.xy
+            ax.plot(xs, ys, color=color)
+
+# On the sphere, S2 normalizes the geometry across the antimeridian,
+# so no explicit make-valid is needed (unlike on R^2).
+fi_s2 = shapely.from_wkt(spherely.to_wkt(fi_sph))
+print(fi_s2.is_valid)  # True
+
+fi_ortho = project(fi_s2, ortho)
+fig, ax = plt.subplots()
+plot_geom(fi_ortho, ax)
+ax.set_aspect("equal")
+ax.set_title("valid")
+plt.show()
+```
+:::
+
 where we see that the line at the antimeridian has disappeared. This
 makes plotting in $R^2$ look terrible, with lines spanning the globe:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 plot(fi.s2, axes = TRUE)
 ```
 
+## Python
+
+```{python}
+import matplotlib.pyplot as plt
+
+def plot_geom(geom, ax, color="red"):
+    geoms = geom.geoms if geom.geom_type.startswith("Multi") else [geom]
+    for g in geoms:
+        if g.geom_type == "Polygon":
+            xs, ys = g.exterior.xy
+            ax.plot(xs, ys, color=color)
+        else:
+            xs, ys = g.xy
+            ax.plot(xs, ys, color=color)
+
+# The S2-normalized geometry spans the antimeridian, so in lon/lat
+# coordinates its edges cross the whole map.
+fig, ax = plt.subplots()
+plot_geom(fi_s2, ax)
+ax.set_title("fi.s2 in lon/lat")
+plt.show()
+```
+:::
+
 Compare the centroid of the country, as computed on $R^2$ and on
 $S^2$, and the distance between the two.
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 sf_use_s2(FALSE)
 (c1 = st_centroid(fi))
@@ -133,6 +359,25 @@ sf_use_s2(TRUE)
 st_distance(c1, c2)
 sf_use_s2(s2)
 ```
+
+## Python
+
+```{python}
+import spherely
+
+# R^2 (planar) centroid of the raw lon/lat geometry
+c1 = fi.centroid
+print("planar centroid:", round(c1.x, 3), round(c1.y, 3))
+
+# S^2 centroid, computed on the sphere by spherely (S2)
+c2 = spherely.centroid(fi_sph)
+print("spherical centroid:", round(spherely.get_x(c2), 3), round(spherely.get_y(c2), 3))
+
+# S2 geodesic distance between the two centroids
+c1_point = spherely.create_point(c1.x, c1.y)
+print("distance (km):", round(spherely.distance(c1_point, c2) / 1000, 1))
+```
+:::
 
 ## Exercise 4.6 {-}
 

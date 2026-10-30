@@ -5,6 +5,9 @@
 After loading **spatstat**, recreate the plot obtained by `plot(longleaf)` 
 by using **ggplot2** and `geom_sf()`, and by `sf::plot()`.
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(spatstat)
 library(sf)
@@ -27,11 +30,49 @@ p = as.data.frame(st_coordinates(pts))
 ggplot() + geom_sf(data = box) + geom_point(aes(x = X, y = Y), data = p, shape = 1, size = 10 * marks / max(marks))
 ```
 
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import shapely
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+from plotnine import ggplot, aes, geom_map, geom_point, theme_minimal
+
+# the longleaf data from spatstat: tree locations in a 200 x 200 m window,
+# marks are tree diameters (exported from R to data/longleaf.csv)
+ll = pd.read_csv("data/longleaf.csv")
+box = gpd.GeoDataFrame(geometry=[shapely.box(0, 0, 200, 200)])
+
+# matplotlib: open circles, size proportional to the marks
+fig, ax = plt.subplots()
+ax.add_patch(Rectangle((0, 0), 200, 200, fill=False))
+ax.scatter(ll.x, ll.y, s=(20 * ll.marks / ll.marks.max()) ** 2,
+           facecolors="none", edgecolors="black")
+ax.set_aspect("equal")
+ax.set_axis_off()
+plt.show()
+
+# plotnine, the ggplot2 equivalent: open circles with geom_point (shape="o")
+(
+    ggplot()
+    + geom_map(box, fill=None)
+    + geom_point(aes(x="x", y="y", size="marks"), data=ll, shape="o", fill="none")
+    + theme_minimal()
+)
+```
+:::
+
 ## Exercise 11.2 {-}
 
 Convert the sample locations of the NO$_2$ data used in [Chapter
 12](https://r-spatial.org/book/12-Interpolation.html) to a `ppp`
 object, with a proper window.
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 library(tidyverse) |> suppressPackageStartupMessages()
@@ -52,7 +93,33 @@ rbind(win, no2.sf[,"NO2"]) |> as.ppp() -> p
 plot(p)
 ```
 
+## Python
+
+```{python}
+no2 = pd.read_csv("data/no2_stations.csv")  # from the gstat R package
+no2_sf = gpd.GeoDataFrame(
+    no2[["NO2"]],
+    geometry=gpd.points_from_xy(no2.station_longitude_deg, no2.station_latitude_deg),
+    crs="OGC:CRS84").to_crs("EPSG:32632")
+de = gpd.read_file("data/de_nuts1.gpkg").to_crs("EPSG:32632")  # from edzer/sdsr
+
+# observation window: union of the states; no Python equivalent of ppp exists
+# in the packages used here, so we keep window, locations and marks together
+win = de.geometry.union_all()
+
+fig, ax = plt.subplots()
+gpd.GeoSeries([win]).plot(ax=ax, facecolor="none", edgecolor="black")
+no2_sf.plot(ax=ax, markersize=no2_sf.NO2 * 3, facecolor="none", edgecolor="red")
+ax.set_axis_off()
+plt.show()
+```
+:::
+
 Alternatively, the `ppp` object can be created stepwise:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 st_union(st_geometry(de)) |> as.owin() -> w
 st_geometry(no2.sf) |> as.ppp(W = w) -> p # requires sf 1.0-9
@@ -60,10 +127,24 @@ marks(p) = no2.sf$NO2
 p
 ```
 
+## Python
+
+```{python}
+p = {"window": win,
+     "x": no2_sf.geometry.x.values,
+     "y": no2_sf.geometry.y.values,
+     "marks": no2_sf.NO2.values}
+len(p["x"]), p["window"].geom_type, p["marks"][:5]
+```
+:::
+
 ## Exercise 11.3 {-}
 
 Compute and plot the density of the NO$_2$ dataset, import the density as a `stars`
 object and compute the volume under the surface. 
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 d = density(p)
@@ -73,7 +154,59 @@ st_as_stars(d) |> st_set_crs(crs) -> s
 plot(s)
 mean(s[[1]], na.rm = TRUE) * st_area(win)
 ```
+
+## Python
+
+```{python}
+from scipy.ndimage import gaussian_filter
+from rasterio.features import geometry_mask
+from rasterio.transform import from_origin
+import rioxarray
+import xarray as xr
+
+# Gaussian kernel density estimate on a 128 x 128 grid over the window's
+# bounding box, like spatstat::density(); sigma is the value spatstat picks by
+# default (bw.diggle), 80073.65 m
+sigma = 80073.65
+xmin, ymin, xmax, ymax = win.bounds
+n = 128
+dx, dy = (xmax - xmin) / n, (ymax - ymin) / n
+xc = xmin + dx * (np.arange(n) + 0.5)
+yc = ymax - dy * (np.arange(n) + 0.5)
+X, Y = np.meshgrid(xc, yc)
+
+dens = np.zeros_like(X)
+for px, py in zip(p["x"], p["y"]):
+    dens += np.exp(-((X - px) ** 2 + (Y - py) ** 2) / (2 * sigma ** 2)) / (2 * np.pi * sigma ** 2)
+
+inside = geometry_mask([win], out_shape=X.shape,
+                       transform=from_origin(xmin, ymax, dx, dy), invert=True)
+# spatstat applies a uniform edge correction by default: divide by the
+# kernel mass that falls inside the window
+edge = gaussian_filter(inside.astype(float), (sigma / dy, sigma / dx), mode="constant")
+dens = np.where(inside, dens / edge.clip(1e-12), np.nan)
+
+# as a georeferenced raster, like the stars object
+s = xr.DataArray(dens, coords={"y": yc, "x": xc}, dims=("y", "x")).rio.write_crs("EPSG:32632")
+s.plot()
+plt.show()
+
+np.nanmean(s.values) * win.area  # the volume under the surface
+```
+:::
+
 this number is close to the number of observations, 
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 nrow(no2.sf)
 ```
+
+## Python
+
+```{python}
+len(no2_sf)
+```
+:::

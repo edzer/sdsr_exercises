@@ -6,6 +6,9 @@ For the countries Indonesia and Canada, create individual plots using
 equirectangular, orthographic, and Lambert equal area projections,
 while choosing projection parameters sensible for the area.
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 # +proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +units=m
 # +proj=ortho +lon_0=0 +lat_0=0
@@ -32,6 +35,41 @@ in_laea = st_crs("+proj=laea +lat_0=-2.3 +lon_0=117")
 st_geometry(ind) |> st_transform(in_laea) |> plot(axes=TRUE, graticule=TRUE)
 ```
 
+## Python
+
+```{python}
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
+ne = gpd.read_file("data/ne_ca_ind.gpkg")  # Natural Earth, as used by rnaturalearth
+ca = ne[ne.admin == "Canada"]
+ind = ne[ne.admin == "Indonesia"]
+
+# country centres, as used for the projection parameters below
+print(ca.geometry.union_all().centroid)
+print(ind.geometry.union_all().centroid)
+
+crs = {
+    "Canada": {
+        "eqc": "+proj=eqc +lat_ts=60.6",
+        "ortho": "+proj=ortho +lat_0=60.6 +lon_0=-96.4",
+        "laea": "+proj=laea +lat_0=60.6 +lon_0=-96.4",
+    },
+    "Indonesia": {
+        "eqc": "+proj=eqc +lat_ts=-2.3",
+        "ortho": "+proj=ortho +lat_0=-2.3 +lon_0=117",
+        "laea": "+proj=laea +lat_0=-2.3 +lon_0=117",
+    },
+}
+for name, g in [("Canada", ca), ("Indonesia", ind)]:
+    for proj, p4 in crs[name].items():
+        ax = g.to_crs(p4).plot(edgecolor="black", facecolor="none")
+        ax.grid(True)
+        ax.set_title(f"{name}: {proj}")
+        plt.show()
+```
+:::
+
 ## Exercise 8.2 {-}
 
 Recreate the plot in [Figure
@@ -39,6 +77,10 @@ Recreate the plot in [Figure
 with **ggplot2** and with **tmap**.
 
 **ggplot2**:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(sf)
 nc <- read_sf(system.file("gpkg/nc.gpkg", package = "sf"))
@@ -49,7 +91,35 @@ ggplot() + geom_sf(data = nc, aes(fill = BIR74)) +
 		scale_fill_gradientn(colours = sf.colors())
 ```
 
+## Python
+
+```{python}
+import geopandas as gpd
+import matplotlib.pyplot as plt
+from plotnine import ggplot, aes, geom_map, scale_fill_cmap, theme_minimal
+
+nc = gpd.read_file("data/nc/nc.shp")
+# 10 km buffer around the first county: buffer in an azimuthal equidistant projection
+first = nc.iloc[[0]]
+c = first.geometry.union_all().centroid
+aeqd = f"+proj=aeqd +lat_0={c.y} +lon_0={c.x}"
+b = gpd.GeoDataFrame(geometry=first.to_crs(aeqd).buffer(10000).to_crs(nc.crs).boundary)
+
+(
+    ggplot()
+    + geom_map(nc, aes(fill="BIR74"))
+    + geom_map(b, color="red", fill=None)
+    + scale_fill_cmap(cmap_name="Blues")
+    + theme_minimal()
+)
+```
+:::
+
 **tmap**: see <https://r-tmap.github.io/tmap-book/>
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(tmap)
 b = st_buffer(nc[1,1], units::set_units(10, km)) |> st_cast("LINESTRING")
@@ -60,11 +130,26 @@ tm_shape(nc) +
 	tm_lines(legend.lwd.show = FALSE, col = 'red')
 ```
 
+## Python
+
+```{python}
+fig, ax = plt.subplots()
+nc.plot(ax=ax, column="BIR74", cmap="Blues", legend=True,
+        legend_kwds={"label": "BIR74", "location": "right"})
+b.plot(ax=ax, color="red")
+ax.set_axis_off()
+plt.show()
+```
+:::
+
 ## Exercise 8.3 {-}
 
 Recreate the plot in [Figure
 8.7](https://r-spatial.org/book/08-Plotting.html#fig-tmapstars)
 using the `viridis` colour ramp.
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 library(stars)
@@ -72,6 +157,18 @@ library(viridis)
 r <- read_stars(system.file("tif/L7_ETMs.tif", package = "stars"))
 tm_shape(r) + tm_raster(palette = viridis(100))
 ```
+
+## Python
+
+```{python}
+import rioxarray
+
+# L7_ETMs.tif, copied from the stars R package into data/
+r = rioxarray.open_rasterio("data/L7_ETMs.tif")
+r.plot(col="band", col_wrap=3, cmap="viridis")
+plt.show()
+```
+:::
 
 ## Exercise 8.4 {-}
 
@@ -80,6 +177,9 @@ View the interactive plot in [Figure
 using the "view" (interactive) mode of `tmap`, and explore which
 interactions are possible;
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(stars)
 library(viridis)
@@ -87,22 +187,82 @@ r <- read_stars(system.file("tif/L7_ETMs.tif", package = "stars"))
 tmap_mode("view")
 tm_shape(r) + tm_raster(palette = viridis(100))
 ```
+
+## Python
+
+```{python}
+import folium
+import numpy as np
+from matplotlib import colormaps
+
+# warp to lon/lat, as the web map needs
+rw = r.rio.reproject("EPSG:4326")
+rw = rw.where(rw != rw.rio.nodata)
+xmin, ymin, xmax, ymax = rw.rio.bounds()
+
+def band_overlay(b, alpha=1.0):
+    v = rw.sel(band=b).values
+    v = (v - np.nanmin(v)) / (np.nanmax(v) - np.nanmin(v))
+    rgba = colormaps["viridis"](v)
+    rgba[np.isnan(v), 3] = 0  # transparent outside the image
+    return folium.raster_layers.ImageOverlay(
+        rgba, bounds=[[ymin, xmin], [ymax, xmax]], opacity=alpha,
+        name=f"band {b}")
+
+m = folium.Map(location=[(ymin + ymax) / 2, (xmin + xmax) / 2], zoom_start=11)
+band_overlay(1).add_to(m)
+m
+```
+:::
+
 Interactions: zoom, pan, linked cursor.
 
 Also explore adding `+ tm_facets(as.layers=TRUE)` and try switching
 layers on and off.
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 tmap_mode("view")
 tm_shape(r) + tm_raster(palette = viridis(100)) + 
 		tm_facets(as.layers=TRUE)
 ```
+
+## Python
+
+```{python}
+m = folium.Map(location=[(ymin + ymax) / 2, (xmin + xmax) / 2], zoom_start=11)
+for b in rw.band.values:
+    band_overlay(b).add_to(m)
+folium.LayerControl().add_to(m)  # switch layers on and off
+m
+```
+:::
+
 Layer switch on left-hand side (layer symbol).
 
 Try also setting a transparency value to 0.5.
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 tmap_mode("view")
 tm_shape(r) + tm_raster(palette = viridis(100), alpha = .5) + 
 		tm_facets(as.layers=TRUE)
 ```
+
+## Python
+
+```{python}
+m = folium.Map(location=[(ymin + ymax) / 2, (xmin + xmax) / 2], zoom_start=11)
+for b in rw.band.values:
+    band_overlay(b, alpha=0.5).add_to(m)
+folium.LayerControl().add_to(m)
+m
+```
+:::
+
 This shows the base map shining through transparent raster colors 
 (switch 3 of the 4 layers off to see this).

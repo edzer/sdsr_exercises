@@ -32,6 +32,10 @@ so some detective work is needed here. How did people do this,
 more than three decades ago?
 
 We can now compute `area` by
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(sf)
 nc = read_sf(system.file("gpkg/nc.gpkg", package="sf"))
@@ -45,12 +49,49 @@ nc$area[1:10]
 sf_use_s2(s2) # set back to original
 cor(a_ell, a_sph)
 ```
+
+## Python
+
+```{python}
+import geopandas as gpd
+import numpy as np
+from pyproj import Geod
+
+nc = gpd.read_file("data/nc/nc.shp")
+print(nc["AREA"].head(10).tolist())
+
+# helper: yield exterior rings of a (Multi)Polygon as (lon, lat) lists
+def rings(geom):
+    if geom.geom_type == "Polygon":
+        yield list(geom.exterior.coords)
+    else:
+        for g in geom.geoms:
+            yield list(g.exterior.coords)
+
+def area_geodesic(geom, ellps):
+    geod = Geod(ellps=ellps)
+    return sum(
+        abs(geod.polygon_area_perimeter([c[0] for c in r], [c[1] for c in r])[0])
+        for r in rings(geom)
+    )
+
+a_sph = nc.geometry.apply(lambda g: area_geodesic(g, "sphere"))   # spherical
+a_ell = nc.geometry.apply(lambda g: area_geodesic(g, "WGS84"))    # ellipsoidal
+print(np.round(a_ell.head(10) / 1e6, 2).tolist())  # km^2
+print("cor(a_ell, a_sph):", round(np.corrcoef(a_ell, a_sph)[0, 1], 6))
+```
+:::
+
 and this gives the area, in square metres, computed using either
 ellipsoidal or spherical geometry. We see that these are not
 identical, but nearly perfectly linearly correlated.
 
 A first hypothesis might be a constant factor between the `area`
 and `AREA` variables. For this, we could try a power of 10:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 nc$area2 = units::drop_units(nc$area / 1e10)
 cor(nc$AREA, nc$area2)
@@ -58,6 +99,29 @@ summary(lm(area2 ~ AREA, nc))
 plot(area2 ~ AREA, nc)
 abline(0, 1)
 ```
+
+## Python
+
+```{python}
+import statsmodels.api as sm
+import matplotlib.pyplot as plt
+
+# nc$area is the ellipsoidal area (a_ell); scale by 1e10 like the R chunk
+area2 = a_ell / 1e10
+print("cor(AREA, area2):", round(np.corrcoef(nc["AREA"], area2)[0, 1], 6))
+
+model = sm.OLS(area2, sm.add_constant(nc["AREA"])).fit()
+print("lm slope:", model.params.round(6).tolist())
+print("residual SE:", round(np.sqrt(model.mse_resid), 6))
+
+fig, ax = plt.subplots()
+ax.plot(nc["AREA"], area2, "o")
+ax.plot(nc["AREA"], model.fittedvalues, "-")
+ax.set_xlabel("AREA")
+ax.set_ylabel("area2")
+plt.show()
+```
+:::
 
 and we see a pretty good, close to 1:1 correspondence! But the
 factor 1e10 is strange: it does not convert square metres into a
@@ -68,21 +132,50 @@ be explained by the rounding of `AREA` to three digits? If rounding
 to three digits was the only cause of spread around the regression
 line, we would expect a residual standard error similar to the standard
 deviation of a uniform distribution with width .001, which is
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 sqrt(0.001^2/12)
 ```
+
+## Python
+
+```{python}
+import numpy as np
+print(np.sqrt(0.001 ** 2 / 12))
+```
+:::
+
 but the one obtained int he regression is three times larger. Also,
 the units of `AREA` would be 1e10 $m^2$, or 1e4 $km^2$, which is
 odd and could ring some bells: one degree latitude corresponds
 roughly to 111 km, so one "square degree" at the equator corresponds
 roughly to $1.11^2 \times 10^4$, and at 35 degrees North roughly to
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 111 ^ 2 * cos(35 / 180 * pi)
 ```
+
+## Python
+
+```{python}
+import numpy as np
+print(111 ** 2 * np.cos(35 / 180 * np.pi))
+```
+:::
+
 which closely corresponds to the regression slope found above.
 
 We can compute "square degree" area by using the $R^2$ area routines,
 e.g. obtained when we set the CRS to `NA`:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 nc2 = nc
@@ -93,6 +186,37 @@ abline(0,1)
 cor(nc2$area, nc2$AREA)
 summary(lm(area ~ AREA, nc2))
 ```
+
+## Python
+
+```{python}
+import numpy as np
+import statsmodels.api as sm
+import matplotlib.pyplot as plt
+
+# "square degree" area: treat lon/lat as planar and use the shoelace formula
+def area_sqdeg(geom):
+    if geom.geom_type == "Polygon":
+        xs, ys = np.array(geom.exterior.coords)[:, 0], np.array(geom.exterior.coords)[:, 1]
+        return 0.5 * abs(np.sum(xs * np.roll(ys, -1) - np.roll(xs, -1) * ys))
+    else:
+        return sum(area_sqdeg(g) for g in geom.geoms)
+
+sqdeg = nc.geometry.apply(area_sqdeg)
+print("cor(sqdeg, AREA):", round(np.corrcoef(sqdeg, nc["AREA"])[0, 1], 6))
+
+model2 = sm.OLS(sqdeg, sm.add_constant(nc["AREA"])).fit()
+print("lm slope:", model2.params.round(6).tolist())
+print("residual SE:", round(np.sqrt(model2.mse_resid), 6))
+
+fig, ax = plt.subplots()
+ax.plot(nc["AREA"], sqdeg, "o")
+ax.set_xlabel("AREA")
+ax.set_ylabel("square degrees")
+plt.show()
+```
+:::
+
 We now get a much better fit, a near perfect correlation, and a
 regression standard error that corresponds exactly to what one
 would expect after rounding `AREA` to three digits.
@@ -100,10 +224,27 @@ would expect after rounding `AREA` to three digits.
 A further "red flag" against the constant (1e10) conversion
 hypothesis is the spatial pattern of the regression residuals
 obtained by the first approach:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 nc$resid = residuals(lm(area2 ~ AREA, nc))
 plot(nc["resid"])
 ```
+
+## Python
+
+```{python}
+import matplotlib.pyplot as plt
+
+nc["resid"] = model.resid
+fig, ax = plt.subplots()
+nc.plot(ax=ax, column="resid", legend=True, cmap="coolwarm")
+ax.set_title("residuals of area2 ~ AREA")
+plt.show()
+```
+:::
 
 these residuals clearly show a North-South trend, corresponding
 to the effect that the Earth's curvature has been ignored during
@@ -129,6 +270,10 @@ over the parts.
 area-weighted interpolation
 
 From the on-line version of the book we get the code that created the plot:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 g = st_make_grid(st_bbox(st_as_sfc("LINESTRING(0 0,1 1)")), n = c(2,2))
 par(mar = rep(0,4))
@@ -136,6 +281,36 @@ plot(g)
 plot(g[1] * diag(c(3/4, 1)) + c(0.25, 0.125), add = TRUE, lty = 2)
 text(c(.2, .8, .2, .8), c(.2, .2, .8, .8), c(1,2,4,8), col = 'red')
 ```
+
+## Python
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import shapely
+import shapely.affinity as aff
+from shapely.geometry import box
+
+# 2x2 grid over the bbox of LINESTRING(0 0,1 1)
+xs = [0, 0.5, 1]
+ys = [0, 0.5, 1]
+g = [box(xs[i], ys[j], xs[i + 1], ys[j + 1])
+     for j in range(2) for i in range(2)]
+
+fig, ax = plt.subplots()
+for cell in g:
+    cx, cy = cell.exterior.xy
+    ax.plot(cx, cy, color="black")
+# dashed: g[1] scaled by diag(3/4, 1), shifted by (0.25, 0.125)
+dashed = aff.translate(aff.scale(g[0], xfact=0.75, yfact=1.0, origin=(0, 0)), 0.25, 0.125)
+dx, dy = dashed.exterior.xy
+ax.plot(dx, dy, color="black", linestyle="--")
+for (x, y, val) in [(0.2, 0.2, 1), (0.8, 0.2, 2), (0.2, 0.8, 4), (0.8, 0.8, 8)]:
+    ax.text(x, y, str(val), color="red", ha="center")
+ax.set_aspect("equal")
+plt.show()
+```
+:::
 
 A question is how we can make `g` into an `sf` object with the right
 attribute values associated with the right geometries. We try values
@@ -145,26 +320,102 @@ sf = st_sf(x = 1:4, geom = g)
 plot(sf)
 ```
 and see the order of the geometries: row-wise, bottom row first, so
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 sf = st_sf(x = c(1,2,4,8), geom = g)
 plot(sf)
 ```
+
+## Python
+
+```{python}
+import geopandas as gpd
+
+# geometry order is row-wise, bottom row first (as in R)
+sf = gpd.GeoDataFrame({"x": [1, 2, 4, 8]}, geometry=g)
+sf.plot(column="x", legend=True)
+```
+:::
+
 gives us the source object. We create target geometries by
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 dashed = g[1] * diag(c(3/4, 1)) + c(0.25, 0.125)
 box = st_union(g)
 c(dashed, box)
 ```
+
+## Python
+
+```{python}
+import shapely
+
+# g[1] in R is the first (bottom-left) cell; in Python that is g[0]
+dashed = aff.translate(aff.scale(g[0], xfact=0.75, yfact=1.0, origin=(0, 0)), 0.25, 0.125)
+box = shapely.union_all(g)
+targets = [dashed, box]
+print([tuple(round(v, 3) for v in b.bounds) for b in targets])
+```
+:::
+
 and can call `st_interpolate_aw` to compute the area-weighted interpolations:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 st_interpolate_aw(sf, c(dashed, box), extensive = TRUE)
 st_interpolate_aw(sf, c(dashed, box), extensive = FALSE)
 ```
+
+## Python
+
+```{python}
+def interpolate_aw(sources, values, targets, extensive):
+    out = []
+    for tgt in targets:
+        num = 0.0
+        for src, v in zip(sources, values):
+            ov = tgt.intersection(src)
+            if ov.is_empty:
+                continue
+            ov_area = ov.area
+            if extensive:
+                num += v * ov_area / src.area
+            else:
+                num += v * ov_area
+        out.append(num if extensive else num / tgt.area)
+    return out
+
+print("extensive:", interpolate_aw(g, [1, 2, 4, 8], targets, True))
+print("non-extensive:", interpolate_aw(g, [1, 2, 4, 8], targets, False))
+```
+:::
+
 This generates a warning, which we can get rid of by setting the `agr` to
 `constant`:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 st_agr(sf) = "constant"
 st_interpolate_aw(sf, c(dashed, box), FALSE)
 ```
+
+## Python
+
+```{python}
+# geopandas has no direct st_interpolate_aw equivalent, so we compute
+# the (non-extensive) area-weighted mean directly.
+print(interpolate_aw(g, [1, 2, 4, 8], targets, False))
+```
+:::
 
 

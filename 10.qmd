@@ -7,6 +7,9 @@ to predict `SID` values (e.g. using package **randomForest**), and
 plot the random forest predictions against observations, along
 with the $x=y$ line.
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(tidyverse)
 library(sf)
@@ -20,11 +23,39 @@ plot(rf~SID, nc1)
 abline(0, 1)
 ```
 
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestRegressor
+
+nc = gpd.read_file("data/nc/nc.shp")
+nc1 = nc.assign(SID=nc.SID74 / nc.BIR74, NWB=nc.NWBIR74 / nc.BIR74)
+
+r = RandomForestRegressor(n_estimators=500, oob_score=True, random_state=7392)
+r.fit(nc1[["NWB"]], nc1.SID)
+nc1["rf"] = r.oob_prediction_  # out-of-bag predictions, as predict(r) gives in R
+
+fig, ax = plt.subplots()
+ax.scatter(nc1.SID, nc1.rf)
+ax.axline((0, 0), slope=1, color="black")
+ax.set_xlabel("SID")
+ax.set_ylabel("rf")
+plt.show()
+```
+:::
+
 ## Exercise 10.2 {-}
 
 Create a new dataset by randomly sampling 1000 points from the
 `nc` dataset, and rerun the linear regression model of section
 10.2 on this dataset. What has changed?
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 pts = st_sample(nc, 1000)
@@ -33,9 +64,32 @@ lm(SID ~ NWB, nc1) |> summary()
 lm(SID ~ NWB, nc2) |> summary()
 ```
 
+## Python
+
+```{python}
+import statsmodels.formula.api as smf
+
+# 1000 random points in the state; each gets the attributes of the county it is in
+pts = gpd.GeoDataFrame(
+    geometry=gpd.GeoSeries(nc1.geometry.union_all())
+        .sample_points(1000, rng=7392).explode(ignore_index=True),
+    crs=nc1.crs)
+nc2 = gpd.sjoin(pts, nc1, how="inner", predicate="intersects")
+
+m1 = smf.ols("SID ~ NWB", nc1).fit()
+m2 = smf.ols("SID ~ NWB", nc2).fit()
+print(m1.summary().tables[1])
+print(m2.summary().tables[1])
+```
+:::
+
 we see that the standard error has decreased with a factor 3 (sqrt(10)).
 
 For prediction interval widths:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 lm(SID ~ NWB, nc1) |>
   predict(nc1, interval = "prediction") -> pr1
@@ -44,9 +98,26 @@ lm(SID ~ NWB, nc2) |>
 mean(pr1[,"upr"] - pr1[,"lwr"])
 mean(pr2[,"upr"] - pr2[,"lwr"])
 ```
+
+## Python
+
+```{python}
+def mean_width(m, kind):
+    d = m.get_prediction(nc1).summary_frame(alpha=0.05)
+    return (d[f"{kind}_ci_upper"] - d[f"{kind}_ci_lower"]).mean()
+
+print(mean_width(m1, "obs"))  # prediction interval, nc1 model
+print(mean_width(m2, "obs"))  # prediction interval, nc2 model
+```
+:::
+
 no change, as this dominated by the residual variance;
 
 Confidence intervals for the predicted means:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 lm(SID ~ NWB, nc1) |>
   predict(nc1, interval = "confidence") -> pr1
@@ -55,6 +126,15 @@ lm(SID ~ NWB, nc2) |>
 mean(pr1[,"upr"] - pr1[,"lwr"])
 mean(pr2[,"upr"] - pr2[,"lwr"])
 ```
+
+## Python
+
+```{python}
+print(mean_width(m1, "mean"))  # confidence interval of the mean, nc1 model
+print(mean_width(m2, "mean"))  # confidence interval of the mean, nc2 model
+```
+:::
+
 drops for larger dataset, as this is dominated by the standard
 errors of estimated coefficients.
 
@@ -64,6 +144,10 @@ Redo the water-land classification of section 7.4 using `class::knn`
 instead of `lda`.
 
 Preparing the dataset:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 tif <- system.file("tif/L7_ETMs.tif", package = "stars")
 library(stars)
@@ -81,7 +165,37 @@ trn$cls <- rep("land", 20)
 trn$cls[c(8, 14, 15, 18, 19)] <- "water"
 ```
 
+## Python
+
+```{python}
+import rioxarray
+import xarray as xr
+from matplotlib.colors import ListedColormap
+
+x = rioxarray.open_rasterio("data/L7_ETMs.tif").astype("float64")
+
+# the 20 sample points used in the R solution (set.seed(115517), st_sample)
+tp = pd.read_csv("data/l7_train_pts.csv")
+bands = [f"X{i}" for i in range(1, 7)]
+vals = x.sel(x=xr.DataArray(tp.x), y=xr.DataArray(tp.y), method="nearest").values.T
+trn = pd.DataFrame(vals, columns=bands)
+
+water = [8, 14, 15, 18, 19]  # identified visually, 1-based
+cls = np.where(np.isin(np.arange(1, 21), water), "water", "land")
+
+fig, ax = plt.subplots()
+x.sel(band=1).plot(ax=ax, cmap="gray", add_colorbar=False)
+for i, (xx, yy, c) in enumerate(zip(tp.x, tp.y, cls), start=1):
+    ax.text(xx, yy, str(i), color="red" if c == "water" else "yellow")
+plt.show()
+```
+:::
+
 estimation and prediction happen in one command:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(class)
 as.data.frame(trn) |> select(X1, X2, X3, X4, X5, X6) -> tr 
@@ -90,9 +204,35 @@ rs$cls = knn(tr, test, trn$cl, k = 5)
 plot(rs["cls"])
 ```
 
+## Python
+
+```{python}
+from sklearn.neighbors import KNeighborsClassifier
+
+X, Y = np.meshgrid(x.x.values, x.y.values)
+test = pd.DataFrame(x.values.reshape(6, -1).T, columns=bands)
+
+def show(pred, title):
+    plt.imshow((pred == "water").reshape(X.shape), cmap="Blues",
+               extent=(x.x.min(), x.x.max(), x.y.min(), x.y.max()))
+    plt.title(title)
+    plt.show()
+
+# estimation and prediction in two steps (fit, predict)
+knn = KNeighborsClassifier(n_neighbors=5).fit(trn, cls)
+pred = knn.predict(test)
+print(pd.Series(pred).value_counts())
+show(pred, "cls")
+```
+:::
+
 ## Exercise 10.4 {-}
 
 For the `nc` data: estimation
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 st_centroid(nc1) |> st_coordinates() -> cc
 bind_cols(nc1, cc) |> transmute(X=X, Y=Y, SID=SID, NWB=NWB) -> nc2
@@ -100,21 +240,66 @@ bind_cols(nc1, cc) |> transmute(X=X, Y=Y, SID=SID, NWB=NWB) -> nc2
 (lm1 <- lm(SID ~ NWB+X+Y, nc2)) |> summary()
 (lm2 <- lm(SID ~ NWB+X+Y+I(X^2)+I(Y^2)+X*Y, nc2)) |> summary()
 ```
+
+## Python
+
+```{python}
+import spherely
+
+# centroids on the sphere (sf uses S2 for lon/lat data by default)
+c = spherely.centroid(spherely.from_wkt([g.wkt for g in nc1.geometry]))
+nc_xy = nc1.assign(X=spherely.get_x(c), Y=spherely.get_y(c))
+
+lm0 = smf.ols("SID ~ NWB", nc1).fit()
+lm1 = smf.ols("SID ~ NWB + X + Y", nc_xy).fit()
+lm2 = smf.ols("SID ~ NWB + X + Y + I(X**2) + I(Y**2) + X*Y", nc_xy).fit()
+for m in (lm0, lm1, lm2):
+    print(m.summary().tables[1])
+```
+:::
+
 The first order model seems to have significant coordinate effects,
 for the second order model none of the coordinate effects are
 significant.
 
 Prediction:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 nc1$pr0 <- lm0 |> predict(nc2)
 nc1$pr1 <- lm1 |> predict(nc2)
 nc1$pr2 <- lm2 |> predict(nc2)
 nc1[c("pr0", "pr1", "pr2")] |> st_as_stars() |> merge() |> plot(breaks = "equal")
 ```
+
+## Python
+
+```{python}
+nc1["pr0"] = lm0.predict(nc_xy)
+nc1["pr1"] = lm1.predict(nc_xy)
+nc1["pr2"] = lm2.predict(nc_xy)
+
+lim = dict(vmin=nc1[["pr0", "pr1", "pr2"]].min().min(),
+           vmax=nc1[["pr0", "pr1", "pr2"]].max().max())  # same colour scale
+fig, axes = plt.subplots(1, 3, figsize=(12, 3))
+for ax, v in zip(axes, ["pr0", "pr1", "pr2"]):
+    nc1.plot(ax=ax, column=v, legend=(v == "pr2"), **lim)
+    ax.set_title(v)
+    ax.set_axis_off()
+plt.show()
+```
+:::
+
 Largely the same pattern is shown in the predictions, some extremes get more
 extreme.
 
 For the `knn` on the remote sensing data:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 cbind(as.data.frame(trn), st_coordinates(trn)) |> 
   select(X, Y, X1, X2, X3, X4, X5, X6) -> tr1
@@ -127,4 +312,25 @@ as.data.frame(rs) |>
 rs$cls2 = knn(tr2, test2, trn$cl, k = 5)
 rs[c("cls", "cls1", "cls2")] |> merge() |> plot()
 ```
+
+## Python
+
+```{python}
+tr1 = trn.assign(X=tp.x, Y=tp.y)
+test1 = test.assign(X=X.ravel(), Y=Y.ravel())
+cols1 = ["X", "Y"] + bands
+pred1 = KNeighborsClassifier(5).fit(tr1[cols1], cls).predict(test1[cols1])
+show(pred1, "cls1")
+
+# note: in the R code, the column X2 = X^2 gets the same name as band X2,
+# so band 2 is silently dropped from this second model; we do the same here
+def squares(d):
+    return d.assign(X2=d.X**2, Y2=d.Y**2, XY=d.X * d.Y)
+
+cols2 = ["X", "Y", "X2", "Y2", "XY", "X1", "X3", "X4", "X5", "X6"]
+pred2 = KNeighborsClassifier(5).fit(squares(tr1)[cols2], cls).predict(squares(test1)[cols2])
+show(pred2, "cls2")
+```
+:::
+
 Both models involving coordinates show much worse results!

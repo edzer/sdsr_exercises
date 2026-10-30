@@ -1,0 +1,23 @@
+cf-xarray
+dask
+descartes
+esda
+folium
+geopandas
+libpysal
+mapclassify
+matplotlib
+plotnine
+pyarrow
+pygeoda
+# pyinla
+pykrige
+rasterio
+rioxarray
+splot
+spreg
+sqlalchemy
+statsmodels
+tobler
+xarray
+xvec

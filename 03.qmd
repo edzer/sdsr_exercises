@@ -6,6 +6,9 @@
 
 Give two examples of geometries in 2-D (flat) space that are not simple feature geometries, and create a plot of them.
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(sf)
 x1 <- st_linestring(rbind(c(0,0),c(2,2),c(0,2),c(2,0)))
@@ -15,13 +18,52 @@ st_is_simple(x1)
 st_is_simple(x2)
 ```
 
+## Python
+
+```{python}
+import matplotlib.pyplot as plt
+from shapely.geometry import LineString, Polygon
+
+x1 = LineString([(0, 0), (2, 2), (0, 2), (2, 0)])   # self-intersecting line
+x2 = Polygon([(3, 0), (5, 2), (3, 2), (5, 0), (3, 0)])  # self-intersecting ring
+
+fig, ax = plt.subplots()
+for g, c in [(x1, "green"), (x2, "red")]:
+    if g.geom_type == "LineString":
+        xs, ys = g.xy
+    else:
+        xs, ys = g.exterior.xy
+    ax.plot(xs, ys, color=c)
+ax.set_aspect("equal")
+ax.set_title("Non-simple geometries")
+plt.show()
+
+print(x1.is_simple, x2.is_simple)  # both are False
+```
+:::
+
 ## Exercise 3.2  {-}
 
 Recompute the coordinates 10.542, 0.01, 45321.789 using precision values 1, 1e3, 1e6, and 1e-2.
+
+::: {.panel-tabset}
+## R
+
 ```{r 2) precicsion}
 for(i in c(1,1e3,1e6,1e-2)) 
   print(round(i * c(10.542, 0.01, 45321.789))/i)
 ```
+
+## Python
+
+```{python}
+import numpy as np
+
+coords = np.array([10.542, 0.01, 45321.789])
+for i in [1, 1e3, 1e6, 1e-2]:
+    print(np.round(i * coords) / i)
+```
+:::
 
 ## Exercise 3.3  {-}
 
@@ -42,6 +84,9 @@ simple feature geometries. `st_voronoi` chooses a default (square)
 polygon to limit the extent, which can be enlarged. Alternatively,
 the extent can be limited using `st_intersection` on its result:
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(sf)
 par(mfrow = c(2,2))
@@ -61,9 +106,65 @@ plot(mp, add = TRUE)
 title("smaller, intersected envelope")
 ```
 
+## Python
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+from shapely.geometry import MultiPoint, Polygon
+from shapely.ops import voronoi_diagram
+
+np.random.seed(133331)
+mp = MultiPoint(np.random.rand(10, 2))
+px = [p.x for p in mp.geoms]
+py = [p.y for p in mp.geoms]
+
+fig, axes = plt.subplots(2, 2, figsize=(8, 8))
+
+# default extent
+ax = axes[0, 0]
+for poly in voronoi_diagram(mp).geoms:
+    xs, ys = poly.exterior.xy
+    ax.plot(xs, ys, color="black")
+ax.plot(px, py, "k.")
+ax.set_title("default extent")
+ax.set_aspect("equal")
+
+# enlarged envelope
+ax = axes[0, 1]
+e2 = Polygon([(-5, -5), (5, -5), (5, 5), (-5, 5)])
+for poly in voronoi_diagram(mp, envelope=e2).geoms:
+    xs, ys = poly.exterior.xy
+    ax.plot(xs, ys, color="black")
+ax.plot(px, py, "k.")
+ax.set_title("enlarged envelope")
+ax.set_aspect("equal")
+
+# smaller, intersected envelope
+ax = axes[1, 0]
+e3 = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
+v = voronoi_diagram(mp)
+clipped = [poly.intersection(e3) for poly in v.geoms]
+for poly in clipped:
+    if not poly.is_empty:
+        xs, ys = poly.exterior.xy
+        ax.plot(xs, ys, color="black")
+ax.plot(px, py, "k.")
+ax.set_title("smaller, intersected envelope")
+ax.set_aspect("equal")
+
+axes[1, 1].axis("off")
+plt.tight_layout()
+plt.show()
+```
+:::
+
 ## Exercise 3.5  {-}
 
 Give the unary measure dimension for geometries POINT Z (0 1 1), LINESTRING Z (0 0 1,1 1 2), and POLYGON Z ((0 0 0,1 0 0,1 1 0,0 0 0))
+
+::: {.panel-tabset}
+## R
 
 ```{r unary measure dimension}
 st_dimension(st_point(c(0,1,1)))
@@ -71,11 +172,27 @@ st_dimension(st_linestring(rbind(c(0,1,1),c(1,1,2))))
 st_dimension(st_polygon(list(rbind(c(0,0,0),c(1,0,0),c(1,1,0),c(0,0,0)))))
 ```
 
+## Python
+
+```{python}
+from shapely import get_dimensions
+from shapely.geometry import Point, LineString, Polygon
+
+print(get_dimensions(Point(0, 1, 1)))
+print(get_dimensions(LineString([(0, 1, 1), (1, 1, 2)])))
+print(get_dimensions(Polygon([(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 0, 0)])))
+```
+:::
+
 (these are all zero-dimensional geometries because they are _points_, irrespective the number of dimensions they're defined in)
 
 ## Exercise 3.6  {-}
 
 Give the DE-9IM relation between LINESTRING(0 0,1 0) and LINESTRING(0.5 0,0.5 1); explain the individual characters.
+
+::: {.panel-tabset}
+## R
+
 ```{r DE-9IM relation}
 line_1 = st_linestring(rbind(c(0,0),c(1,0)))
 line_2 = st_linestring(rbind(c(.5,0),c(.5,1)))
@@ -83,6 +200,29 @@ plot(line_1,col = "green")
 plot(line_2,col = "red", add = TRUE)
 st_relate(line_1, line_2)
 ```
+
+## Python
+
+```{python}
+import matplotlib.pyplot as plt
+from shapely.geometry import LineString
+
+line_1 = LineString([(0, 0), (1, 0)])
+line_2 = LineString([(0.5, 0), (0.5, 1)])
+
+fig, ax = plt.subplots()
+xs, ys = line_1.xy
+ax.plot(xs, ys, color="green")
+xs, ys = line_2.xy
+ax.plot(xs, ys, color="red")
+ax.set_aspect("equal")
+ax.set_title("DE-9IM: F01FF0102")
+plt.show()
+
+print(line_1.relate(line_2))  # F01FF0102
+```
+:::
+
 The DE-9IM relation is F01FF0102
 
 - F   Intersection of green lines interior and red lines interior is empty
@@ -105,6 +245,10 @@ Yes, but I would say that the set may just contain one polygon, because simple f
 ## Exercise 3.8  {-}
 
 For the nc counties in the dataset that comes with R package sf, find the points touched by four counties.
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 # read data
 nc <- st_read(system.file("shape/nc.shp", package="sf"))
@@ -130,6 +274,49 @@ result = st_sfc(points[point_no])
 plot(nc_geom, main = "Points touched by four counties")
 plot(result, add = TRUE, col = "red", pch = 10, cex = 2)
 ```
+
+## Python
+
+```{python}
+import geopandas as gpd
+import itertools
+import matplotlib.pyplot as plt
+
+# read the nc shapefile (copied from the sf R package into data/nc/)
+nc = gpd.read_file("data/nc/nc.shp")
+geom = list(nc.geometry)
+
+# pairwise intersections of counties; keep the resulting points
+pts = []
+for a, b in itertools.combinations(range(len(geom)), 2):
+    inter = geom[a].intersection(geom[b])
+    if inter.is_empty:
+        continue
+    if inter.geom_type == "Point":
+        pts.append(inter)
+    elif inter.geom_type == "GeometryCollection":
+        for g in inter.geoms:
+            if g.geom_type == "Point":
+                pts.append(g)
+
+# deduplicate by coordinates
+uniq = {}
+for p in pts:
+    uniq[(round(p.x, 6), round(p.y, 6))] = p
+
+# keep points touched by exactly four counties
+four = [p for p in uniq.values() if sum(g.touches(p) for g in geom) == 4]
+
+fig, ax = plt.subplots()
+nc.plot(ax=ax, edgecolor="black", facecolor="none")
+for p in four:
+    ax.plot(p.x, p.y, "ro")
+ax.set_title("Points touched by four counties")
+plt.show()
+
+print("number of points:", len(four))
+```
+:::
 
 A more compact way might be to search for points where counties touch
 another county _only_ in a point, which can be found using `st_relate`
@@ -158,6 +345,9 @@ sf_use_s2(s2) # set back
 How would figure 3.6 look like if delta for the y-coordinate was positive?
 Only cells that were fully crossed by the red line would be grey:
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(stars)
 ls = st_sf(a = 2, st_sfc(st_linestring(rbind(c(0.1, 0), c(1, .9)))))
@@ -172,6 +362,33 @@ plot(st_geometry(st_as_sf(grd)), border = 'orange', col = NA,
 plot(r, axes = TRUE, add = TRUE, breaks = "equal") # ALL_TOUCHED=FALSE;
 plot(ls, add = TRUE, col = "red", lwd = 2)
 ```
+
+## Python
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import rasterio
+from rasterio.features import rasterize
+from shapely.geometry import LineString
+
+ls = LineString([(0.1, 0), (1, 0.9)])
+
+# grid 10 x 10 over [0, 1] x [0, 1]; y axis points up
+nx = ny = 10
+transform = rasterio.transform.from_origin(0, 1, 0.1, 0.1)
+r = rasterize([(ls, 1)], out_shape=(ny, nx), transform=transform, all_touched=True)
+
+fig, ax = plt.subplots()
+ax.imshow(r, extent=[0, 1, 0, 1], origin="upper", cmap="Greys", alpha=0.5)
+xs, ys = ls.xy
+ax.plot(xs, ys, color="red", lw=2)
+ax.set_xlim(0, 1)
+ax.set_ylim(0, 1)
+ax.set_title("ALL_TOUCHED=TRUE")
+plt.show()
+```
+:::
 
 The reason is that in this case, _lower_ left corners of grid cells are part
 of the cell, rather than _upper_ left corners.

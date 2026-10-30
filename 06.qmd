@@ -74,6 +74,10 @@ year that the average daily $PM_{10}$ value exceeds 50 $\mu g/m^3$
 This gives a one-dimensional data cube, with dimension "station"
 
 An example for NO2, 2017, using threshold 25, is given below:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 #| code-fold: true
 load("data/ch13.RData")
@@ -85,6 +89,34 @@ library(ggplot2)
 df = as.data.frame(by_year[,1]) # ignore single valued 2018
 ggplot(df, aes(NO2)) + geom_histogram(bins=15) + xlab("# days")
 ```
+
+## Python
+
+```{python}
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# hourly NO2 matrix (8760 hours x 74 stations) and time values,
+# exported from the stars object no2.st in data/ch13.RData
+m = pd.read_csv("data/no2_matrix.csv").to_numpy(dtype=float)
+tm = pd.to_datetime(pd.read_csv("data/no2_time.csv")["x"], format="mixed")
+df = pd.DataFrame(m, index=tm)
+
+# daily means
+a = df.resample("D").mean()
+# threshold
+b = a > 25
+# number of days exceeding the threshold per year
+by_year = b.groupby(a.index.year).sum()
+
+# ignore the single-valued 2018, use the 2017 counts
+counts = by_year.iloc[0]
+plt.hist(counts, bins=15)
+plt.xlabel("# days")
+plt.show()
+```
+:::
 
 ## Exercise 6.5.2  {-}
 
@@ -111,6 +143,10 @@ smallest temporal trends in SST values.
 This gives a two-dimensional data cube (or raster layer: the reclassified trend raster).
 
 An example for SST using only a 9-day time series:
+
+::: {.panel-tabset}
+## R
+
 ```{r eval=TRUE}
 #| code-fold: true
 library(stars)
@@ -148,3 +184,43 @@ tr$LH[tr$lm1 < qq[1]] = -1 # lower than .1-quantile
 tr$LH[tr$lm1 > qq[2]] = 1  # above .9-quantile
 plot(tr["LH"])
 ```
+
+## Python
+
+```{python}
+import xarray as xr
+import numpy as np
+import matplotlib.pyplot as plt
+
+# 9 daily SST rasters (global 0.25deg grid), copied from the starsdata
+# package into data/avhrr/
+x = [f"avhrr-only-v2.{d}.nc" for d in
+     ["19810901","19810902","19810903","19810904","19810905",
+      "19810906","19810907","19810908","19810909"]]
+sst = xr.concat([xr.open_dataset("data/avhrr/" + f)["sst"] for f in x],
+                dim="time").squeeze("zlev", drop=True)
+arr = sst.values  # (time, lat, lon)
+
+# trend (slope of lm(sst ~ 1:9)) per pixel; NA if any value is missing
+X = np.column_stack([np.ones(9), np.arange(1, 10)])
+coef = np.linalg.inv(X.T @ X) @ X.T
+slope_coef = coef[1]
+
+arr_ll = arr.transpose(1, 2, 0)  # (lat, lon, time)
+valid = ~np.isnan(arr_ll).any(axis=2)
+tr = np.full(arr_ll.shape[:2], np.nan)
+tr[valid] = arr_ll[valid] @ slope_coef
+
+# 10% and 90% quantiles
+qq = np.nanquantile(tr, [0.1, 0.9])
+print("quantiles:", qq)
+tr_lh = np.zeros_like(tr)
+tr_lh[tr < qq[0]] = -1  # lower than .1-quantile
+tr_lh[tr > qq[1]] = 1   # above .9-quantile
+
+plt.imshow(tr_lh, origin="upper")
+plt.title("LH: low (<10%) / mid / high (>90%) trend")
+plt.colorbar()
+plt.show()
+```
+:::

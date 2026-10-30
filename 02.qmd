@@ -16,6 +16,9 @@ List three geographic measures that do not have a natural zero origin
 
 Convert the (x, y) point s (10, 2), (-10, -1), (10, -2) and (0, 10) to polar cooridnates
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 cart2polar = function(x, y){
   r = sqrt(x*x + y*y)  # compute r (distance from origin)
@@ -31,9 +34,30 @@ cart2polar(10, -2)
 cart2polar(0, 10)
 ```
 
+## Python
+
+```{python}
+import math
+
+def cart2polar(x, y):
+    r = math.sqrt(x * x + y * y)          # distance from origin
+    phi = math.atan2(y, x)                # angle in rad
+    phi_deg = phi * 180 / math.pi         # angle in deg
+    return (r, phi_deg)
+
+print(cart2polar(10, 2))
+print(cart2polar(-10, -1))
+print(cart2polar(10, -2))
+print(cart2polar(0, 10))
+```
+:::
+
 ## Exercise 2.3 {-}
 
 Convert the polar (r, phi) points (10, 45°), (0, 100°) and (5, 259°) to Cartesian coordinates
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 deg2rad = function(angle_degree) {
@@ -53,9 +77,33 @@ polar2cart(0, 100)
 polar2cart(5, 259)
 ```
 
+## Python
+
+```{python}
+import math
+
+def deg2rad(angle_degree):
+    return angle_degree * math.pi / 180
+
+def polar2cart(r, phi_deg):
+    # phi must be in degrees
+    phi_rad = deg2rad(phi_deg)           # convert phi in degrees to radians
+    x = r * math.cos(phi_rad)
+    y = r * math.sin(phi_rad)
+    return (x, y)
+
+print(polar2cart(10, 45))
+print(polar2cart(0, 100))
+print(polar2cart(5, 259))
+```
+:::
+
 ## Exercise 2.4 {-} 
 
 assuming the Earth is a sphere with a radius of 6371 km, compute for (lambda, phi) points the great circle distance between (10, 10) and (11, 10), between (10, 80)    >and (11, 80), between (10, 10) and (10, 11) and between (10, 80) and (10, 81).
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 distOnSphere = function(l1, phi1, l2, phi2, radius) {
@@ -77,4 +125,33 @@ distOnSphere(10, 80, 11, 80, radius)
 distOnSphere(10, 10, 10, 11, radius)
 distOnSphere(10, 80, 10, 81, radius)
 ```
+
+## Python
+
+```{python}
+import math
+
+def deg2rad(angle_degree):
+    return angle_degree * math.pi / 180
+
+def distOnSphere(l1, phi1, l2, phi2, radius):
+    l1_rad = deg2rad(l1)
+    l2_rad = deg2rad(l2)
+    phi1_rad = deg2rad(phi1)
+    phi2_rad = deg2rad(phi2)
+
+    theta = math.acos(
+        math.sin(phi1_rad) * math.sin(phi2_rad) +
+        math.cos(phi1_rad) * math.cos(phi2_rad) * math.cos(abs(l1_rad - l2_rad))
+    )
+    return radius * theta
+
+radius = 3671
+print(distOnSphere(10, 10, 11, 10, radius))
+print(distOnSphere(10, 80, 11, 80, radius))
+print(distOnSphere(10, 10, 10, 11, radius))
+print(distOnSphere(10, 80, 10, 81, radius))
+```
+:::
+
 Unit of all results are kilometers.
