@@ -61,7 +61,7 @@ plt.show()
     + geom_map(box, fill=None)
     + geom_point(aes(x="x", y="y", size="marks"), data=ll, shape="o", fill="none")
     + theme_minimal()
-)
+).show()
 ```
 :::
 

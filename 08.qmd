@@ -111,7 +111,7 @@ b = gpd.GeoDataFrame(geometry=first.to_crs(aeqd).buffer(10000).to_crs(nc.crs).bo
     + geom_map(b, color="red", fill=None)
     + scale_fill_cmap(cmap_name="Blues")
     + theme_minimal()
-)
+).show()
 ```
 :::
 

@@ -316,7 +316,7 @@ df = pd.DataFrame({"band": np.repeat(names, p1[0].size), "value": p1.ravel()})
     ggplot(df, aes(x="value"))
     + geom_histogram(bins=30)
     + facet_wrap("band")
-)
+).show()
 ```
 :::
 
