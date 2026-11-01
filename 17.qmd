@@ -1,32 +1,132 @@
 # Spatial econometrics models
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 load("data/ch16.RData")
 library(spdep)
 ```
 
+## Python
+
+```{python}
+import warnings
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import statsmodels.formula.api as smf
+import matplotlib.pyplot as plt
+import spreg
+from patsy import dmatrices
+from scipy import optimize as so, sparse
+from scipy.stats import chi2, norm
+from scipy.spatial.distance import cdist
+from libpysal import graph
+warnings.filterwarnings("ignore")
+
+# the objects of chapter 16 that are used here, recomputed from the exported data:
+# properties_in_dd, f_pr, f_pr_md and the symmetrised k = 4 neighbours pr_nb_k4s
+depmunic = gpd.read_file("data/athens_depmunic.gpkg")
+properties = gpd.read_file("data/athens_properties.gpkg")
+depmunic["popdens"] = depmunic["population"] / (10000 * depmunic["area"])
+depmunic["foreigners"] = 100 * depmunic["pop_rest"] / depmunic["population"]
+depmunic["prgreensp"] = depmunic["greensp"] / (10000 * depmunic["area"])
+properties_in_dd = gpd.sjoin(properties, depmunic, how="left", predicate="within").sort_index()
+
+f_pr = "prpsqm ~ size + age + dist_metro"
+f_pr_md = f_pr + " + foreigners + prgreensp + popdens + museums + airbnb"
+
+xy = np.column_stack([properties.geometry.x, properties.geometry.y])
+D = cdist(xy, xy)
+np.fill_diagonal(D, np.inf)
+nn = np.argsort(D, axis=1, kind="stable")[:, :4]   # ties between coincident points: row order
+A = sparse.csr_matrix((np.ones(nn.size), (np.repeat(np.arange(len(xy)), 4), nn.ravel())),
+                      shape=(len(xy), len(xy)))
+pr_nb_k4s = graph.Graph.from_sparse(((A + A.T) > 0).astype(float), ids=properties["id"].to_numpy())
+```
+:::
+
 ## Exercise 17.1 {-}
 
 First create a spatial weights object from the `k=4` symmetrized neighbour object:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 library(spatialreg)
 lw <- spdep::nb2listw(pr_nb_k4s)
 ```
 
+## Python
+
+```{python}
+lw = pr_nb_k4s.transform("r").to_W()   # row-standardised spatial weights
+Wd = lw.full()[0]                      # as a dense matrix, used below
+Bk = (Wd > 0).astype(float)            # binary neighbours
+
+xn = ["size", "age", "dist_metro"]                                           # f_pr
+xm = xn + ["foreigners", "prgreensp", "popdens", "museums", "airbnb"]       # f_pr_md
+y = properties_in_dd["prpsqm"].to_numpy().reshape(-1, 1)
+n = len(y)
+```
+:::
+
 Fit a linear model to the lower-level data; all the included variables seem worth retaining:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 LM_pr <- lm(f_pr, data=properties_in_dd)
 summary(LM_pr)
 ```
+
+## Python
+
+```{python}
+LM_pr = smf.ols(f_pr, data=properties_in_dd).fit()
+LM_pr.summary()
+```
+:::
+
 However, there is strong residual autocorrelation:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 library(spdep)
 lm.morantest(LM_pr, lw)
 ```
+
+## Python
+
+```{python}
+def lm_morantest(model, B=Bk):
+    """Moran's I test for linear model residuals (Cliff & Ord), one-sided
+    (alternative "greater"), like spdep::lm.morantest(); B: binary neighbours"""
+    y_, X = model.model.endog, model.model.exog
+    Wr = B / B.sum(1, keepdims=True); U = 0.5 * (Wr + Wr.T); N, p = X.shape
+    S0 = U.sum(); S1 = 0.5 * ((2 * U) ** 2).sum(); XtXinv = np.linalg.inv(X.T @ X)
+    u = y_ - X @ XtXinv @ X.T @ y_
+    I = N / S0 * (u @ U @ u) / (u @ u)
+    Z_ = U @ X; C3 = XtXinv @ (X.T @ Z_); trA = np.trace(C3)
+    EI = -(N * trA) / ((N - p) * S0)
+    VI = (N * N / (S0 * S0 * (N - p) * (N - p + 2))) * (
+        S1 + 2 * np.trace(C3 @ C3) - np.trace(4 * XtXinv @ (Z_.T @ Z_)) - 2 * trA ** 2 / (N - p))
+    z = (I - EI) / np.sqrt(VI)
+    return pd.Series(dict(I=I, expectation=EI, variance=VI, z=z, p_value=norm.sf(z)))
+
+lm_morantest(LM_pr)
+```
+:::
+
 Robust (adjusted) Lagrange multiplier tests (Rao's score tests) suggest that the fitted model should include a spatial autoregressive process in the residuals, but not in the response:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 if (packageVersion("spdep") < "1.3.3") {
@@ -35,18 +135,60 @@ if (packageVersion("spdep") < "1.3.3") {
   spdep::lm.RStests(LM_pr, lw, test=c("adjRSerr", "adjRSlag"))
 }
 ```
+
+## Python
+
+```{python}
+def rs_tests(model, w=lw):
+    """adjusted Rao score tests for spatial error and lag dependence (the robust LM tests
+    of Anselin et al.), via spreg's spatial diagnostics for OLS"""
+    o = spreg.OLS(model.model.endog.reshape(-1, 1), model.model.exog[:, 1:],  # spreg adds the constant
+                  w=w, spat_diag=True)
+    return pd.DataFrame({"statistic": [o.rlm_error[0], o.rlm_lag[0]],
+                         "p_value": [o.rlm_error[1], o.rlm_lag[1]]}, index=["adjRSerr", "adjRSlag"])
+
+rs_tests(LM_pr)
+```
+:::
+
 Adding in the copied out municipality department level variables, we see that they do not seem to be worth retaining (unless there are good reasons for doing so); they do however improve model fit:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 LM_pr_md <- lm(f_pr_md, data=properties_in_dd)
 summary(LM_pr_md)
 ```
+
+## Python
+
+```{python}
+LM_pr_md = smf.ols(f_pr_md, data=properties_in_dd).fit()
+LM_pr_md.summary()
+```
+:::
+
 The pre-test results are similar to those for the properties-only variables:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 lm.morantest(LM_pr_md, lw)
 ```
+
+## Python
+
+```{python}
+lm_morantest(LM_pr_md)
+```
+:::
+
 and the LM tests continue to indicate an omitted spatial process in the residual rather than the response:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 if (packageVersion("spdep") < "1.3.3") {
@@ -56,18 +198,52 @@ if (packageVersion("spdep") < "1.3.3") {
 }
 ```
 
+## Python
+
+```{python}
+rs_tests(LM_pr_md)
+```
+:::
+
 ## Exercise 17.2 {-}
 
 We may update the formula for the properties-only model to include municipality department "fixed effects", dummy variables:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 LM_pr_fx <- lm(update(f_pr, . ~ . + num_dep), data=properties_in_dd)
 summary(LM_pr_fx)
 ```
+
+## Python
+
+```{python}
+LM_pr_fx = smf.ols(f_pr + " + C(num_dep)", data=properties_in_dd).fit()  # num_dep is a factor
+LM_pr_fx.summary()
+```
+:::
+
 The pre-test output is similar to that for the models considered above:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 spdep::lm.morantest(LM_pr_fx, lw)
 ```
+
+## Python
+
+```{python}
+lm_morantest(LM_pr_fx)
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 if (packageVersion("spdep") < "1.3.3") {
   spdep::lm.LMtests(LM_pr_fx, lw, test=c("RLMerr", "RLMlag"))
@@ -75,16 +251,52 @@ if (packageVersion("spdep") < "1.3.3") {
   spdep::lm.RStests(LM_pr_fx, lw, test=c("adjRSerr", "adjRSlag"))
 }
 ```
+
+## Python
+
+```{python}
+rs_tests(LM_pr_fx)
+```
+:::
+
 We may fit a regimes model, where separate regression coefficients are calculated for interactions between the municipality department dummies and the included variables; `size` and `dist_metro` only retian influence for municipality departments 1 and 2:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 LM_pr_reg <- lm(update(f_pr, . ~ num_dep/(0 + .)), data=properties_in_dd)
 summary(LM_pr_reg)
 ```
+
+## Python
+
+```{python}
+# regimes: separate intercepts and coefficients for each municipality department
+LM_pr_reg = smf.ols("prpsqm ~ C(num_dep) + C(num_dep):size + C(num_dep):age + C(num_dep):dist_metro",
+                    data=properties_in_dd).fit()
+LM_pr_reg.summary()
+```
+:::
+
 The pre-test results are now changed, with possible spatial processes in both residuals and response being indicated:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 spdep::lm.morantest(LM_pr_reg, lw)
 ```
+
+## Python
+
+```{python}
+lm_morantest(LM_pr_reg)
+```
+:::
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 if (packageVersion("spdep") < "1.3.3") {
@@ -94,15 +306,37 @@ if (packageVersion("spdep") < "1.3.3") {
 }
 ```
 
+## Python
+
+```{python}
+rs_tests(LM_pr_reg)
+```
+:::
+
 ## Exercise 17.3 {-}
 
 Fitting models initially by maximum likelihood (GMM may also be used), we pre-compute the eigenvalues:
+
+::: {.panel-tabset}
+## R
 
 ```{r, cache=TRUE}
 eigs <- eigenw(lw)
 ```
 
+## Python
+
+```{python}
+# eigenvalues of the spatial weights matrix (real and complex), used by the ML fits below
+eigs = np.linalg.eigvals(Wd)
+(eigs.real.min(), eigs.real.max())
+```
+:::
+
 The strong residual autocorrelation is picked up by the spatial coefficient, but unfortunately the Hausman test shows strong mis-specification:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 SEM_pr <- errorsarlm(f_pr, data=properties_in_dd, listw=lw, Durbin=FALSE,
@@ -110,16 +344,67 @@ SEM_pr <- errorsarlm(f_pr, data=properties_in_dd, listw=lw, Durbin=FALSE,
 summary(SEM_pr, Hausman=TRUE)
 ```
 
+## Python
+
+```{python}
+def hausman_test(y_, X, W, lam, s2):
+    """spatial Hausman test of OLS against the spatial error model, as spatialreg::Hausman.test().
+    Vo follows spatialreg's Hcov, which uses A A with A = (I - lambda W)^-1 (not A A'),
+    for which the statistic need not be positive"""
+    y_ = np.asarray(y_).ravel(); B = np.eye(len(y_)) - lam * W; A = np.linalg.inv(B)
+    R = np.linalg.inv(X.T @ X); Xs, ys = B @ X, B @ y_
+    d = R @ X.T @ y_ - np.linalg.solve(Xs.T @ Xs, Xs.T @ ys)    # OLS minus SEM coefficients
+    Vo = s2 * (R @ X.T @ A @ A @ X @ R); Vs = s2 * np.linalg.inv(Xs.T @ Xs)
+    stat = float(d @ np.linalg.solve(Vo - Vs, d))
+    return pd.Series(dict(statistic=stat, df=len(d), p_value=chi2.sf(abs(stat), len(d))))
+
+SEM_pr = spreg.ML_Error(y, properties_in_dd[xn].to_numpy(), w=lw, name_x=xn, name_y="prpsqm")
+print(SEM_pr.summary)
+X_pr = np.column_stack([np.ones(n), properties_in_dd[xn].to_numpy()])
+hausman_test(y, X_pr, Wd, SEM_pr.lam, SEM_pr.sig2[0, 0])
+```
+:::
+
 The Hausman test compares the OLS and SEM coefficient estimates and their standard errors, assessing whether their distributions overlap sufficiently to suggest the absence of major mis-specification:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 (LM_coefs <- coef(summary(LM_pr)))
 ```
 
+## Python
+
+```{python}
+LM_coefs = pd.DataFrame({"Estimate": LM_pr.params, "Std. Error": LM_pr.bse,
+                         "t value": LM_pr.tvalues, "Pr(>|t|)": LM_pr.pvalues})
+LM_coefs
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 (SEM_coefs <- coef(summary(SEM_pr)))
 ```
+
+## Python
+
+```{python}
+SEM_coefs = pd.DataFrame({"Estimate": SEM_pr.betas[:-1, 0], "Std. Error": SEM_pr.std_err[:-1],
+                          "z value": [z for z, _ in SEM_pr.z_stat[:-1]],
+                          "Pr(>|z|)": [p_ for _, p_ in SEM_pr.z_stat[:-1]]},
+                         index=["Intercept"] + xn)
+SEM_coefs
+```
+:::
+
 The tables are harder to read than the figure, which shows that the coefficient estimates do differ a lot for two variables, somewhat for the intercept, and little for one variable, but where the ML standard error estimate under usual assumptions crosses zero:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 opar <- par(mfrow=c(2,2))
@@ -146,26 +431,109 @@ abline(v=SEM_coefs[4,1], lwd=2, col="orange")
 curve(dnorm(x, mean=SEM_coefs[4,1], sd=SEM_coefs[4,2]), add=TRUE, col="orange", lwd=2)
 par(opar)
 ```
+
+## Python
+
+```{python}
+limits = [((1400, 2500), 0.006), ((1.5, 7), 1.1), ((-28, -13), 0.4), ((-0.9, 0.3), 6)]
+fig, axes = plt.subplots(2, 2, figsize=(9, 6))
+for i, (ax, ((lo, hi), top)) in enumerate(zip(axes.ravel(), limits)):
+    g = np.linspace(lo, hi, 400)
+    m1, s1 = LM_coefs.iloc[i, 0], LM_coefs.iloc[i, 1]
+    m2, s2_ = SEM_coefs.iloc[i, 0], SEM_coefs.iloc[i, 1]
+    ax.plot(g, norm.pdf(g, m1, s1), color="black", label="LM")
+    ax.axvline(m1, color="black", lw=1)
+    ax.plot(g, norm.pdf(g, m2, s2_), color="orange", lw=2, label="SEM")
+    ax.axvline(m2, color="orange", lw=2)
+    ax.set(xlim=(lo, hi), ylim=(0, top), xlabel=LM_coefs.index[i])
+axes[0, 0].legend(loc="upper right", frameon=False)
+plt.tight_layout()
+plt.show()
+```
+:::
+
 The Hausman test also suggests mis-specification for the SEM model augmented with the municipality department level variables:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 SEM_pr_md <- errorsarlm(f_pr_md, data=properties_in_dd, listw=lw, Durbin=FALSE,
     control=list(pre_eig=eigs))
 summary(SEM_pr_md, Hausman=TRUE)
 ```
+
+## Python
+
+```{python}
+X_md = np.column_stack([np.ones(n), properties_in_dd[xm].to_numpy()])
+SEM_pr_md = spreg.ML_Error(y, properties_in_dd[xm].to_numpy(), w=lw, name_x=xm, name_y="prpsqm")
+print(SEM_pr_md.summary)
+hausman_test(y, X_md, Wd, SEM_pr_md.lam, SEM_pr_md.sig2[0, 0])
+```
+:::
+
 Extending to the SDEM models, and reporting impacts:
+
+::: {.panel-tabset}
+## R
 
 ```{r, cache=TRUE}
 SDEM_pr <- errorsarlm(f_pr, data=properties_in_dd, listw=lw, Durbin=TRUE,
     control=list(pre_eig=eigs))
 summary(impacts(SDEM_pr), short=TRUE, zstats=TRUE)
 ```
+
+## Python
+
+```{python}
+def impacts_slx(coef, cov, names, kx):
+    """direct (own), indirect (lagged X) and total impacts of SLX and SDEM models, with standard
+    errors from the coefficient covariance (the "glht" impacts of spatialreg)"""
+    rows = []
+    for j, nm in enumerate(names):
+        i_b, i_t = 1 + j, 1 + kx + j
+        b, t = coef[i_b], coef[i_t]
+        v_b, v_t, c = cov[i_b, i_b], cov[i_t, i_t], cov[i_b, i_t]
+        rows.append(dict(variable=nm, direct=b, indirect=t, total=b + t,
+                         se_direct=v_b ** .5, se_indirect=v_t ** .5, se_total=(v_b + v_t + 2 * c) ** .5))
+    out = pd.DataFrame(rows).set_index("variable")
+    for c in ["direct", "indirect", "total"]:
+        out["z_" + c] = out[c] / out["se_" + c]
+        out["p_" + c] = 2 * norm.sf(abs(out["z_" + c]))
+    return out
+
+# Durbin = TRUE: spreg's slx_lags = 1 adds the spatially lagged X variables
+SDEM_pr = spreg.ML_Error(y, properties_in_dd[xn].to_numpy(), w=lw, slx_lags=1,
+                         name_x=xn, name_y="prpsqm")
+impacts_slx(SDEM_pr.betas.ravel()[:-1], SDEM_pr.vm[:-1, :-1], xn, len(xn))
+```
+:::
+
 we have Hausman test results still indicating strong mis-specification:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 Hausman.test(SDEM_pr)
 ```
+
+## Python
+
+```{python}
+def augmented(names):  # intercept, X and the spatially lagged X
+    Xv = properties_in_dd[names].to_numpy()
+    return np.column_stack([np.ones(n), Xv, Wd @ Xv])
+
+hausman_test(y, augmented(xn), Wd, SDEM_pr.lam, SDEM_pr.sig2[0, 0])
+```
+:::
+
 The same applies to the properties variables augmented with the municipality department level variables:
+
+::: {.panel-tabset}
+## R
 
 ```{r, cache=TRUE}
 SDEM_pr_md <- errorsarlm(f_pr_md, data=properties_in_dd, listw=lw, Durbin=TRUE,
@@ -173,19 +541,66 @@ SDEM_pr_md <- errorsarlm(f_pr_md, data=properties_in_dd, listw=lw, Durbin=TRUE,
 summary(impacts(SDEM_pr_md), short=TRUE, zstats=TRUE)
 ```
 
+## Python
+
+```{python}
+SDEM_pr_md = spreg.ML_Error(y, properties_in_dd[xm].to_numpy(), w=lw, slx_lags=1,
+                            name_x=xm, name_y="prpsqm")
+impacts_slx(SDEM_pr_md.betas.ravel()[:-1], SDEM_pr_md.vm[:-1, :-1], xm, len(xm))
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 Hausman.test(SDEM_pr_md)
 ```
+
+## Python
+
+```{python}
+hausman_test(y, augmented(xm), Wd, SDEM_pr_md.lam, SDEM_pr_md.sig2[0, 0])
+```
+:::
+
 Reaching out to the SLX models does not help, because although - as with the SDEM models - the indirect impacts (coefficients on lagged $X$ variables) are large, so including lagged $X$ variables especially at the properties level seems sensible, there is serious residual autocorrelation, and now the pre-test strategy points to a missing spatial process in the response:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 SLX_pr <- lmSLX(f_pr, data=properties_in_dd, listw=lw, Durbin=TRUE)
 summary(impacts(SLX_pr), short=TRUE, zstats=TRUE)
 ```
 
+## Python
+
+```{python}
+SLX_pr = spreg.OLS(y, properties_in_dd[xn].to_numpy(), w=lw, slx_lags=1,
+                   name_x=xn, name_y="prpsqm")
+impacts_slx(SLX_pr.betas.ravel(), SLX_pr.vm, xn, len(xn))
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 spdep::lm.morantest(SLX_pr, lw)
 ```
+
+## Python
+
+```{python}
+# the SLX model as a linear model of y on X and the lagged X
+SLX_lm = smf.ols("y ~ 0 + X", data={"y": y.ravel(), "X": augmented(xn)}).fit()
+lm_morantest(SLX_lm)
+```
+:::
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 if (packageVersion("spdep") < "1.3.3") {
@@ -195,15 +610,48 @@ if (packageVersion("spdep") < "1.3.3") {
 }
 ```
 
+## Python
+
+```{python}
+rs_tests(SLX_lm)
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 SLX_pr_md <- lmSLX(f_pr_md, data=properties_in_dd, listw=lw, Durbin=TRUE)
 summary(impacts(SLX_pr_md), short=TRUE, zstats=TRUE)
 ```
 
+## Python
+
+```{python}
+SLX_pr_md = spreg.OLS(y, properties_in_dd[xm].to_numpy(), w=lw, slx_lags=1,
+                      name_x=xm, name_y="prpsqm")
+impacts_slx(SLX_pr_md.betas.ravel(), SLX_pr_md.vm, xm, len(xm))
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 spdep::lm.morantest(SLX_pr_md, lw)
 ```
 
+## Python
+
+```{python}
+SLX_lm_md = smf.ols("y ~ 0 + X", data={"y": y.ravel(), "X": augmented(xm)}).fit()
+lm_morantest(SLX_lm_md)
+```
+:::
+
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 if (packageVersion("spdep") < "1.3.3") {
@@ -213,60 +661,246 @@ if (packageVersion("spdep") < "1.3.3") {
 }
 ```
 
+## Python
+
+```{python}
+rs_tests(SLX_lm_md)
+```
+:::
+
 So on balance, the pre-test strategy has not worked out too well; it is unclear what is missing in the model.
 
 ## Exercise 17.4 {-}
 
 Turning to estimating the general nested model first, followed by excluding the Durbin (spatially lagged $X$) variables, a likelihood ratio test shows that the spatially lagged $X$ variables should be retained in the model:
 
+::: {.panel-tabset}
+## R
+
 ```{r, cache=TRUE}
 GNM_pr <- sacsarlm(f_pr, data=properties_in_dd, listw=lw, Durbin=TRUE,
     control=list(pre_eig1=eigs, pre_eig2=eigs))
 ```
+
+## Python
+
+```{python}
+# spreg has ML estimation of spatial error, lag and Durbin models, but not of the SAC and
+# general nested models (GNM). This is a compact implementation of ML estimation by maximising the
+# concentrated log-likelihood over rho and lambda, with the log-determinants from the
+# eigenvalues of W (pre_eig in R); standard errors come from the numerical Hessian of
+# the full log-likelihood, so they differ somewhat from the analytical ones of spatialreg
+def logdet(r, ev):  # ln|I - r W|
+    return np.log(np.abs(1 - r * ev)).sum()
+
+def sac_loglik(theta, y_, X, W, ev, rho, lam):
+    k = X.shape[1]; b = theta[:k]
+    r = theta[k] if rho else 0.0; l = theta[k + 1] if lam else 0.0; s2 = theta[k + 2]
+    res = (y_ - r * (W @ y_)) - X @ b
+    e = res - l * (W @ res)
+    return -len(y_) / 2 * np.log(2 * np.pi * s2) - e @ e / (2 * s2) + logdet(r, ev) + logdet(l, ev)
+
+def sac_concentrated(r, l, y_, X, W, ev):  # ML estimates of beta and sigma^2 given rho, lambda
+    ys = (y_ - r * (W @ y_)) - l * (W @ (y_ - r * (W @ y_)))
+    Xs = X - l * (W @ X)
+    b = np.linalg.lstsq(Xs, ys, rcond=None)[0]
+    s2 = ((ys - Xs @ b) ** 2).mean()
+    return b, s2
+
+def num_hessian(f, x0, h=1e-4):
+    k = len(x0); H = np.zeros((k, k)); st = h * np.maximum(1.0, np.abs(x0))
+    for i in range(k):
+        for j in range(i, k):
+            ei = np.zeros(k); ej = np.zeros(k); ei[i] = st[i]; ej[j] = st[j]
+            H[i, j] = H[j, i] = (f(x0 + ei + ej) - f(x0 + ei - ej) - f(x0 - ei + ej) + f(x0 - ei - ej)) / (4 * st[i] * st[j])
+    return H
+
+def _put(theta, idx, t):
+    out = theta.copy(); out[idx] = t
+    return out
+
+def fit_sac(variables, durbin, rho=True, lam=True):
+    """SAC (durbin = []) or GNM (durbin = names of the variables with lagged X)"""
+    Xv = properties_in_dd[variables].to_numpy()
+    X = np.column_stack([np.ones(n), Xv] + ([Wd @ properties_in_dd[durbin].to_numpy()] if durbin else []))
+    y_ = y.ravel(); lo = 1 / eigs.real.min()
+    def nll(p):
+        r, l = (p[0] if rho else 0.0), (p[1] if lam else 0.0)
+        b, s2 = sac_concentrated(r, l, y_, X, Wd, eigs)
+        return -sac_loglik(np.concatenate([b, [r, l, s2]]), y_, X, Wd, eigs, rho, lam)
+    best = None
+    for start in [(0.5, 0.5), (0.8, -0.8), (-0.3, 0.3), (0.0, 0.0)]:
+        res = so.minimize(nll, start, method="L-BFGS-B", bounds=[(lo + 1e-3, 0.999)] * 2)
+        if best is None or res.fun < best.fun:
+            best = res
+    r, l = (best.x[0] if rho else 0.0), (best.x[1] if lam else 0.0)
+    b, s2 = sac_concentrated(r, l, y_, X, Wd, eigs)
+    theta = np.concatenate([b, [r, l, s2]])
+    free = np.array([True] * X.shape[1] + [rho, lam, True])
+    idx = np.flatnonzero(free)
+    H = num_hessian(lambda t: sac_loglik(_put(theta, idx, t), y_, X, Wd, eigs, rho, lam), theta[idx])
+    cov = np.linalg.inv(-H)
+    names = ["(Intercept)"] + variables + ["lag." + d for d in durbin]
+    return dict(theta=theta, free=free, cov=cov, idx=idx, names=names, variables=variables, durbin=durbin,
+                rho=r, lam=l, s2=s2, loglik=sac_loglik(theta, y_, X, Wd, eigs, rho, lam), df=int(free.sum()),
+                se=np.sqrt(np.diag(cov)))
+
+def sac_table(fit):
+    k = len(fit["names"])
+    tab = pd.DataFrame({"Estimate": fit["theta"][:k], "Std. Error": fit["se"][:k]}, index=fit["names"])
+    tab["z value"] = tab["Estimate"] / tab["Std. Error"]
+    print(f"rho: {fit['rho']:.4f} (se {fit['se'][k]:.4f}), lambda: {fit['lam']:.4f} (se {fit['se'][k + 1]:.4f})")
+    print(f"log likelihood: {fit['loglik']:.3f}, df: {fit['df']}")
+    return tab
+
+GNM_pr = fit_sac(xn, xn)
+sac_table(GNM_pr)
+```
+:::
+
+::: {.panel-tabset}
+## R
 
 ```{r, cache=TRUE}
 SARAR_pr <- sacsarlm(f_pr, data=properties_in_dd, listw=lw, 
     control=list(pre_eig1=eigs, pre_eig2=eigs))
 ```
 
+## Python
+
+```{python}
+SARAR_pr = fit_sac(xn, [])
+SARAR_pr["loglik"], SARAR_pr["df"]
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 lmtest::lrtest(SARAR_pr, GNM_pr)
 ```
+
+## Python
+
+```{python}
+def lrtest(m0, m1):
+    """likelihood ratio test of two nested models (each a dict with loglik and df)"""
+    stat = 2 * (m1["loglik"] - m0["loglik"]); df = m1["df"] - m0["df"]
+    return pd.DataFrame({"#Df": [m0["df"], m1["df"]], "LogLik": [m0["loglik"], m1["loglik"]],
+                         "Df": [np.nan, df], "Chisq": [np.nan, stat],
+                         "Pr(>Chisq)": [np.nan, chi2.sf(stat, df)]}, index=["model 1", "model 2"])
+
+lrtest(SARAR_pr, GNM_pr)
+```
+:::
+
 Again using a likelihood ratio test, the GNM model outperforms the SDEM model:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 lmtest::lrtest(SDEM_pr, GNM_pr)
 ```
+
+## Python
+
+```{python}
+def ll(m):  # log likelihood and number of parameters (coefficients, spatial parameter(s), sigma^2) of spreg models
+    return dict(loglik=float(m.logll), df=len(m.betas) + 1)
+
+lrtest(ll(SDEM_pr), GNM_pr)
+```
+:::
+
+::: {.panel-tabset}
+## R
 
 ```{r, cache=TRUE}
 SDM_pr <- lagsarlm(f_pr, data=properties_in_dd, listw=lw, Durbin=TRUE,
     control=list(pre_eig=eigs))
 ```
 
+## Python
+
+```{python}
+SDM_pr = spreg.ML_Lag(y, properties_in_dd[xn].to_numpy(), w=lw, slx_lags=1,
+                      name_x=xn, name_y="prpsqm")
+ll(SDM_pr)
+```
+:::
+
 as is also the case with the SDM model:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 lmtest::lrtest(SDM_pr, GNM_pr)
 ```
+
+## Python
+
+```{python}
+lrtest(ll(SDM_pr), GNM_pr)
+```
+:::
+
 and the SLX model:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 lmtest::lrtest(SLX_pr, GNM_pr)
 ```
 
+## Python
+
+```{python}
+lrtest(ll(SLX_pr), GNM_pr)
+```
+:::
+
 Is the inclusion of the municipality department level variables in the GNM model justified?
+
+::: {.panel-tabset}
+## R
 
 ```{r, cache=TRUE}
 GNM_pr_md <- sacsarlm(f_pr_md, data=properties_in_dd, listw=lw, Durbin=TRUE,
     control=list(pre_eig1=eigs, pre_eig2=eigs))
 ```
 
+## Python
+
+```{python}
+GNM_pr_md = fit_sac(xm, xm)
+GNM_pr_md["loglik"], GNM_pr_md["df"]
+```
+:::
+
 No, not really:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 lmtest::lrtest(GNM_pr, GNM_pr_md)
 ```
+
+## Python
+
+```{python}
+lrtest(GNM_pr, GNM_pr_md)
+```
+:::
+
 If we drop the municipality department level variables from the Durbin term, we lose fewer degrees of freedom, so preferring the model including the municipality department level variables:
+
+::: {.panel-tabset}
+## R
 
 ```{r, cache=TRUE}
 GNM_pr_md1 <- sacsarlm(f_pr_md, data=properties_in_dd, listw=lw, 
@@ -274,34 +908,122 @@ GNM_pr_md1 <- sacsarlm(f_pr_md, data=properties_in_dd, listw=lw,
     control=list(pre_eig1=eigs, pre_eig2=eigs))
 ```
 
+## Python
+
+```{python}
+GNM_pr_md1 = fit_sac(xm, xn)  # Durbin = ~ size + age + dist_metro
+GNM_pr_md1["loglik"], GNM_pr_md1["df"]
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 lmtest::lrtest(GNM_pr, GNM_pr_md1)
 ```
+
+## Python
+
+```{python}
+lrtest(GNM_pr, GNM_pr_md1)
+```
+:::
+
 Unfortunately, impacts are depressing here:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 trs <- trW(as(lw, "CsparseMatrix"))
 i_GNM_pr_md1 <- impacts(GNM_pr_md1, tr=trs, R=2000)
 summary(i_GNM_pr_md1, short=TRUE, zstats=TRUE)
 ```
+
+## Python
+
+```{python}
+def impacts_sac(fit, R=2000, seed=4807):
+    """direct, indirect and total impacts of a GNM, with simulation based standard errors;
+    the traces of the powers of W follow from the eigenvalues, so no trW() is needed"""
+    names, durbin = fit["variables"], fit["durbin"]; kx = len(fit["names"])
+    k = len(names); sel = list(range(kx)) + [kx]            # coefficients and rho
+    mean, cov = fit["theta"][sel], fit["cov"][np.ix_(sel, sel)]
+    def one(p):
+        b, r = p[:kx], p[kx]
+        trS = (1 / (1 - r * eigs)).real.sum(); trSW = (eigs / (1 - r * eigs)).real.sum()
+        out = []
+        for j, nm in enumerate(names):
+            bb = b[1 + j]; tt = b[1 + k + durbin.index(nm)] if nm in durbin else 0.0
+            d = (bb * trS + tt * trSW) / n; tot = (bb + tt) / (1 - r)
+            out.append((d, tot - d, tot))
+        return np.array(out)
+    est = one(mean)
+    sims = np.array([one(p) for p in np.random.default_rng(seed).multivariate_normal(mean, cov, R)])
+    se = sims.std(axis=0, ddof=1); z = est / se; cols = ["direct", "indirect", "total"]
+    return pd.concat({"impact": pd.DataFrame(est, index=names, columns=cols),
+                      "se": pd.DataFrame(se, index=names, columns=cols),
+                      "z": pd.DataFrame(z, index=names, columns=cols),
+                      "p": pd.DataFrame(2 * norm.sf(abs(z)), index=names, columns=cols)}, axis=1)
+
+impacts_sac(GNM_pr_md1)
+```
+:::
+
 The values and standard errors of the spatial coefficients suggest numerical problems in finding an optimum where the two coefficients are equally strong but with opposing signs:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 c("response"=GNM_pr_md1$rho, "response se"=GNM_pr_md1$rho.se, "residual"=GNM_pr_md1$lambda, "residual se"=GNM_pr_md1$lambda.se)
 ```
 
+## Python
+
+```{python}
+k_ = len(GNM_pr_md1["names"])
+pd.Series({"response": GNM_pr_md1["rho"], "response se": GNM_pr_md1["se"][k_],
+          "residual": GNM_pr_md1["lam"], "residual se": GNM_pr_md1["se"][k_ + 1]})
+```
+:::
+
 
 If we fall back on the properties level only GNM, total impacts are only significant in conventional terms for `size`:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 i_GNM_pr <- impacts(GNM_pr, tr=trs, R=2000)
 summary(i_GNM_pr, short=TRUE, zstats=TRUE)
 ```
+
+## Python
+
+```{python}
+impacts_sac(GNM_pr)
+```
+:::
+
 The same problem occurs without the municipality department level variables; the impacts are being driven by the large spatial coefficient on the lagged response:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 c("response"=GNM_pr$rho, "response se"=GNM_pr$rho.se, "residual"=GNM_pr$lambda, "residual se"=GNM_pr$lambda.se)
 ```
+
+## Python
+
+```{python}
+k_ = len(GNM_pr["names"])
+pd.Series({"response": GNM_pr["rho"], "response se": GNM_pr["se"][k_],
+          "residual": GNM_pr["lam"], "residual se": GNM_pr["se"][k_ + 1]})
+```
+:::
 
 ## Exercise 17.5 {-}
 

@@ -5,6 +5,9 @@
 
 The archived **HSAR** package includes an upper level polygon support municipality department data set, ans a lower level property data set. Both are `"sf"` objects, in the same projected CRS, provided locally.  
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(sf)
 #library(HSAR)
@@ -24,60 +27,201 @@ depmunic$foreigners <- 100 * depmunic$pop_rest/ depmunic$population
 depmunic$prgreensp <- depmunic$greensp/ (10000*depmunic$area)
 ```
 
+## Python
+
+```{python}
+import warnings
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import statsmodels.formula.api as smf
+from scipy.stats import chi2, norm
+from scipy.spatial.distance import cdist
+from scipy import sparse
+from libpysal import graph
+import esda
+
+# depmunic and properties from the R package spData (>= 2.2.1), exported to GeoPackage
+depmunic = gpd.read_file("data/athens_depmunic.gpkg")
+properties = gpd.read_file("data/athens_properties.gpkg")
+# note: use depmunic["area"], not depmunic.area (which is the geometry area)
+depmunic["popdens"] = depmunic["population"] / (10000 * depmunic["area"])
+depmunic["foreigners"] = 100 * depmunic["pop_rest"] / depmunic["population"]
+depmunic["prgreensp"] = depmunic["greensp"] / (10000 * depmunic["area"])
+```
+:::
+
 The vignette `PropertiesAthens.Rmd` can be extracted from the [archived HSAR package](https://cran.r-project.org/src/contrib/Archive/HSAR/HSAR_0.5.1.tar.gz), and can be run and viewed ("Knit") in rstudio by replacing on line 18 the command `library(HSAR)` with `library(Matrix)`.
 
 In the vignette, two upper-level variables are added to the six already present, and we change the green space variable scaling to avoid numerical issues in calculating coefficient standard errors.
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 summary(depmunic)
 ```
+
+## Python
+
+```{python}
+depmunic.drop(columns="geometry").describe()
+```
+:::
+
 The properties data set has only four variables, but with price per square metre already added: 
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 summary(properties)
 ```
+
+## Python
+
+```{python}
+properties.drop(columns="geometry").describe()
+```
+:::
+
 The values of the variables in `depmunic` get copied to each of the properties falling within the boundaries of the municipality departments:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 properties_in_dd <- st_join(properties, depmunic, join = st_within)
 ```
+
+## Python
+
+```{python}
+# the municipality department variables are copied to each property within it
+properties_in_dd = gpd.sjoin(properties, depmunic, how="left", predicate="within").sort_index()
+properties_in_dd.drop(columns="geometry").head()
+```
+:::
 
 
 ## Exercise 16.2 {-}
 
 For polygon support, we prefer contiguous neighbours:
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 (mun_nb <- spdep::poly2nb(depmunic, row.names=as.character(depmunic$num_dep)))
 ```
 
+## Python
+
+```{python}
+# contiguity (queen) neighbours of the municipality departments
+mun_nb = graph.Graph.build_contiguity(depmunic.set_index("num_dep"), rook=False)
+
+def nb_summary(g):
+    print("Number of regions:", g.n)
+    print("Number of nonzero links:", int(g.cardinalities.sum()))
+    print("Average number of links:", round(g.cardinalities.mean(), 6))
+    print("Disjoint connected subgraphs:", g.n_components)
+
+nb_summary(mun_nb)
+```
+:::
+
 Global spatial autocorrelation is marginally detected for the green space variable:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 spdep::moran.test(depmunic$prgreensp, spdep::nb2listw(mun_nb))
 ```
+
+## Python
+
+```{python}
+def moran_test(x, g):
+    """Moran's I test under randomisation, row-standardised weights, one-sided
+    (alternative "greater"), like spdep::moran.test()"""
+    m = esda.Moran(np.asarray(x), g.transform("r").to_W(), permutations=0)
+    return pd.Series(dict(I=m.I, expectation=m.EI, variance=m.VI_rand,
+                          z=m.z_rand, p_value=norm.sf(m.z_rand)))
+
+moran_test(depmunic["prgreensp"], mun_nb)
+```
+:::
+
 Unlike the vignette, which uses distance neighbours up to 1300 m and creates a very dense representation, we choose `k=4` k-nearest neighbours, then convert to symmetry (note that some point locations are duplicated, preventing the use of spatial indexing):
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 (pr_nb_k4s <- spdep::knn2nb(spdep::knearneigh(properties, k=4), sym=TRUE, row.names=properties$id))
 ```
+
+## Python
+
+```{python}
+# k = 4 nearest neighbours, made symmetric. There are only 575 distinct locations
+# for the 1000 properties, and libpysal's Graph.build_knn() refuses coincident points
+# (as does the kd-tree in spdep, which falls back to brute force); here ties between
+# identical locations are broken by row order, as the brute-force search in spdep does
+xy = np.column_stack([properties.geometry.x, properties.geometry.y])
+D = cdist(xy, xy)
+np.fill_diagonal(D, np.inf)
+nn = np.argsort(D, axis=1, kind="stable")[:, :4]
+A = sparse.csr_matrix((np.ones(nn.size), (np.repeat(np.arange(len(xy)), 4), nn.ravel())),
+                      shape=(len(xy), len(xy)))
+pr_nb_k4s = graph.Graph.from_sparse(((A + A.T) > 0).astype(float), ids=properties["id"].to_numpy())
+nb_summary(pr_nb_k4s)
+```
+:::
+
 Copying out has led to the introduction of very powerful positive spatial autocorrelation in this and other variables copied out:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 spdep::moran.test(properties_in_dd$prgreensp, spdep::nb2listw(pr_nb_k4s))
 ```
+
+## Python
+
+```{python}
+moran_test(properties_in_dd["prgreensp"], pr_nb_k4s)
+```
+:::
 
 
 ## Exercise 16.3 {-}
 
 The vignette proposes the full property level and municipal department level set of variables straight away. Here we choose the property level ones first, and update for the copied out municipal department level ones next:
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 f_pr <- prpsqm ~ size + age + dist_metro
 f_pr_md <- update(f_pr, . ~ . + foreigners + prgreensp + popdens + museums + airbnb)
 ```
 
+## Python
+
+```{python}
+f_pr = "prpsqm ~ size + age + dist_metro"
+f_pr_md = f_pr + " + foreigners + prgreensp + popdens + museums + airbnb"
+```
+:::
+
 Adding in the copied out upper level variables appears to account for more of the variability of the response than leaving them out:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 library(mgcv)
@@ -85,38 +229,147 @@ pr_base <- gam(f_pr, data=properties_in_dd)
 pr_2lev <- gam(f_pr_md, data=properties_in_dd)
 anova(pr_base, pr_2lev, test="Chisq")
 ```
+
+## Python
+
+```{python}
+# mgcv::gam() with only parametric terms is a linear model
+pr_base = smf.ols(f_pr, properties_in_dd).fit()
+pr_2lev = smf.ols(f_pr_md, properties_in_dd).fit()
+
+def anova_chisq(small, big):
+    """analysis of deviance table with a chi-square test, scale from the larger model,
+    like anova(small, big, test = "Chisq") on gam objects"""
+    ddf = small.df_resid - big.df_resid
+    dev = small.ssr - big.ssr
+    scale = big.ssr / big.df_resid
+    return pd.DataFrame({"Resid. Df": [small.df_resid, big.df_resid],
+                         "Resid. Dev": [small.ssr, big.ssr],
+                         "Df": [np.nan, ddf], "Deviance": [np.nan, dev],
+                         "Pr(>Chi)": [np.nan, chi2.sf(dev / scale, ddf)]})
+
+anova_chisq(pr_base, pr_2lev)
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 summary(pr_base)
 ```
 
+## Python
+
+```{python}
+pr_base.summary()
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 summary(pr_2lev)
 ```
+
+## Python
+
+```{python}
+pr_2lev.summary()
+```
+:::
+
 Adding an upper level IID random effect to the base formula also improves the fit of the model substantially:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 pr_base_iid <- gam(update(f_pr, . ~ . + s(num_dep, bs="re")), data=properties_in_dd)
 anova(pr_base, pr_base_iid, test="Chisq")
 ```
 
+## Python
+
+```{python}
+# IID random effect for the municipality department: a random intercept, fitted with
+# statsmodels' MixedLM (the lme4 analogue; REML for the estimates, ML for the
+# likelihood ratio tests, as REML likelihoods are not comparable across fixed effects).
+# Note that the R chunk uses the integer num_dep in s(num_dep, bs = "re"), which gives a
+# random slope; the factor conversion only happens in exercise 16.4. With a factor, gam
+# (method = "REML"), lme4 and MixedLM all give the same estimates.
+def fit_iid(formula, reml):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        return smf.mixedlm(formula, properties_in_dd,
+                           groups=properties_in_dd["num_dep"]).fit(reml=reml)
+
+def lrt_iid(fixed_only, formula):
+    """likelihood ratio test of the random intercept (variance on the boundary of the
+    parameter space, so the chi-square(1) p-value is halved)"""
+    ols_ml, iid_ml = fixed_only, fit_iid(formula, reml=False)
+    stat = 2 * (iid_ml.llf - ols_ml.llf)
+    return pd.Series({"logLik (fixed only)": ols_ml.llf, "logLik (with IID)": iid_ml.llf,
+                      "LR statistic": stat, "p-value": 0.5 * chi2.sf(stat, 1)})
+
+pr_base_iid = fit_iid(f_pr, reml=True)
+lrt_iid(pr_base, f_pr)
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 summary(pr_base_iid)
 ```
 
+## Python
+
+```{python}
+pr_base_iid.summary()
+```
+:::
+
 This improvement is much more moderate when both the upper level variables and IID random effect are present:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 pr_2lev_iid <- gam(update(f_pr_md, . ~ . + s(num_dep, bs="re")), data=properties_in_dd)
 anova(pr_2lev, pr_2lev_iid, test="Chisq")
 ```
 
+## Python
+
+```{python}
+pr_2lev_iid = fit_iid(f_pr_md, reml=True)
+lrt_iid(pr_2lev, f_pr_md)
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 summary(pr_2lev_iid)
 ```
 
+## Python
+
+```{python}
+pr_2lev_iid.summary()
+```
+:::
+
 ## Exercise 16.4 {-}
 
 The `"mrf"` smooth term needs ID keys set so that the neighbour object is correctly matched to the observations. Once these are provided, the properties level model with a municipality department level MRF smooth may be fit:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 names(mun_nb) <- attr(mun_nb, "region.id")
@@ -125,22 +378,69 @@ pr_base_mrf <- gam(update(f_pr, . ~ . + s(num_dep, bs="mrf", xt=list(nb=mun_nb))
     data=properties_in_dd)
 summary(pr_base_mrf)
 ```
+
+## Python
+
+```{python}
+# The "mrf" (Markov random field, intrinsic CAR) smooth of mgcv::gam() has no
+# counterpart in the Python ecosystem: pyGAM has no MRF smooth basis, and libpysal/
+# spreg fit spatial dependence on the response or residuals rather than a
+# multilevel ICAR random effect. So there is no Python equivalent of `pr_base_mrf`.
+```
+:::
+
 Repeating for the extended model with upper level variables present, we see that no more response variability is accounted for than in the lower level variables only MRF RE model, and none of the upper level variables are significant at conventional levels.
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 pr_2lev_mrf <- gam(update(f_pr_md, . ~ . + s(num_dep, bs="mrf", xt=list(nb=mun_nb))),
     data=properties_in_dd)
 summary(pr_2lev_mrf)
 ```
+
+## Python
+
+```{python}
+# The "mrf" (Markov random field, intrinsic CAR) smooth of mgcv::gam() has no
+# counterpart in the Python ecosystem: pyGAM has no MRF smooth basis, and libpysal/
+# spreg fit spatial dependence on the response or residuals rather than a
+# multilevel ICAR random effect. So there is no Python equivalent of `pr_2lev_mrf`.
+```
+:::
+
 It also seems that the model without upper level variables outperforms that with them included:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 anova(pr_base_mrf, pr_2lev_mrf, test="Chisq")
 ```
+
+## Python
+
+```{python}
+# Depends on the unavailable `pr_base_mrf` and `pr_2lev_mrf` fits above.
+```
+:::
+
 and the MRF RE outperforms the IID RE:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 anova(pr_base_mrf, pr_base_iid, test="Chisq")
 ```
+
+## Python
+
+```{python}
+# Depends on the unavailable `pr_base_mrf` fit above.
+```
+:::
 
 
 ```{r}

@@ -12,6 +12,9 @@ Graph-based functions for creating neighbour objects (`spdep::tri2nb()`, `spdep:
 
 A chessboard is an $8 \times 8$ grid:
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 xy <- data.frame(expand.grid(1:8, 1:8), col=rep(c(rep(c("black", "white"), 4), rep(c("white", "black"), 4)), 4))
 library(stars)
@@ -19,84 +22,304 @@ library(sf)
 (xy |> st_as_stars() |> st_as_sf() -> grd)
 ```
 
+## Python
+
+```{python}
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import shapely
+import matplotlib.pyplot as plt
+from matplotlib.collections import LineCollection
+from libpysal import weights
+
+# 8 x 8 chessboard; rows from the top (y = 8) down, like the sf object
+cells = [(x, y) for y in range(8, 0, -1) for x in range(1, 9)]
+grd = gpd.GeoDataFrame(
+    {"col": ["black" if (x + y) % 2 == 0 else "white" for x, y in cells]},
+    geometry=[shapely.box(x - .5, y - .5, x + .5, y + .5) for x, y in cells])
+grd
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 library(spdep)
 (rook <- poly2nb(grd, queen=FALSE))
 ```
+
+## Python
+
+```{python}
+rook = weights.Rook.from_dataframe(grd, use_index=False)
+
+def summary(w):
+    print(f"Number of regions: {w.n}")
+    print(f"Number of nonzero links: {int(w.s0)}")
+    print(f"Percentage nonzero weights: {w.pct_nonzero}")
+    print(f"Average number of links: {w.mean_neighbors}")
+
+summary(rook)
+```
+:::
+
 The `rook` neighbours also form a grid, where the neighbours share a grid edge:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 plot(st_geometry(grd), col=grd$col) 
 plot(rook, xy, add=TRUE, col="grey")
 ```
 
+## Python
+
+```{python}
+def plot_nb(w, ax, color="grey"):
+    """draw the links between the centroids of neighbouring polygons"""
+    c = grd.geometry.centroid
+    segs = [[(c[i].x, c[i].y), (c[j].x, c[j].y)] for i, js in w.neighbors.items() for j in js]
+    ax.add_collection(LineCollection(segs, colors=color))
+
+fig, ax = plt.subplots()
+grd.plot(ax=ax, color=grd.col, edgecolor="black")
+plot_nb(rook, ax)
+ax.set_axis_off()
+plt.show()
+```
+:::
+
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 (queen <- poly2nb(grd, queen=TRUE))
 ```
+
+## Python
+
+```{python}
+queen = weights.Queen.from_dataframe(grd, use_index=False)
+summary(queen)
+```
+:::
+
 The `queen` neighbours add neighbours sharing only one corner point:
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 plot(st_geometry(grd), col=grd$col) 
 plot(queen, xy, add=TRUE, col="grey")
 ```
 
+## Python
+
+```{python}
+fig, ax = plt.subplots()
+grd.plot(ax=ax, color=grd.col, edgecolor="black")
+plot_nb(queen, ax)
+ax.set_axis_off()
+plt.show()
+```
+:::
+
 and the difference yields neighbours sharing not more than one boundary point:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 plot(st_geometry(grd), col=grd$col) 
 plot(diffnb(queen, rook), xy, add=TRUE, col="grey")
 ```
 
+## Python
+
+```{python}
+diff = weights.w_difference(queen, rook, constrained=False)  # in queen, not in rook
+fig, ax = plt.subplots()
+grd.plot(ax=ax, color=grd.col, edgecolor="black")
+plot_nb(diff, ax)
+ax.set_axis_off()
+plt.show()
+print(diff.n_components, "disjoint connected subgraphs")
+```
+:::
+
 ## Exercise 14.4 {-}
 
 We can access cardinalities using `card()`, and tabulate their frequencies for the chessboard rook case:
 
+::: {.panel-tabset}
+## R
+
 ```{r}
 ((rook |> card() -> rc) |> table() -> t)
 ```
+
+## Python
+
+```{python}
+rc = pd.Series(rook.cardinalities).sort_index()  # number of neighbours per polygon
+t = rc.value_counts().sort_index()
+t
+```
+:::
+
 Taking the counts found, we can construct the weights corresponding to those neighbour counts:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 1/rev(as.numeric(names(t)))
 ```
+
+## Python
+
+```{python}
+1 / t.index.to_numpy()[::-1]
+```
+:::
+
 Plotting the row-standardized weights, we see that they up-weight the neighbours of observations with few neighbours, and down-weight the neighbours of observations with more neighbours:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 grd$rc <- as.factor(1/rc)
 plot(grd[, "rc"], main="rook row-standardized weights", key.width = lcm(2.5))
 ```
 
+## Python
+
+```{python}
+grd["rc"] = pd.Categorical((1 / rc).round(4))  # one level per distinct weight
+grd.plot(column="rc", categorical=True, legend=True, cmap="viridis")
+plt.title("rook row-standardized weights")
+plt.show()
+```
+:::
+
 We can also use the cardinality frequency table to find counts of neighbours with (increasing) weights:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 unname(rev(t))*rev(as.numeric(names(t)))
 ```
+
+## Python
+
+```{python}
+t.to_numpy()[::-1] * t.index.to_numpy()[::-1]
+```
+:::
+
 This can be confirmed by tabulating the frequencies of weights yielded by `nb2listw()`:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 table(unlist(nb2listw(rook, style="W")$weights))
 ```
+
+## Python
+
+```{python}
+rook.transform = "R"  # row-standardized weights
+pd.Series([v for ws in rook.weights.values() for v in ws]).round(6).value_counts().sort_index()
+```
+:::
+
 Repeating for the `queen` case again shows how row-standardization can engender edge effects:
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 ((queen |> card() -> rc) |> table() -> t)
 ```
+
+## Python
+
+```{python}
+rc = pd.Series(queen.cardinalities).sort_index()
+t = rc.value_counts().sort_index()
+t
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 1/rev(as.numeric(names(t)))
 ```
+
+## Python
+
+```{python}
+1 / t.index.to_numpy()[::-1]
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 grd$rc <- as.factor(1/rc)
 plot(grd[, "rc"], main = "rook row-standardised weights", key.width = lcm(2.5))
 ```
 
+## Python
+
+```{python}
+grd["rc"] = pd.Categorical((1 / rc).round(4))
+grd.plot(column="rc", categorical=True, legend=True, cmap="viridis")
+plt.title("queen row-standardized weights")
+plt.show()
+```
+:::
+
+::: {.panel-tabset}
+## R
+
 ```{r}
 unname(rev(t))*rev(as.numeric(names(t)))
 ```
 
+## Python
+
+```{python}
+t.to_numpy()[::-1] * t.index.to_numpy()[::-1]
+```
+:::
+
+
+::: {.panel-tabset}
+## R
 
 ```{r}
 table(unlist(nb2listw(queen, style="W")$weights))
 ```
+
+## Python
+
+```{python}
+queen.transform = "R"
+pd.Series([v for ws in queen.weights.values() for v in ws]).round(6).value_counts().sort_index()
+```
+:::
 
 ```{r}
 save(list = ls(), file = "data/ch14.RData")
